@@ -32,7 +32,7 @@ const rightFieldArray = [];
 let targetList = createTargetList()
 let enemyHits = 0;
 let ownHits = 0;
-let botGameState = "Begun";
+let botGameState = "";
 let turn = 1;
 
 
@@ -355,10 +355,13 @@ function getShipObjectByID(ID) {
 function fireCannon(e) {
     if (botGameState === "Begun"){
         const firedAtField = e.currentTarget
-        if (leftFieldArray.includes(firedAtField)) {
+        if (firedAtField.dataset.side === "left") {
             alert("Cannot fire at your own board");
             return;
-        } else if (occupiedFieldArrayRight.includes(firedAtField)) {
+        } else if (firedAtField.classList.contains("missedField") || firedAtField.classList.contains("hitField")) {
+            return;
+        }
+        else if (occupiedFieldArrayRight.includes(firedAtField)) {
             firedAtField.classList.remove("occupiedField");
             firedAtField.classList.add("hitField");
             console.log("Hit shot");
@@ -372,6 +375,9 @@ function fireCannon(e) {
         turn = 0;
         console.log(turn)
         gameLoop();
+    }
+    else {
+        alert("Place your ships and click ready to start the game!")
     }
 }
 
@@ -408,10 +414,25 @@ function setShipEventListener() {
     })
 }
 
+function readyCheck() {
+    console.log(occupiedFieldArrayLeft.length)
+    if (occupiedFieldArrayLeft.length === 17) {
+        document.getElementById("turn").textContent = "Battle begun";
+        botGameState = "Begun"
+        //Reset ships when pressing ready
+        //getElementById("resetButton")?.removeEventListener("click", resetShipPlacement()); 
+        //getElementById("randomizeButton")?.removeEventListener("click", randomizeShipPlacement());
+    }
+    else {
+        alert("Not all ships are placed place all ships")
+    }
+}
+
 function initializeBotGame() {
     initializeFields()
     setShipEventListener()
     randomizeShipPlacement("right");
+    document.getElementById("turn").textContent = "Place your ships";
     gameLoop();
 }
 
@@ -419,3 +440,5 @@ initializeBotGame(); // starts bot game
 
 getElementById("resetButton")?.addEventListener("click", resetShipPlacement);
 getElementById("randomizeButton")?.addEventListener("click", () => randomizeShipPlacement("left"));
+getElementById("readyButton")?.addEventListener("click", () => readyCheck());
+getElementById("exitGameButton")?.addEventListener("click", () => window.location.href = "/");
