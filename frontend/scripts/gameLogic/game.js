@@ -5,6 +5,7 @@ import { setLoading } from '../utility/ui.js';
 import { getElementById } from '../utility/helperFunctions.js';
 import { boardHeight, boardWidth } from './board.js';
 import { deleteGame, fetchGameData, fireShot } from './gameFunctions.js';
+import { Ship } from "./ships.js";
 
 const playerIndex = User()._id == Game().players[0].userId ? 0 : 1;
 const enemyIndex = playerIndex == 0 ? 1 : 0;
@@ -205,10 +206,13 @@ async function handleFireShot(e) {
     const firedAtField = e.currentTarget;
     const field = parseInt(firedAtField.dataset.index, 10); // Field number
   
-    const updatedGame = await fireShot(Game()._id, field);
+    const updatedGameData = await fireShot(Game()._id, field);
   
-    if (updatedGame) {
-      // Instead of a simple true/false check, our checkIfHit now registers hits.
+    if (updatedGameData) {
+      // Rehydrate ships so that registerHit() is available.
+      const updatedGame = rehydrateGame(updatedGameData);
+  
+      // Check for a hit and update the UI accordingly.
       if (checkIfHit(field)) {
         firedAtField.classList.add("hitField");
         console.log("Hit shot");
@@ -216,12 +220,13 @@ async function handleFireShot(e) {
         firedAtField.classList.add("missedField");
         console.log("Missed shot");
       }
+  
       setGame(updatedGame);
-
+  
       if (checkWinCondition()) {
         return;
       }
-
+  
       checkGameState();
       startOrStopGameFetchIfNeeded();
   
@@ -299,5 +304,18 @@ async function handleDeleteGame(e) {
     setLoading(false);
 }
 
-
+function rehydrateGame(gameData) {
+    // For each player, convert their ships into instances of Ship.
+    gameData.players.forEach(player => {
+      player.ships = player.ships.map(shipData => new Ship(
+        shipData.name,
+        shipData.length,
+        shipData.rotation,
+        shipData.location,
+        shipData.hits,
+        shipData.isSunk
+      ));
+    });
+    return gameData;
+  }
 
