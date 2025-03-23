@@ -7,8 +7,6 @@ import { boardHeight, boardWidth } from './board.js';
 import { deleteGame, fetchGameData, fireShot } from './gameFunctions.js';
 
 
-
-
 let howOftenToFetchDataInMS = 500;
 
 
