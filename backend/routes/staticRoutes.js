@@ -49,7 +49,6 @@ router.get('/gameLobby', (req, res) => {
     res.sendFile(join(__dirname, '..', '..', 'frontend', 'templates', 'gameLobby.html'));
 });
 
-
 router.get('/game', (req, res) => {
     res.sendFile(join(__dirname, '..', '..', 'frontend', 'templates', 'game.html'));
 });

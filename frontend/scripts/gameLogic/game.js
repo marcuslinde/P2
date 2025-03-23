@@ -149,14 +149,9 @@ export function initializeFields() {
             const field = document.createElement("div");
             field.classList.add("field");
             field.classList.add(side);
-
             field.id = side + "field" + (i + 1);
-
-
-
             field.dataset.side = side;
             field.dataset.index = String(i + 1);
-
             // Adds hover effect when dragging ship to left squares
 
             if (side == "left") {
