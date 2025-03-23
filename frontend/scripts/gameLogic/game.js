@@ -31,9 +31,9 @@ function startOrStopGameFetchIfNeeded() {
         fetchDataInterval = setInterval(() => {
             handleFetchGameData();
             checkGameState();
-            paintShotsOnBoards()
+       //     paintShotsOnBoards() 
 
-        }, 2000)
+        }, 500)
     }
 
 }
@@ -66,7 +66,7 @@ function paintShipsOnLeftBoard() {
     })
 }
 
-
+/*
 function paintShotsOnBoards() {
     Game().players[enemyIndex].shots.forEach((shot)=>{
         let fieldElement = getElementById("leftfield"+shot);
@@ -86,7 +86,7 @@ function paintShotsOnBoards() {
         }
     })
 
-}
+}*/
 
 
 
@@ -210,7 +210,6 @@ async function handleFireShot(e) {
     if (updatedGame) {
         // UPDATE UI FOR SHOT
         if (checkIfHit(field)) {
-            firedAtField.classList.remove("occupiedField");
             firedAtField.classList.add("hitField");
             console.log("Hit shot");
         } else {
@@ -250,6 +249,14 @@ function checkIfHit(field) {
     return false
 }
 
+
+function registerHit() {
+    this.hits++;
+    if (!this.isSunk && this.hits >= this.length) {
+      this.isSunk = true;
+      this.displaySunkMessage();
+    }
+  }
 
 
 async function handleDeleteGame(e) {

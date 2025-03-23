@@ -6,12 +6,16 @@ export class Ship {
      * @param {number} length - how many fields  the ship take up
      * @param {string} rotation - either "vertical" or "horizontal"
      * @param {object|null} location - ships placement. Null means 'unplaced';
+     * @param {number} hits - number of times ship has been hit
+     * @param {boolean} isSunk - if the ship has been sunk or not
      */
     constructor(name, length, rotation, location) {
         this.name = name;
         this.length = length;
         this.rotation = rotation;
         this.location = location;
+        this.hits = hits;
+        this.isSunk isSunk;
     }
 }
 

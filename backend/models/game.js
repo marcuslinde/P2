@@ -8,7 +8,9 @@ const ShipSchema = new Schema({
   location: {
     startField: { type: Number },                // The starting field number
     coveredFields: { type: [Number] }              // An array of field numbers occupied by the ship
-  }
+  },
+  hits: {type: Number, required: true},
+  isSunk: {type: Boolean, required: true},
 }, { _id: false });
 
 // Schema for a player in the game
