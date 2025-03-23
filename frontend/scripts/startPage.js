@@ -1,16 +1,26 @@
 /** @module register */
-import { User, setUser, Game } from './utility/state.js';
+import { User, setUser, Game, setGame } from './utility/state.js';
 import { getElementById } from './utility/helperFunctions.js';
-import {showElement, hideElement} from './utility/helperFunctions.js';
+import { showElement, hideElement } from './utility/helperFunctions.js';
 import { setLoading } from './utility/ui.js';
+
 
 
 // checks if the user is in a game
 if (Game()) {
+    // backend code to check if game exists
     setLoading(true)
-    setTimeout(()=>{
-        window.location.href = "/game"
-    },1000)
+    setTimeout(() => {
+        if (Game().status = "waiting") {
+            window.location.href = "/gameLobby"   
+        } else if (Game().status = "active") {
+            window.location.href = "/game"
+        }
+        
+        setLoading(false)
+
+    }, 1000)
+
 }
 
 

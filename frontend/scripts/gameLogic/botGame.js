@@ -1,7 +1,11 @@
-//import { initializeFields, randomizeShipPlacement, resetShipPlacement } from './game.js'; 
+
+import { initializeFields } from './game.js';
+import { randomizeShipPlacement, resetShipPlacement } from './placeShips.js';
+
 import { getElementById, querySelectorAll } from '../utility/helperFunctions.js';
 import { createShips } from './ships.js';
 import { boardHeight, boardWidth } from './board.js';
+
 
 /** Array of ship div elements
 * @type {Array<Object>} */

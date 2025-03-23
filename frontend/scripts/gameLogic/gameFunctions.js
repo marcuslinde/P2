@@ -24,7 +24,6 @@ export async function createGame(userId, gameCode, name) {
 
         return gameData;
 
-
     } catch (error) {
         console.error("Error creating game:", error);
     }
@@ -40,7 +39,6 @@ export async function fetchGameData(gameId) {
         // Fetch from the dedicated endpoint
         const response = await fetch(`/game/data?gameId=${gameId}`);
         if (!response.ok) {
-            alert(`${response.statusText} while fetching`);
             throw new Error(`Server error: ${response.status}`)
         }
 
@@ -93,10 +91,11 @@ export async function joinGame(userId, gameCode, name) {
  * @returns {Promise<object>} 
  */
 export async function deleteGame(gameId) {
+
     try {
         // Fetch from the dedicated endpoint
         const response = await fetch(`/game/delete/${gameId}`, {
-            method: 'DELETE'
+            method: 'DELETE',
         });
         if (!response.ok) {
             throw new Error(`Server error: ${response.status}`)
@@ -158,12 +157,9 @@ export async function fireShot(gameId, field) {
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-
         const updatedGame = await response.json();
-        console.log("Game updated successfully:", updatedGame);
-
-
-
+        console.log("Shot fired successfully!");
+        return updatedGame;
 
     } catch (error) {
         console.error("Error updating game:", error);
