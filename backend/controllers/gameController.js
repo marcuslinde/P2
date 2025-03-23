@@ -122,13 +122,13 @@ export async function getGameData(req, res) {
  * @param {*} res 
  */
 export const deleteGame = async (req, res) => {
-  const { gameId } = req.params;
-  console.log("gameId: ", gameId); //debugging to see in terminal
-  if (!mongoose.Types.ObjectId.isValid(gameId)) {
+  const { id } = req.params;
+  console.log("gameId: ", id); //debugging to see in terminal
+  if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(404).json({ success: false, message: "Invalid Game Id" });
   }
   try {
-    await Game.findByIdAndDelete(gameId);
+    await Game.findByIdAndDelete(id);
     res.status(200).json({ success: true, message: "Game deleted" });
   } catch (error) {
     res.status(500).json({ success: false, message: "Server Error" });

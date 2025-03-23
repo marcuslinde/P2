@@ -6,9 +6,8 @@ import { setLoading } from "../utility/ui.js";
 import { createGame } from "./gameFunctions.js";
 
 
-
 if (!User()) {
-    window.location.href = "/login"; // go to front page
+    window.location.href = "/login"; // go to login page
 }
 
 const form = getElementById("createGameForm");
@@ -28,7 +27,7 @@ async function handleCreateGame(e) {
   if (gameData) {
     // Store the _id from the MongoDB document
     setGame(gameData);
-    window.location.href = '/game';
+    window.location.href = '/gameLobby';
   }
 
   setLoading(false);

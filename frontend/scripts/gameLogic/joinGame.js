@@ -29,7 +29,7 @@ async function handleJoinGame(e) {
   if (gameData) {
         // Save the game so the /game page can access it
         setGame(gameData);
-        window.location.href = '/game'; 
+        window.location.href = '/placeShips'; 
   }
 
   setLoading(false)
