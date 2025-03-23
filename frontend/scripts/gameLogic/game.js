@@ -192,38 +192,38 @@ export function initializeFields() {
 
 async function handleFireShot(e) {
     e.preventDefault();
-
+  
     if (Game().currentTurn !== User()._id) {
         return;
     }
-
+  
     if (!Game().players[0].ready || !Game().players[1].ready) {
-        window.alert("Waiting for ships to be placed")
+        window.alert("Waiting for ships to be placed");
+        return;
     }
-
+  
     const firedAtField = e.currentTarget;
-    const field = parseInt(firedAtField.dataset.index, 10); // Get the field number
-
-
-    const updatedGame = await fireShot(Game()._id, field)
-
+    const field = parseInt(firedAtField.dataset.index, 10); // Field number
+  
+    const updatedGame = await fireShot(Game()._id, field);
+  
     if (updatedGame) {
-        // UPDATE UI FOR SHOT
-        if (checkIfHit(field)) {
-            firedAtField.classList.add("hitField");
-            console.log("Hit shot");
-        } else {
-            firedAtField.classList.add("missedField");
-            console.log("Missed shot");
-        }
-        setGame(updatedGame);
-        checkGameState();
-        startOrStopGameFetchIfNeeded();
-
-        // UDSKIFT FIELD MED EN KOPI AF SIG SELV, SÅ MAN IKKE KAN SKYDE TO GANGE
-        firedAtField.parentNode.replaceChild(firedAtField.cloneNode(true), firedAtField)
+      // Instead of a simple true/false check, our checkIfHit now registers hits.
+      if (checkIfHit(field)) {
+        firedAtField.classList.add("hitField");
+        console.log("Hit shot");
+      } else {
+        firedAtField.classList.add("missedField");
+        console.log("Missed shot");
+      }
+      setGame(updatedGame);
+      checkGameState();
+      startOrStopGameFetchIfNeeded();
+  
+      // Prevent firing the same field twice
+      firedAtField.parentNode.replaceChild(firedAtField.cloneNode(true), firedAtField);
     }
-}
+  }
 
 
 /**
@@ -231,6 +231,7 @@ async function handleFireShot(e) {
  * @param {number} field 
  * @returns {boolean}
  */
+/*
 function checkIfHit(field) {
 
     console.log("fieldNumber", field)
@@ -247,15 +248,22 @@ function checkIfHit(field) {
         }
     }
     return false
-}
+} */
 
-
-function registerHit() {
-    this.hits++;
-    if (!this.isSunk && this.hits >= this.length) {
-      this.isSunk = true;
-      this.displaySunkMessage();
+function checkIfHit(field) {
+    const checkPlayer = Game().players[0].userId === User()._id ? 1 : 0;
+    const enemyShips = Game().players[checkPlayer].ships;
+  
+    for (let i = 0; i < enemyShips.length; i++) {
+      const ship = enemyShips[i];
+      // Ensure ship has been placed (location is not null)
+      if (ship.location && ship.location.coveredFields.includes(field)) {
+        // Register a hit on this ship
+        ship.registerHit();
+        return true;
+      }
     }
+    return false;
   }
 
 
