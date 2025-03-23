@@ -12,10 +12,7 @@ let fetchDataInterval = null
 const turnElmnt = getElementById("turn")
 getElementById("exitGameButton").addEventListener("click", handleDeleteGame)
 
-console.log(Game());
-
 initializeGame()
-
 function setGameNames() {
     if (Game().status == 'active') {
         if (Game().players[0].name == User().name) {
@@ -57,6 +54,18 @@ function checkGameState() {
     }
 }
 
+function paintShipsOnLeftBoard() {
+    let playerIndex = User()._id == Game().players[0].userId ? 0 : 1;
+    console.log("playerIndex", playerIndex);
+    Game().players[playerIndex].ships.forEach((ship) => {
+        ship.location.coveredFields.forEach((field) => {
+            getElementById("leftfield" + field).classList.add("occupiedField")
+        })
+    })
+}
+
+
+
 async function handleFetchGameData() {
 
     const gameData = await fetchGameData(Game()._id);
@@ -80,10 +89,12 @@ async function initializeGame() {
     handleFetchGameData()
 
     if (Game()) {
-        setGameNames();
         initializeFields();
+        setGameNames();
+        paintShipsOnLeftBoard();
         checkGameState();
         startOrStopGameFetchIfNeeded();
+
     } else {
         window.location.href = "/"
     }
@@ -186,13 +197,10 @@ async function handleFireShot(e) {
         setGame(updatedGame);
         checkGameState();
         startOrStopGameFetchIfNeeded();
-    
+
         // UDSKIFT FIELD MED EN KOPI AF SIG SELV, SÅ MAN IKKE KAN SKYDE TO GANGE
         firedAtField.parentNode.replaceChild(firedAtField.cloneNode(true), firedAtField)
     }
-
-  
-
 }
 
 
