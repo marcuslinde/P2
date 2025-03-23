@@ -6,6 +6,8 @@ import { getElementById } from '../utility/helperFunctions.js';
 import { boardHeight, boardWidth } from './board.js';
 import { deleteGame, fetchGameData, fireShot } from './gameFunctions.js';
 
+const playerIndex = User()._id == Game().players[0].userId ? 0 : 1;
+const enemyIndex = playerIndex == 0 ? 1 : 0;
 
 let fetchDataInterval = null
 
@@ -29,6 +31,7 @@ function startOrStopGameFetchIfNeeded() {
         fetchDataInterval = setInterval(() => {
             handleFetchGameData();
             checkGameState();
+            paintShotsOnBoards()
 
         }, 2000)
     }
@@ -56,13 +59,33 @@ function checkGameState() {
 }
 
 function paintShipsOnLeftBoard() {
-    let playerIndex = User()._id == Game().players[0].userId ? 0 : 1;
-    console.log("playerIndex", playerIndex);
     Game().players[playerIndex].ships.forEach((ship) => {
         ship.location.coveredFields.forEach((field) => {
             getElementById("leftfield" + field).classList.add("occupiedField")
         })
     })
+}
+
+
+function paintShotsOnBoards() {
+    Game().players[enemyIndex].shots.forEach((shot)=>{
+        let fieldElement = getElementById("leftfield"+shot);
+        if (fieldElement.classList.contains("occupiedField")) {
+            fieldElement.classList.add("hitField");
+        } else {
+            fieldElement.classList.add("missedField");
+        }
+    })
+
+    Game().players[playerIndex].shots.forEach((shot)=>{
+        let fieldElement = getElementById("rightfield"+shot);
+        if (fieldElement.classList.contains("occupiedField")) {
+            fieldElement.classList.add("hitField");
+        } else {
+            fieldElement.classList.add("missedField");
+        }
+    })
+
 }
 
 
@@ -105,10 +128,7 @@ async function initializeGame() {
 }
 
 
-// makes sure the user cant leave the game by pressing going back, without confirming
-window.onbeforeunload = function () {
-    return true;
-};
+
 
 
 
