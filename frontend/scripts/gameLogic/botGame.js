@@ -26,26 +26,13 @@ const leftFieldArray = [];
 /** Array of fields that are filled by ships 
 *  @type {Array<HTMLElement>}  */
 const rightFieldArray = [];
-
-
-
-let targetList = createTargetList()
-let enemyHits = 0;
-let ownHits = 0;
-let botGameState = "";
+let targetList = Array.from({ length: 100 }, (_, i) => i + 1);//creats array with values from 1-100 as a targetlist for the bot
+let game = { enemyHits: 0, ownHits:0, gameState: ""}
 let turn = 1;
 
-
-function createTargetList() {
-    let targetList = [];
-    for (let i = 1; i <= 100; i++) {
-        targetList.push(i);
-    }
-    console.log(targetList);
-    return targetList
-}
-
-
+/** handls the bot fire a shot
+ * @function
+ */
 function botFireCannon() {
 
     const firedAtField = getElementById(`leftfield${getNextRandomTarget()}`);
@@ -58,7 +45,7 @@ function botFireCannon() {
         firedAtField.classList.remove("occupiedField");
         firedAtField.classList.add("hitField");
         console.log("Hit shot");
-        enemyHits += 1;
+        game.game.enemyHits += 1;
     }
     else {
         firedAtField?.classList.add("missedField");
@@ -69,6 +56,9 @@ function botFireCannon() {
     console.log("Bot fired at:", firedAtField?.id);
 }
 
+/** Gets random target for the bot to shot at
+ * @function
+ */
 function getNextRandomTarget() {
     const randomIndex = Math.floor(Math.random() * targetList.length);
     const randomTarget = targetList[randomIndex];
@@ -77,11 +67,15 @@ function getNextRandomTarget() {
     return randomTarget;
 }
 
+
+/** Checks win condition for both player and enemy
+ * @function
+ */
 function checkWinCondition() {
-    if (enemyHits === 17) {
+    if (game.enemyHits === 17) {
         return 1;
     }
-    else if (ownHits === 17) {
+    else if (game.ownHits === 17) {
         return 2;
     }
 
@@ -93,6 +87,9 @@ if (turn == 0) {
     turn = 1;
 }
 
+/** calls checkwincondtion to check if condition are met for a win and finds if it is player on enmey turn.
+ * @function
+ */
 function gameLoop() {
     if (checkWinCondition() === 1) {
         alert("The bot won!");
@@ -108,10 +105,13 @@ function gameLoop() {
     }
 }
 
-function removeButtonEventListener() {
-    getElementById("resetButton").removeEventListener("click", resetShipPlacement);
-    getElementById("randomizeButton").removeEventListener("click", () => randomizeShipPlacement("left"));
-}
+/** Used to make buttons unusable doing match
+ * @function
+ */
+//function removeButtonEventListener() {
+//    getElementById("resetButton").removeEventListener("click", resetShipPlacement);
+//    getElementById("randomizeButton").removeEventListener("click", () => randomizeShipPlacement("left"));
+//}
 
 
 /** Tilføjer elementet occupiedField til de fields med skibe på
@@ -157,6 +157,9 @@ function checkForOutOfBounds(startRow, startColumn, shipLength, rotation) {
     }
 }
 
+/** Places ships randomly
+ * @function
+ */
 function randomizeShipPlacement(boardSide) {
     resetShipPlacement();
     // Går over arrayet af ship classes for at placere alle skibene
@@ -332,6 +335,9 @@ function onShipDrop(e) {
     console.log(occupiedFieldArrayLeft)
 }
 
+/** Find the object id of the ship
+ * @function
+ */
 function getShipObjectByID(ID) {
     let draggedShip = null;
     // finder hvilken class ship vi skal bruge ud fra html elementet
@@ -352,8 +358,11 @@ function getShipObjectByID(ID) {
     return draggedShip
 }
 
+/** handels shots made by player event
+ * @function
+ */
 function fireCannon(e) {
-    if (botGameState === "Begun"){
+    if (game.gameState === "Begun"){
         const firedAtField = e.currentTarget
         if (firedAtField.dataset.side === "left") {
             alert("Cannot fire at your own board");
@@ -365,7 +374,7 @@ function fireCannon(e) {
             firedAtField.classList.remove("occupiedField");
             firedAtField.classList.add("hitField");
             console.log("Hit shot");
-            ownHits += 1;
+            game.ownHits += 1;
         } else {
             firedAtField.classList.add("missedField");
 
@@ -381,6 +390,9 @@ function fireCannon(e) {
     }
 }
 
+/** Adds event listners to all ships objects
+ * @function
+ */
 function setShipEventListener() {
     shipsDiv.forEach(ship => {
         ship.addEventListener("dragstart", (e) => {
@@ -414,11 +426,14 @@ function setShipEventListener() {
     })
 }
 
+/** checks if player is done the necessary steps to start the game
+ * @function
+ */
 function readyCheck() {
     console.log(occupiedFieldArrayLeft.length)
     if (occupiedFieldArrayLeft.length === 17) {
         document.getElementById("turn").textContent = "Battle begun";
-        botGameState = "Begun"
+        game.gameState = "Begun"
         //Reset ships when pressing ready
         //getElementById("resetButton")?.removeEventListener("click", resetShipPlacement()); 
         //getElementById("randomizeButton")?.removeEventListener("click", randomizeShipPlacement());
@@ -428,6 +443,9 @@ function readyCheck() {
     }
 }
 
+/** Calls function needed to start game
+ * @function
+ */
 function initializeBotGame() {
     initializeFields()
     setShipEventListener()
