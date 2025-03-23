@@ -298,8 +298,6 @@ async function handleSubmitShips(e) {
         setGame(updatedGame);
     }
 
-    setLoading(false)
-
 }
 getElementById("readyButton").addEventListener("click", handleSubmitShips);
 
