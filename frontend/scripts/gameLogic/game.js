@@ -31,7 +31,7 @@ function startOrStopGameFetchIfNeeded() {
         fetchDataInterval = setInterval(() => {
             handleFetchGameData();
             checkGameState();
-       //     paintShotsOnBoards() 
+            paintShotsOnBoards() 
 
         }, 500)
     }
@@ -66,7 +66,7 @@ function paintShipsOnLeftBoard() {
     })
 }
 
-/*
+
 function paintShotsOnBoards() {
     Game().players[enemyIndex].shots.forEach((shot)=>{
         let fieldElement = getElementById("leftfield"+shot);
@@ -86,7 +86,7 @@ function paintShotsOnBoards() {
         }
     })
 
-}*/
+}
 
 
 
@@ -202,15 +202,6 @@ async function handleFireShot(e) {
     const updatedGame = await fireShot(Game()._id, field);
   
     if (updatedGame) {
-      // Instead of a simple true/false check, our checkIfHit now registers hits.
-      if (checkIfHit(field)) {
-        firedAtField.classList.add("hitField");
-        console.log("Hit shot");
-      } else {
-        firedAtField.classList.add("missedField");
-        console.log("Missed shot");
-      }
-      setGame(updatedGame);
   
       if (checkWinCondition()) {
         return;
