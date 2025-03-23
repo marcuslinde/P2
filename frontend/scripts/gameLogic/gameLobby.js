@@ -6,8 +6,13 @@ import { setBanner, setLoading } from "../utility/ui.js";
 
 
 setBanner(true)
-
 checkForEnemy();
+
+
+getElementById("gameCode").innerHTML = `GAME CODE: ${Game().gameCode}`
+getElementById("cancelButton").addEventListener("click", handleDeleteGame)
+
+
 
 async function checkForEnemy() {
     const gameData = await fetchGameData(Game()._id);
@@ -20,7 +25,7 @@ async function checkForEnemy() {
             checkForEnemy()
         } else {
             setGame(gameData)
-            window.location.href = "/game"
+            window.location.href = "/placeShips"
         }
         
         
@@ -28,10 +33,6 @@ async function checkForEnemy() {
 }
 
 
-
-getElementById("gameCode").innerHTML = `GAME CODE: ${Game().gameCode}`
-
-getElementById("cancelButton").addEventListener("click", handleDeleteGame)
 
 async function handleDeleteGame(e) {
     e.preventDefault()

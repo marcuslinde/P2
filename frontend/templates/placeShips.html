@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Battleships</title>
+    <link rel="stylesheet" href="../styles/game.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js" defer></script>
+    <!--Howler library for sounds-->
+</head>
+
+<body>
+    <button id="cancelButton">Leave game</button>
+
+    <div class="flex-justify-align-center">
+    <h2 id="turn"> place your ships </h2>
+    <div id="gameBoardWrapper" class="center">
+        <div>
+
+            <h2 id="yourName">  </h2>
+            <div class="gameBoard" id="gameBoard"></div>
+        </div>
+    </div>
+
+
+
+    <div class="functionWrapper">
+  
+        <div class="shipSelectionWrapper center">
+            <div id="carrierSize5" class="ship" draggable="true"></div>
+            <div id="battleshipSize4" class="ship" draggable="true"></div>
+            <div id="submarineSize3" class="ship" draggable="true"></div>
+            <div id="cruiserSize3" class="ship" draggable="true"></div>
+            <div id="destroyerSize2" class="ship" draggable="true"></div>
+        </div>
+        <div class="buttonWrapper">
+            <div id="gameButtonWrapper">
+                <input id="readyButton" type="button" value="Ready">
+            </div>
+            <div id="gameButtonWrapper">
+                <input id="randomizeButton" type="button" value="Randomize">
+            </div>
+            <div id="gameButtonWrapper">
+                <input id="resetButton" type="button" value="Reset">
+            </div>
+        </div>
+    </div>
+</div>
+    <script type="module" src="../scripts/utility/audioManager.js"></script>
+    <script type="module" src="../scripts/gameLogic/placeShips.js"></script>
+
+    </div>
+</body>
+
+</html>

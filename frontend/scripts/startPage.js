@@ -1,5 +1,5 @@
 /** @module register */
-import { User, setUser, Game } from './utility/state.js';
+import { User, setUser, Game, setGame } from './utility/state.js';
 import { getElementById } from './utility/helperFunctions.js';
 import { showElement, hideElement } from './utility/helperFunctions.js';
 import { setLoading } from './utility/ui.js';
@@ -8,7 +8,6 @@ import { setLoading } from './utility/ui.js';
 
 // checks if the user is in a game
 if (Game()) {
-
     // backend code to check if game exists
     setLoading(true)
     setTimeout(() => {
