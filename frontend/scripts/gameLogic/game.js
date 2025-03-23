@@ -31,9 +31,9 @@ function startOrStopGameFetchIfNeeded() {
         fetchDataInterval = setInterval(() => {
             handleFetchGameData();
             checkGameState();
-            paintShotsOnBoards()
+       //     paintShotsOnBoards() 
 
-        }, 2000)
+        }, 500)
     }
 
 }
@@ -66,7 +66,7 @@ function paintShipsOnLeftBoard() {
     })
 }
 
-
+/*
 function paintShotsOnBoards() {
     Game().players[enemyIndex].shots.forEach((shot)=>{
         let fieldElement = getElementById("leftfield"+shot);
@@ -86,7 +86,7 @@ function paintShotsOnBoards() {
         }
     })
 
-}
+}*/
 
 
 
@@ -189,49 +189,52 @@ export function initializeFields() {
 
 
 
-
 async function handleFireShot(e) {
     e.preventDefault();
-
+  
     if (Game().currentTurn !== User()._id) {
-        return;
+      return;
     }
-
+  
     if (!Game().players[0].ready || !Game().players[1].ready) {
-        window.alert("Waiting for ships to be placed")
+      window.alert("Waiting for ships to be placed");
+      return;
     }
-
+  
     const firedAtField = e.currentTarget;
-    const field = parseInt(firedAtField.dataset.index, 10); // Get the field number
-
-
-    const updatedGame = await fireShot(Game()._id, field)
-
+    const field = parseInt(firedAtField.dataset.index, 10); // Field number
+  
+    const updatedGame = await fireShot(Game()._id, field);
+  
     if (updatedGame) {
-        // UPDATE UI FOR SHOT
-        if (checkIfHit(field)) {
-            firedAtField.classList.remove("occupiedField");
-            firedAtField.classList.add("hitField");
-            console.log("Hit shot");
-        } else {
-            firedAtField.classList.add("missedField");
-            console.log("Missed shot");
-        }
-        setGame(updatedGame);
-        checkGameState();
-        startOrStopGameFetchIfNeeded();
-
-        // UDSKIFT FIELD MED EN KOPI AF SIG SELV, SÅ MAN IKKE KAN SKYDE TO GANGE
-        firedAtField.parentNode.replaceChild(firedAtField.cloneNode(true), firedAtField)
+      // Instead of a simple true/false check, our checkIfHit now registers hits.
+      if (checkIfHit(field)) {
+        firedAtField.classList.add("hitField");
+        console.log("Hit shot");
+      } else {
+        firedAtField.classList.add("missedField");
+        console.log("Missed shot");
+      }
+      setGame(updatedGame);
+  
+      if (checkWinCondition()) {
+        return;
+      }
+  
+      checkGameState();
+      startOrStopGameFetchIfNeeded();
+  
+      // Prevent firing the same field twice
+      firedAtField.parentNode.replaceChild(firedAtField.cloneNode(true), firedAtField);
     }
-}
-
+  }
 
 /**
  * 
  * @param {number} field 
  * @returns {boolean}
  */
+/*
 function checkIfHit(field) {
 
     console.log("fieldNumber", field)
@@ -248,9 +251,42 @@ function checkIfHit(field) {
         }
     }
     return false
-}
+} */
 
+    function checkIfHit(field) {
+        const checkPlayer = Game().players[0].userId === User()._id ? 1 : 0;
+        const enemyShips = Game().players[checkPlayer].ships;
+      
+        for (let i = 0; i < enemyShips.length; i++) {
+          const ship = enemyShips[i];
+          if (ship.location && ship.location.coveredFields.includes(field)) {
+            return true;
+          }
+        }
+        return false;
+      }
 
+      function checkWinCondition() {
+        const attackerIndex = User()._id.toString() === Game().players[0].userId.toString() ? 0 : 1;
+        const defenderIndex = attackerIndex === 0 ? 1 : 0;
+        const attackerShots = Game().players[attackerIndex].shots;
+        const enemyShips = Game().players[defenderIndex].ships;
+      
+        // For each enemy ship, check if every field is included in the attacker's shots
+        const allSunk = enemyShips.every(ship => {
+          if (!ship.location || !ship.location.coveredFields) return false;
+          return ship.location.coveredFields.every(field => attackerShots.includes(field));
+        });
+      
+        if (allSunk) {
+          alert("Victory! All enemy ships have been sunk!");
+          const gameData = Game();
+          gameData.status = "finished";
+          setGame(gameData);
+          return true;
+        }
+        return false;
+      }
 
 async function handleDeleteGame(e) {
     setLoading(true);
@@ -263,6 +299,5 @@ async function handleDeleteGame(e) {
 
     setLoading(false);
 }
-
 
 

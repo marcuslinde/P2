@@ -29,7 +29,7 @@ async function checkForEnemy() {
         }
         
         
-    }, 2000)
+    }, 500)
 }
 
 
