@@ -217,6 +217,11 @@ async function handleFireShot(e) {
         console.log("Missed shot");
       }
       setGame(updatedGame);
+
+      if (checkWinCondition()) {
+        return;
+      }
+
       checkGameState();
       startOrStopGameFetchIfNeeded();
   
@@ -266,6 +271,21 @@ function checkIfHit(field) {
     return false;
   }
 
+function checkWinCondition() {
+    const enemyIndex = (Game().players[0].userId.toString() === User()._id.toString()) ? 1 : 0;
+    const enemyShips = Game().players[enemyIndex].ships;
+    
+    const allSunk = enemyShips.every(ship => ship.isSunk);
+    
+    if (allSunk) {
+      alert("Victory! All enemy ships have been sunk!");
+      const gameData = Game();
+      gameData.status = "finished";
+      setGame(gameData);
+      return true;
+    }
+    return false;
+  }
 
 async function handleDeleteGame(e) {
     setLoading(true);
