@@ -1,19 +1,20 @@
 /** @module game */
 
 import { User, Game, setGame } from '../utility/state.js';
-import { setBanner, setLoading } from '../utility/ui.js';
-import { getElementById, querySelectorAll } from '../utility/helperFunctions.js';
-import { createShips, Ship } from './ships.js';
+import { setLoading } from '../utility/ui.js';
+import { getElementById } from '../utility/helperFunctions.js';
 import { boardHeight, boardWidth } from './board.js';
-import { deleteGame, fetchGameData, fireShot, submitShips } from './gameFunctions.js';
+import { deleteGame, fetchGameData, fireShot } from './gameFunctions.js';
 
 
 let fetchDataInterval = null
 
 const turnElmnt = getElementById("turn")
+getElementById("exitGameButton").addEventListener("click", handleDeleteGame)
+
+console.log(Game());
 
 initializeGame()
-
 
 function setGameNames() {
     if (Game().status == 'active') {
@@ -31,38 +32,35 @@ function startOrStopGameFetchIfNeeded() {
         fetchDataInterval = setInterval(() => {
             handleFetchGameData();
             checkGameState();
-   
+
         }, 2000)
-    } 
+    }
 
 }
 
 
 function checkGameState() {
-    if (!Game()) {
+    if (!Game() || Game().status !== "active") {
         window.location.href = "/"
     }
-    if (Game().status === "waiting") {
-        setBanner(true)
-    }
+
     if (Game().status === "active") {
         setGameNames();
 
         if (Game().currentTurn == User()._id) {
-            turnElmnt.innerHTML = "Your turn" 
+            turnElmnt.innerHTML = "Your turn"
             clearInterval(fetchDataInterval);
             fetchDataInterval = null;
         } else {
             turnElmnt.innerHTML = "Enemy turn"
         }
-        setBanner(false)
     }
 }
 
 async function handleFetchGameData() {
 
     const gameData = await fetchGameData(Game()._id);
-    
+
     if (gameData) {
         setGame(gameData)
     }
@@ -139,8 +137,10 @@ export function initializeFields() {
 
 
             }
-            if (side == "right") field.addEventListener("click", handleFireShot); 
-            
+            if (side == "right") {
+                field.addEventListener("click", handleFireShot);
+            }
+
             // Tilføjer field div til gameboard div
             gameboard.append(field);
         }
@@ -172,24 +172,27 @@ async function handleFireShot(e) {
 
 
     const updatedGame = await fireShot(Game()._id, field)
+    console.log("updatedGame", updatedGame)
 
-
-    // UPDATE UI FOR SHOT
-    if (checkIfHit(field)) {
-        firedAtField.classList.remove("occupiedField");
-        firedAtField.classList.add("hitField");
-        console.log("Hit shot");
-    } else {
-        firedAtField.classList.add("missedField");
-        console.log("Missed shot");
+    if (updatedGame) {
+        // UPDATE UI FOR SHOT
+        if (checkIfHit(field)) {
+            firedAtField.classList.remove("occupiedField");
+            firedAtField.classList.add("hitField");
+            console.log("Hit shot");
+        } else {
+            firedAtField.classList.add("missedField");
+            console.log("Missed shot");
+        }
+        setGame(updatedGame);
+        checkGameState();
+        startOrStopGameFetchIfNeeded();
+    
+        // UDSKIFT FIELD MED EN KOPI AF SIG SELV, SÅ MAN IKKE KAN SKYDE TO GANGE
+        firedAtField.parentNode.replaceChild(firedAtField.cloneNode(true), firedAtField)
     }
 
-    setGame(updatedGame);
-    checkGameState();
-    startOrStopGameFetchIfNeeded();
-
-    // UDSKIFT FIELD MED EN KOPI AF SIG SELV, SÅ MAN IKKE KAN SKYDE TO GANGE
-    firedAtField.parentNode.replaceChild(firedAtField.cloneNode(true), firedAtField)
+  
 
 }
 
@@ -203,7 +206,7 @@ function checkIfHit(field) {
 
     console.log("fieldNumber", field)
     let checkPlayer = 0;
-    
+
     if (Game().players[0].userId == User()._id) {
         checkPlayer = 1
     }

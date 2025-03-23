@@ -158,12 +158,9 @@ export async function fireShot(gameId, field) {
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-
         const updatedGame = await response.json();
         console.log("Game updated successfully:", updatedGame);
-
-
-
+        return updatedGame;
 
     } catch (error) {
         console.error("Error updating game:", error);

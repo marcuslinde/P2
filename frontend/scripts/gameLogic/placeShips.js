@@ -303,7 +303,7 @@ async function handleSubmitShips(e) {
 }
 getElementById("readyButton").addEventListener("click", handleSubmitShips);
 
-/*
+
 export function randomizeShipPlacement(boardSide) {
     resetShipPlacement();
 
@@ -313,38 +313,18 @@ export function randomizeShipPlacement(boardSide) {
 
         while (!placed) {
             // Sætter skibets rotation til 0 hvis et tilfældigt tal fra 0-1 er mindre en 0.5
-            let rotation = Math.random() < 0.5 ? 0 : 90;
+            // let rotation = Math.random() < 0.5 ? 0 : 90;
 
-            let row = Math.floor(Math.random() * boardHeight);
-            let col = Math.floor(Math.random() * boardWidth);
+            let field = Math.floor(Math.random() * 100)+1;
+            let coveredFields = calculateCoveredFields(field, ship.length, ship.rotation)
+            if (!coveredFields || checkForOverlap(coveredFields)) continue; // Prøver en ny position
 
-            if (checkForOutOfBounds(row, col, ship.length, rotation)) continue; // Prøver en ny position
+            paintOccupiedFields(coveredFields);
 
-            let droppedField = row * boardWidth + col + 1;
-            let coveredFields = [];
-
-            if (rotation % 180 === 0) {
-                for (let j = 0; j < ship.length; j++) { // Lodret placering
-                    coveredFields.push(droppedField + j * boardWidth);
-                }
-            } else {
-                for (let j = 0; j < ship.length; j++) { // Vandret placering
-                    coveredFields.push(droppedField + j);
-                }
-            }
-
-            if (checkForOverlap(coveredFields)) {
-                continue;
-            }
-
-            assignOccupiedFields(coveredFields);
-
-            ship.rotation = String(rotation);
             ship.location = {
-                startField: droppedField,
+                startField: field,
                 coveredFields: coveredFields
             };
-
 
             // Finder skibets id og gemmer elementet når placeret
             const shipElement = getElementById(ship.name + "Size" + ship.length);
@@ -356,7 +336,7 @@ export function randomizeShipPlacement(boardSide) {
     })
 
 }
-*/
+
 
 
 /** 
