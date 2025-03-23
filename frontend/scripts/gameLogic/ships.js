@@ -18,7 +18,8 @@ export class Ship {
         this.isSunk = isSunk;
     }
 
-    registerHit() {
+/*
+registerHit() {
         this.hits++;
         if (!this.isSunk && this.hits >= this.length) {
           this.isSunk = true;
@@ -37,6 +38,13 @@ export class Ship {
         alert(messages[this.name] || `You sunk the ${this.name}!`);
       }
 }
+
+*/
+
+
+
+}
+    
 
 const destroyer = new Ship("destroyer", 2, "vertical", null, 0, false);
 const submarine = new Ship("submarine", 3, "vertical", null, 0, false);
