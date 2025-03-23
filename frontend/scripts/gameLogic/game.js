@@ -5,7 +5,6 @@ import { setLoading } from '../utility/ui.js';
 import { getElementById } from '../utility/helperFunctions.js';
 import { boardHeight, boardWidth } from './board.js';
 import { deleteGame, fetchGameData, fireShot } from './gameFunctions.js';
-import { Ship } from "./ships.js";
 
 const playerIndex = User()._id == Game().players[0].userId ? 0 : 1;
 const enemyIndex = playerIndex == 0 ? 1 : 0;
@@ -190,29 +189,25 @@ export function initializeFields() {
 
 
 
-
 async function handleFireShot(e) {
     e.preventDefault();
   
     if (Game().currentTurn !== User()._id) {
-        return;
+      return;
     }
   
     if (!Game().players[0].ready || !Game().players[1].ready) {
-        window.alert("Waiting for ships to be placed");
-        return;
+      window.alert("Waiting for ships to be placed");
+      return;
     }
   
     const firedAtField = e.currentTarget;
     const field = parseInt(firedAtField.dataset.index, 10); // Field number
   
-    const updatedGameData = await fireShot(Game()._id, field);
+    const updatedGame = await fireShot(Game()._id, field);
   
-    if (updatedGameData) {
-      // Rehydrate ships so that registerHit() is available.
-      const updatedGame = rehydrateGame(updatedGameData);
-  
-      // Check for a hit and update the UI accordingly.
+    if (updatedGame) {
+      // Instead of a simple true/false check, our checkIfHit now registers hits.
       if (checkIfHit(field)) {
         firedAtField.classList.add("hitField");
         console.log("Hit shot");
@@ -220,7 +215,6 @@ async function handleFireShot(e) {
         firedAtField.classList.add("missedField");
         console.log("Missed shot");
       }
-  
       setGame(updatedGame);
   
       if (checkWinCondition()) {
@@ -234,7 +228,6 @@ async function handleFireShot(e) {
       firedAtField.parentNode.replaceChild(firedAtField.cloneNode(true), firedAtField);
     }
   }
-
 
 /**
  * 
@@ -260,37 +253,40 @@ function checkIfHit(field) {
     return false
 } */
 
-function checkIfHit(field) {
-    const checkPlayer = Game().players[0].userId === User()._id ? 1 : 0;
-    const enemyShips = Game().players[checkPlayer].ships;
-  
-    for (let i = 0; i < enemyShips.length; i++) {
-      const ship = enemyShips[i];
-      // Ensure ship has been placed (location is not null)
-      if (ship.location && ship.location.coveredFields.includes(field)) {
-        // Register a hit on this ship
-        ship.registerHit();
-        return true;
+    function checkIfHit(field) {
+        const checkPlayer = Game().players[0].userId === User()._id ? 1 : 0;
+        const enemyShips = Game().players[checkPlayer].ships;
+      
+        for (let i = 0; i < enemyShips.length; i++) {
+          const ship = enemyShips[i];
+          if (ship.location && ship.location.coveredFields.includes(field)) {
+            return true;
+          }
+        }
+        return false;
       }
-    }
-    return false;
-  }
 
-function checkWinCondition() {
-    const enemyIndex = (Game().players[0].userId.toString() === User()._id.toString()) ? 1 : 0;
-    const enemyShips = Game().players[enemyIndex].ships;
-    
-    const allSunk = enemyShips.every(ship => ship.isSunk);
-    
-    if (allSunk) {
-      alert("Victory! All enemy ships have been sunk!");
-      const gameData = Game();
-      gameData.status = "finished";
-      setGame(gameData);
-      return true;
-    }
-    return false;
-  }
+      function checkWinCondition() {
+        const attackerIndex = User()._id.toString() === Game().players[0].userId.toString() ? 0 : 1;
+        const defenderIndex = attackerIndex === 0 ? 1 : 0;
+        const attackerShots = Game().players[attackerIndex].shots;
+        const enemyShips = Game().players[defenderIndex].ships;
+      
+        // For each enemy ship, check if every field is included in the attacker's shots
+        const allSunk = enemyShips.every(ship => {
+          if (!ship.location || !ship.location.coveredFields) return false;
+          return ship.location.coveredFields.every(field => attackerShots.includes(field));
+        });
+      
+        if (allSunk) {
+          alert("Victory! All enemy ships have been sunk!");
+          const gameData = Game();
+          gameData.status = "finished";
+          setGame(gameData);
+          return true;
+        }
+        return false;
+      }
 
 async function handleDeleteGame(e) {
     setLoading(true);
@@ -304,18 +300,4 @@ async function handleDeleteGame(e) {
     setLoading(false);
 }
 
-function rehydrateGame(gameData) {
-    // For each player, convert their ships into instances of Ship.
-    gameData.players.forEach(player => {
-      player.ships = player.ships.map(shipData => new Ship(
-        shipData.name,
-        shipData.length,
-        shipData.rotation,
-        shipData.location,
-        shipData.hits,
-        shipData.isSunk
-      ));
-    });
-    return gameData;
-  }
 
