@@ -90,7 +90,7 @@ async function checkIfReady() {
         }
 
 
-    }, 10000)
+    }, 2000)
 }
 
 

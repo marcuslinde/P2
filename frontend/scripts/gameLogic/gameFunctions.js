@@ -39,7 +39,6 @@ export async function fetchGameData(gameId) {
         // Fetch from the dedicated endpoint
         const response = await fetch(`/game/data?gameId=${gameId}`);
         if (!response.ok) {
-            alert(`${response.statusText} while fetching`);
             throw new Error(`Server error: ${response.status}`)
         }
 

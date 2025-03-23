@@ -38,6 +38,7 @@ function startOrStopGameFetchIfNeeded() {
 
 function checkGameState() {
     if (!Game() || Game().status !== "active") {
+        window.alert("Error: no game found. Enemy might have left")
         window.location.href = "/"
     }
 
@@ -72,6 +73,8 @@ async function handleFetchGameData() {
 
     if (gameData) {
         setGame(gameData)
+    } else {
+        setGame(null)
     }
 
 }
