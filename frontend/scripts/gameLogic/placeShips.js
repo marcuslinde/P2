@@ -17,7 +17,7 @@ initializeFields()
 getElementById("cancelButton").addEventListener("click", handleDeleteGame)
 
 getElementById("resetButton")?.addEventListener("click", resetShipPlacement);
-// getElementById("randomizeButton")?.addEventListener("click", () => randomizeShipPlacement("left"));
+getElementById("randomizeButton")?.addEventListener("click", () => randomizeShipPlacement("left"));
 
 
 let currentHoveredShip = null;
@@ -313,8 +313,7 @@ export function randomizeShipPlacement(boardSide) {
 
         while (!placed) {
             // Sætter skibets rotation til 0 hvis et tilfældigt tal fra 0-1 er mindre en 0.5
-            // let rotation = Math.random() < 0.5 ? 0 : 90;
-
+            ship.rotation = Math.random() < 0.5 ? "vertical" : "horizontal"
             let field = Math.floor(Math.random() * 100)+1;
             let coveredFields = calculateCoveredFields(field, ship.length, ship.rotation)
             if (!coveredFields || checkForOverlap(coveredFields)) continue; // Prøver en ny position
@@ -344,7 +343,7 @@ export function randomizeShipPlacement(boardSide) {
  */
 export function resetShipPlacement() {
     // Finder alle left elementer og fjerner occupiedField classen hvis de har den
-    const fields = querySelectorAll(".left");
+    const fields = querySelectorAll(".field");
 
     fields.forEach((field) => field.classList.remove("occupiedField"));
 

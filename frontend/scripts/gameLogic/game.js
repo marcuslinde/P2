@@ -172,7 +172,6 @@ async function handleFireShot(e) {
 
 
     const updatedGame = await fireShot(Game()._id, field)
-    console.log("updatedGame", updatedGame)
 
     if (updatedGame) {
         // UPDATE UI FOR SHOT
