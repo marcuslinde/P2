@@ -7,7 +7,7 @@ var click = new Howl({
 });
 
 var music = new Howl({
-    src: ["../resources/sounds/music2.mp3"],
+    src: ["../resources/sounds/music1.mp3"],
     volume: 0.5,
     loop: true,
     autoplay: true
