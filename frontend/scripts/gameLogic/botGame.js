@@ -1,6 +1,6 @@
 
-import { initializeFields } from './game.js';
-import { randomizeShipPlacement, resetShipPlacement } from './placeShips.js';
+//import { initializeFields } from './game.js';
+//import { randomizeShipPlacement, resetShipPlacement } from './placeShips.js';
 
 import { getElementById, querySelectorAll } from '../utility/helperFunctions.js';
 import { createShips } from './ships.js';
