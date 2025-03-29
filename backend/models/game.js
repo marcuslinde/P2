@@ -5,10 +5,7 @@ const ShipSchema = new Schema({
   name: { type: String, required: true },       // e.g., "destroyer", "carrier"
   length: { type: Number, required: true },
   rotation: { type: String, required: true },     // e.g., "vertical", "90", "horizontal"
-  location: {
-    startField: { type: Number },                // The starting field number
-    coveredFields: { type: [Number] }              // An array of field numbers occupied by the ship
-  },
+  coveredFields: { type: [Number] },              // An array of field numbers occupied by the ship
   hits: {type: Number, required: true},
   isSunk: {type: Boolean, required: true},
 }, { _id: false });

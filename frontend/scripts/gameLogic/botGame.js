@@ -1,14 +1,12 @@
-
-//import { initializeFields } from './game.js';
-//import { randomizeShipPlacement, resetShipPlacement } from './placeShips.js';
-
+/**
+ * @module
+ * @typedef {"left"|"right"} boardSide
+ */
 import { getElementById, querySelectorAll } from '../utility/helperFunctions.js';
 import { createShips } from './ships.js';
 import { boardHeight, boardWidth } from './board.js';
 
-
-/** Array of ship div elements
-* @type {Array<Object>} */
+/** Array f ship div elements*/
 const shipsClass = createShips();
 
 /** Array of ship div elements 
@@ -25,33 +23,38 @@ const occupiedFieldArrayRight = [];
 
 /** Array of fields that are filled by ships 
 *  @type {Array<HTMLElement>}  */
-const leftFieldArray = [];
-
-/** Array of fields that are filled by ships 
-*  @type {Array<HTMLElement>}  */
 const rightFieldArray = [];
+
 let targetList = Array.from({ length: 100 }, (_, i) => i + 1);//creats array with values from 1-100 as a targetlist for the bot
 let game = { enemyHits: 0, ownHits:0, gameState: ""}
 let turn = 1;
 
-/** handls the bot fire a shot
- * @function
- */
-function botFireCannon() {
+if (turn == 0) {
+    console.log("test")
+    botFireCannon();
+    turn = 1;
+}
 
+initializeBotGame(); // starts bot game
+
+getElementById("resetButton")?.addEventListener("click", resetShipPlacement);
+getElementById("randomizeButton")?.addEventListener("click", () => randomizeShipPlacement("left"));
+getElementById("readyButton")?.addEventListener("click", () => readyCheck());
+getElementById("exitGameButton")?.addEventListener("click", () => window.location.href = "/");
+
+/** handls the bot fire a shot */
+function botFireCannon() {
     const firedAtField = getElementById(`leftfield${getNextRandomTarget()}`);
 
     if (rightFieldArray.includes(firedAtField)) {
         alert("bot should not fire at its own board");
         return;
-    }
-    else if (occupiedFieldArrayLeft.includes(firedAtField)) {
+    } else if (occupiedFieldArrayLeft.includes(firedAtField)) {
         firedAtField.classList.remove("occupiedField");
         firedAtField.classList.add("hitField");
         console.log("Hit shot");
         game.game.enemyHits += 1;
-    }
-    else {
+    } else {
         firedAtField?.classList.add("missedField");
         console.log("Missed shot");
     }
@@ -60,9 +63,7 @@ function botFireCannon() {
     console.log("Bot fired at:", firedAtField?.id);
 }
 
-/** Gets random target for the bot to shot at
- * @function
- */
+/** Gets random target for the bot to shot at */
 function getNextRandomTarget() {
     const randomIndex = Math.floor(Math.random() * targetList.length);
     const randomTarget = targetList[randomIndex];
@@ -71,10 +72,7 @@ function getNextRandomTarget() {
     return randomTarget;
 }
 
-
-/** Checks win condition for both player and enemy
- * @function
- */
+/** Checks win condition for both player and bot */
 function checkWinCondition() {
     if (game.enemyHits === 17) {
         return 1;
@@ -82,21 +80,12 @@ function checkWinCondition() {
     else if (game.ownHits === 17) {
         return 2;
     }
-
 }
 
-if (turn == 0) {
-    console.log("test")
-    botFireCannon();
-    turn = 1;
-}
-
-/** calls checkwincondtion to check if condition are met for a win and finds if it is player on enmey turn.
- * @function
- */
+/** calls checkwincondtion to check if condition are met for a win and finds if it is player on enmey turn. */
 function gameLoop() {
     if (checkWinCondition() === 1) {
-        alert("The bot won!");
+        window.alert("The bot won!");
     }
     else if (checkWinCondition() === 2) {
         alert("You have won!");
@@ -109,18 +98,7 @@ function gameLoop() {
     }
 }
 
-/** Used to make buttons unusable doing match
- * @function
- */
-//function removeButtonEventListener() {
-//    getElementById("resetButton").removeEventListener("click", resetShipPlacement);
-//    getElementById("randomizeButton").removeEventListener("click", () => randomizeShipPlacement("left"));
-//}
-
-
-/** Tilføjer elementet occupiedField til de fields med skibe på
- * @function
- */
+/** Tilføjer elementet occupiedField til de fields med skibe på */
 function assignOccupiedFields(coveredFields, side) {
     coveredFields.forEach(index => {
         const fieldElement = getElementById(side + "field" + (index));
@@ -138,8 +116,9 @@ function assignOccupiedFields(coveredFields, side) {
 /** checks if there already are any ships on the fields
  * @function
  * @param {any} coveredFields
+ * @param {boardSide} boardSide
  */
-function checkForOverlap(coveredFields) {
+function checkForOverlap(coveredFields, boardSide) {
     for (let i = 0; i < coveredFields.length; i++) {
         const fieldElement = getElementById("leftfield" + (coveredFields[i]));
         if (occupiedFieldArrayLeft.includes(fieldElement)) {
@@ -149,10 +128,7 @@ function checkForOverlap(coveredFields) {
     return false;
 }
 
-
-/** Checks if the ship is out of the board bounds
- * @function
- */
+/** Checks if the ship is out of the board bounds*/
 function checkForOutOfBounds(startRow, startColumn, shipLength, rotation) {
     if (rotation % 180 === 0) { // Hvis lodret
         return (startRow + shipLength > boardHeight);
@@ -161,9 +137,7 @@ function checkForOutOfBounds(startRow, startColumn, shipLength, rotation) {
     }
 }
 
-/** Places ships randomly
- * @function
- */
+/** Places ships randomly */
 function randomizeShipPlacement(boardSide) {
     resetShipPlacement();
     // Går over arrayet af ship classes for at placere alle skibene
@@ -189,8 +163,6 @@ function randomizeShipPlacement(boardSide) {
                 for (let j = 0; j < ship.length; j++) { // Vandret placering
                     coveredFields.push(droppedField + j);
                 }
- 
-
             }
             if (checkForOverlap(coveredFields, boardSide)) {
                 continue;
@@ -199,7 +171,7 @@ function randomizeShipPlacement(boardSide) {
             // Finder skibets id og gemmer elementet når placeret
             if (boardSide === "left") {
             
-                const shipElement = document.getElementById(ship.name + "Size" + ship.length);
+                const shipElement = getElementById(ship.name + "Size" + ship.length);
                 shipElement.style.display = "none";
             }
             placed = true;
@@ -239,11 +211,7 @@ function initializeFields() {
             const field = document.createElement("div");
             field.classList.add("field");
             field.classList.add(side);
-
             field.id = side + "field" + (i + 1);
-
-
-
             field.dataset.side = side;
             field.dataset.index = String(i + 1);
 
@@ -273,35 +241,21 @@ function initializeFields() {
     }
 }
 
-/** handles ship drop event
- * @function
- */
+/** handles ship drop event */
 function onShipDrop(e) {
     e.preventDefault();
-
     const field = e.currentTarget;
-
     const side = field.dataset.side;
-
     const shipId = e.dataTransfer.getData("text/plain"); // text/plain fortæller at dataen vi leder efter er ren tekst
-
     const shipElmnt = getElementById(shipId); // htmlElement
-
     const draggedShip = getShipObjectByID(shipElmnt.id); // ship object
-
     const droppedField = parseInt(field.dataset.index, 10);
-
     const draggedShipLength = draggedShip.length;
-
     const draggedShipRotation = parseInt(shipElmnt.getAttribute("data-rotation") || "0", 10); // Finder skibets nuværende rotation ved at finde attributen "data-rotation" og give den som en int
-
     const startColumn = (droppedField - 1) % boardWidth; // finder de næste felter ud fra start
-
     const startRow = Math.floor((droppedField - 1) / boardWidth);
 
     let coveredFields = [];
-
-
 
     if (draggedShipRotation % 180 === 0) { // Hvis % 180 === 0 er sandt betyder det at skibet er lodret 
         if (checkForOutOfBounds(startRow, startColumn, draggedShipLength, draggedShipRotation)) {
@@ -321,16 +275,13 @@ function onShipDrop(e) {
         }
     }
 
-    if (checkForOverlap(coveredFields)) {
+    if (checkForOverlap(coveredFields, "left")) {
         alert("Ship overlaps another ship.");
         return;
     }
 
-    draggedShip.rotation = String(draggedShipRotation);
-    draggedShip.location = {
-        startField: droppedField,
-        coveredFields: coveredFields
-    };
+    draggedShip.rotation == "vertical" ? draggedShip.setRotation("horizontal") : draggedShip.setRotation("vertical")
+    draggedShip.setcoveredFields(coveredFields);
 
     shipElmnt.style.display = "none"; // Gør html elementet usynligt når skibet bliver placeret
 
@@ -339,21 +290,20 @@ function onShipDrop(e) {
     console.log(occupiedFieldArrayLeft)
 }
 
-/** Find the object id of the ship
- * @function
- */
+/** Find the object id of the ship 
+ * @returns {import('./ships.js').ship} */
 function getShipObjectByID(ID) {
     let draggedShip = null;
     // finder hvilken class ship vi skal bruge ud fra html elementet
-    if (ID === "destroyerSize2") {
+    if (ID === "destroyer") {
         draggedShip = shipsClass[0] // destoryer
-    } else if (ID === "submarineSize3") {
+    } else if (ID === "submarine") {
         draggedShip = shipsClass[1]; // submarine
-    } else if (ID === "cruiserSize3") {
+    } else if (ID === "cruiser") {
         draggedShip = shipsClass[2]; // cruiser
-    } else if (ID === "battleshipSize4") {
+    } else if (ID === "battleship") {
         draggedShip = shipsClass[3]; // battleship
-    } else if (ID === "carrierSize5") {
+    } else if (ID === "carrier") {
         draggedShip = shipsClass[4]; // carrier
     }
     if (!draggedShip) {
@@ -361,10 +311,7 @@ function getShipObjectByID(ID) {
     }
     return draggedShip
 }
-
-/** handels shots made by player event
- * @function
- */
+/** handels shots made by player event */
 function fireCannon(e) {
     if (game.gameState === "Begun"){
         const firedAtField = e.currentTarget
@@ -394,9 +341,7 @@ function fireCannon(e) {
     }
 }
 
-/** Adds event listners to all ships objects
- * @function
- */
+/** Adds event listners to all ships objects */
 function setShipEventListener() {
     shipsDiv.forEach(ship => {
         ship.addEventListener("dragstart", (e) => {
@@ -430,13 +375,11 @@ function setShipEventListener() {
     })
 }
 
-/** checks if player is done the necessary steps to start the game
- * @function
- */
+/** checks if player is done the necessary steps to start the game  */
 function readyCheck() {
     console.log(occupiedFieldArrayLeft.length)
     if (occupiedFieldArrayLeft.length === 17) {
-        document.getElementById("turn").textContent = "Battle begun";
+        getElementById("turn").textContent = "Battle begun";
         game.gameState = "Begun"
         //Reset ships when pressing ready
         //getElementById("resetButton")?.removeEventListener("click", resetShipPlacement()); 
@@ -447,20 +390,12 @@ function readyCheck() {
     }
 }
 
-/** Calls function needed to start game
- * @function
- */
+/** Calls function needed to start game */
 function initializeBotGame() {
     initializeFields()
     setShipEventListener()
     randomizeShipPlacement("right");
-    document.getElementById("turn").textContent = "Place your ships";
+    getElementById("turn").textContent = "Place your ships";
     gameLoop();
 }
 
-initializeBotGame(); // starts bot game
-
-getElementById("resetButton")?.addEventListener("click", resetShipPlacement);
-getElementById("randomizeButton")?.addEventListener("click", () => randomizeShipPlacement("left"));
-getElementById("readyButton")?.addEventListener("click", () => readyCheck());
-getElementById("exitGameButton")?.addEventListener("click", () => window.location.href = "/");
