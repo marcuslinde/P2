@@ -18,8 +18,8 @@ initializeFields()
 
 // Event listeners der kalder deres respektive funktioner
 getElementById("cancelButton").addEventListener("click", handleDeleteGame)
-getElementById("resetButton")?.addEventListener("click", resetShipPlacement);
-getElementById("randomizeButton")?.addEventListener("click", () => randomizeShipPlacement());
+getElementById("resetButton").addEventListener("click", resetShipPlacement);
+getElementById("randomizeButton").addEventListener("click", () => randomizeShipPlacement());
 getElementById("readyButton").addEventListener("click", handleSubmitShips);
 
 const howOftenToFetchDataInMS = 500;
@@ -176,7 +176,7 @@ function onShipDrop(e) {
 function rotateShip() {
     const shipName = currentHoveredShip.getAttribute('id');
     const ship = getShipByName(shipName);
-    ship.rotation == "horizontal" ? ship.rotation = "vertical" : ship.rotation = "horizontal";
+    ship.rotation == "horizontal" ? ship.setRotation("vertical") : ship.setRotation("horizontal");
 
     let currentRotation = parseInt(currentHoveredShip.getAttribute("data-rotation") || "0", 10);
     let newRotation = (currentRotation + 90) % 360;
@@ -269,7 +269,7 @@ export function randomizeShipPlacement() {
 
         while (!placed) {
             // Sætter skibets rotation til 0 hvis et tilfældigt tal fra 0-1 er mindre en 0.5
-            ship.rotation = Math.random() < 0.5 ? "vertical" : "horizontal"
+            Math.random() < 0.5 ? ship.setRotation("vertical") : ship.setRotation("horizontal");
             let field = Math.floor(Math.random() * 100)+1;
             let coveredFields = calculateCoveredFields(field, ship.length, ship.rotation)
             if (!coveredFields || checkForOverlap(coveredFields)) continue; // Prøver en ny position
