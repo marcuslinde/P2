@@ -1,5 +1,7 @@
-/** @module baord*/
-
+/** 
+ * @module baord
+ * @typedef {number} field  
+*/
 
 /** Board width in fields
  * @type {number} */
