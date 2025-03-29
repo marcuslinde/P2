@@ -96,7 +96,7 @@ export async function joinGame(req, res) {
 
 
 /**
- * 
+ * fetches game data using gameId
  * @param {*} req 
  * @param {*} res 
  */

@@ -1,3 +1,9 @@
+/** 
+ * @module placeShips.js 
+ * @typedef {Ship} ship
+ * @typedef {number} field
+ * @typedef {"vertical"|"horizontal"} rotation
+*/
 import { deleteGame } from "./gameFunctions.js";
 import { Game, setGame, User } from "../utility/state.js";
 import { setLoading } from "../utility/ui.js";
@@ -5,26 +11,21 @@ import { getElementById } from "../utility/helperFunctions.js";
 import { fetchGameData, submitShips } from "./gameFunctions.js";
 import { boardWidth, boardHeight } from "./board.js";
 import { querySelectorAll } from "../utility/helperFunctions.js";
-import { createShips } from "./ships.js";
-
+import { createShips, Ship } from "./ships.js";
 
 checkIfReady();
-
 initializeFields()
-
 
 // Event listeners der kalder deres respektive funktioner
 getElementById("cancelButton").addEventListener("click", handleDeleteGame)
+getElementById("resetButton").addEventListener("click", resetShipPlacement);
+getElementById("randomizeButton").addEventListener("click", () => randomizeShipPlacement());
+getElementById("readyButton").addEventListener("click", handleSubmitShips);
 
-getElementById("resetButton")?.addEventListener("click", resetShipPlacement);
-getElementById("randomizeButton")?.addEventListener("click", () => randomizeShipPlacement("left"));
-
-
+const howOftenToFetchDataInMS = 500;
 let currentHoveredShip = null;
 
-
-/** Array of ship div elements
- * @type {Array<Object>} */
+/** Holds the array of five ships */
 const shipsClass = createShips();
 
 /** Array of ship div elements 
@@ -36,27 +37,17 @@ const shipsDiv = querySelectorAll(".ship");
 const occupiedFieldArrayLeft = [];
 
 
-
-
-/** Creates 100 fields to fill the game boards and adds drag and drop functionalty to them
- * @function
- */
+/** Creates 100 fields to fill the game boards and adds drag and drop functionalty to them */
 export function initializeFields() {
     let gameboard = getElementById("gameBoard");
-
 
     for (let i = 0; i < boardWidth * boardHeight; i++) {
         const field = document.createElement("div");
         field.classList.add("field");
-
         field.dataset.index = String(i + 1);
-
-        field.id = "field" + (i + 1);
-
+        field.id = "field" + (i + 1);  // sets the html field ID
 
         // Adds hover effect when dragging ship to left squares
-
-
         field.addEventListener("dragover", (e) => {
             e.preventDefault();
             field.style.border = "2px solid black"
@@ -65,21 +56,19 @@ export function initializeFields() {
             e.preventDefault();
             field.style.border = "1px solid black"
         })
+        field.addEventListener("drop", onShipDrop);        // Adds hover effect when dragging ship
 
-        // Adds hover effect when dragging ship
-        field.addEventListener("drop", onShipDrop);
-        // Tilføjer field div til gameboard div
-        gameboard.append(field);
+        gameboard.append(field);        // Tilføjer field div til gameboard div
+
     }
 }
 
-
+/** recursive function that checks if both players have pressed 'ready' every x seconds */
 async function checkIfReady() {
     const gameData = await fetchGameData(Game()._id);
-
+    // timeout so we dont fetch constantly
     setTimeout(() => {
         console.log('Waiting for enemy');
-
 
         if (gameData.players[1].ready && gameData.players[0].ready) {
             setGame(gameData)
@@ -88,13 +77,10 @@ async function checkIfReady() {
         } else {
             checkIfReady()
         }
-
-
-    }, 500)
+    }, howOftenToFetchDataInMS)
 }
 
-
-
+//* Adds eventlistener for dragging a ship, which creates a cloneImage that is the one visible when dragging */
 shipsDiv.forEach(ship => {
     ship.addEventListener("dragstart", (e) => {
         let cloneImageShip = ship.cloneNode(true);
@@ -132,24 +118,21 @@ shipsDiv.forEach(ship => {
     ship.addEventListener("mouseout", (e) => {
         currentHoveredShip = null;
     })
-
 })
 
-
-
-
-function getShipObjectByID(ID) {
+/** Helper function */
+function getShipByName(name) {
     let draggedShip = null;
     // finder hvilken class ship vi skal bruge ud fra html elementet
-    if (ID === "destroyerSize2") {
+    if (name === "destroyer") {
         draggedShip = shipsClass[0] // destoryer
-    } else if (ID === "submarineSize3") {
+    } else if (name === "submarine") {
         draggedShip = shipsClass[1]; // submarine
-    } else if (ID === "cruiserSize3") {
+    } else if (name === "cruiser") {
         draggedShip = shipsClass[2]; // cruiser
-    } else if (ID === "battleshipSize4") {
+    } else if (name === "battleship") {
         draggedShip = shipsClass[3]; // battleship
-    } else if (ID === "carrierSize5") {
+    } else if (name === "carrier") {
         draggedShip = shipsClass[4]; // carrier
     }
     if (!draggedShip) {
@@ -158,23 +141,19 @@ function getShipObjectByID(ID) {
     return draggedShip
 }
 
-
-
-/** handles ship drop event
- * @function
- */
+/** Logic for dropping a ship on a given field. the event (e) holds the field we are dropping on */
 function onShipDrop(e) {
     e.preventDefault();
 
     const field = e.currentTarget;
     const shipId = e.dataTransfer.getData("text/plain"); // text/plain fortæller at dataen vi leder efter er ren tekst
     const shipElmnt = getElementById(shipId); // htmlElement
-    const shipObject = getShipObjectByID(shipId); // ship object
+    const ship = getShipByName(shipId); // ship class element
 
     const dropField = parseInt(field.dataset.index, 10);
     console.log("dropped on:", dropField)
 
-    let coveredFields = calculateCoveredFields(dropField, shipObject.length, shipObject.rotation);
+    let coveredFields = calculateCoveredFields(dropField, ship.length, ship.rotation);
 
     if (!coveredFields) {
         window.alert("Ship is out of bounds!");
@@ -186,60 +165,45 @@ function onShipDrop(e) {
         return;
     }
 
-    shipObject.location = {
-        startField: dropField,
-        coveredFields: coveredFields
-    };
+    ship.setcoveredFields(coveredFields);
 
     shipElmnt.style.display = "none"; // Gør html elementet usynligt når skibet bliver placeret
 
     paintOccupiedFields(coveredFields);
-
-
 }
 
-// ROTATE SHIP
+/** Changes the currentHovered ship rotation and updates the css to rotate the ship when " */
+function rotateShip() {
+    const shipName = currentHoveredShip.getAttribute('id');
+    const ship = getShipByName(shipName);
+    ship.rotation == "horizontal" ? ship.setRotation("vertical") : ship.setRotation("horizontal");
+
+    let currentRotation = parseInt(currentHoveredShip.getAttribute("data-rotation") || "0", 10);
+    let newRotation = (currentRotation + 90) % 360;
+
+    currentHoveredShip.style.transform = "rotate(" + newRotation + "deg)";
+    currentHoveredShip.setAttribute("data-rotation", newRotation);
+}
+// calls the rotateShip function when "r" key is pressed
 document.addEventListener("keydown", (e) => {
-    if (e.key.toLowerCase() === "r" && currentHoveredShip) {
-
-        let shipID = currentHoveredShip.getAttribute('id')
-
-        const shipObject = getShipObjectByID(shipID);
-        if (shipObject.rotation == "horizontal") {
-            shipObject.rotation = "vertical";
-        } else {
-            shipObject.rotation = "horizontal";
-        }
-
-        console.log("hovered ship", shipObject)
-
-        let currentRotation = parseInt(currentHoveredShip.getAttribute("data-rotation") || "0", 10);
-        let newRotation = (currentRotation + 90) % 360;
-
-        currentHoveredShip.style.transform = "rotate(" + newRotation + "deg)";
-
-        currentHoveredShip.setAttribute("data-rotation", newRotation);
-    }
+    if (e.key.toLowerCase() === "r" && currentHoveredShip)
+        rotateShip();
 });
 
-
-/**
- * 
- * @param {*} start 
- * @param {*} length 
- * @param {"vertical"|"horizontal"} rotation 
- * @returns 
+/** Helper function to calculate what fields to the ship will take up. Returns null if out of bounds.
+ * @param {number} start 
+ * @param {number} length 
+ * @param {rotation} rotation 
+ * @returns {?Array<field>}
  */
-
 function calculateCoveredFields(start, length, rotation) {
-
     const startColumn = (start - 1) % boardWidth; // finder de næste felter ud fra start
     const startRow = Math.floor((start - 1) / boardWidth);
 
-    if (rotation == "vertical" && startRow + length > boardHeight) { // Hvis lodret
-        return false;
+    if (rotation == "vertical" && startRow + length > boardHeight) {
+        return null;
     } else if (rotation == "horizontal" && startColumn + length > boardWidth) {
-        return false;
+        return null;
     }
 
     let occupiedFields = [];
@@ -254,15 +218,13 @@ function calculateCoveredFields(start, length, rotation) {
         }
     }
 
-    console.log("occupied fields", occupiedFields);
     return occupiedFields;
-
 }
-
 
 /** checks if there already are any ships on the fields
  * @function
- * @param {any} coveredFields
+ * @param {Array<field>} coveredFields
+ * @returns {boolean}
  */
 function checkForOverlap(coveredFields) {
     for (let i = 0; i < coveredFields.length; i++) {
@@ -274,8 +236,8 @@ function checkForOverlap(coveredFields) {
     return false;
 }
 
-/** Tilføjer elementet occupiedField til de fields med skibe på
- * @function
+/** Tilføjer css styling til alle de fields med skibe på
+ * @param {Array<field>} coveredFields
  */
 function paintOccupiedFields(coveredFields) {
     coveredFields.forEach(index => {
@@ -285,9 +247,7 @@ function paintOccupiedFields(coveredFields) {
     });
 }
 
-
-
-
+/** Calls the submitShip function and updates the "game" struct */
 async function handleSubmitShips(e) {
     e.preventDefault();
     setLoading(true)
@@ -297,12 +257,10 @@ async function handleSubmitShips(e) {
     if (updatedGame) {
         setGame(updatedGame);
     }
-
 }
-getElementById("readyButton").addEventListener("click", handleSubmitShips);
 
-
-export function randomizeShipPlacement(boardSide) {
+/** Places the ships randomly*/
+export function randomizeShipPlacement() {
     resetShipPlacement();
 
     // Går over arrayet af ship classes for at placere alle skibene
@@ -311,22 +269,18 @@ export function randomizeShipPlacement(boardSide) {
 
         while (!placed) {
             // Sætter skibets rotation til 0 hvis et tilfældigt tal fra 0-1 er mindre en 0.5
-            ship.rotation = Math.random() < 0.5 ? "vertical" : "horizontal"
+            Math.random() < 0.5 ? ship.setRotation("vertical") : ship.setRotation("horizontal");
             let field = Math.floor(Math.random() * 100)+1;
             let coveredFields = calculateCoveredFields(field, ship.length, ship.rotation)
             if (!coveredFields || checkForOverlap(coveredFields)) continue; // Prøver en ny position
 
             paintOccupiedFields(coveredFields);
 
-            ship.location = {
-                startField: field,
-                coveredFields: coveredFields
-            };
+            ship.setcoveredFields(coveredFields);
 
             // Finder skibets id og gemmer elementet når placeret
-            const shipElement = getElementById(ship.name + "Size" + ship.length);
+            const shipElement = getElementById(ship.name);
             shipElement.style.display = "none";
-
 
             placed = true;
         }
@@ -334,11 +288,7 @@ export function randomizeShipPlacement(boardSide) {
 
 }
 
-
-
-/** 
- * @function
- */
+/** Clears the board*/
 export function resetShipPlacement() {
     // Finder alle left elementer og fjerner occupiedField classen hvis de har den
     const fields = querySelectorAll(".field");
@@ -356,6 +306,7 @@ export function resetShipPlacement() {
     }
 }
 
+/** Calls the deleteGame function and changes to frontpage if the game is deleted */
 async function handleDeleteGame(e) {
     e.preventDefault()
     setLoading(true)

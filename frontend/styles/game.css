@@ -98,7 +98,7 @@
     display: flex;
 }
 
-#carrierSize5 {
+#carrier {
     height: 150px;
     width: 30px;
     background-color: var(--carrier);
@@ -107,7 +107,7 @@
     margin: 30px;
 }
 
-#battleshipSize4 {
+#battleship {
     height: 120px;
     width: 30px;
     background-color: var(--battleship);
@@ -116,7 +116,7 @@
     margin: 30px;
 }
 
-#cruiserSize3 {
+#cruiser {
     height: 90px;
     width: 30px;
     background-color: var(--cruiser);
@@ -125,7 +125,7 @@
     margin: 30px;
 }
 
-#submarineSize3 {
+#submarine {
     height: 90px;
     width: 30px;
     background-color: var(--submarine);
@@ -134,7 +134,7 @@
     margin: 30px;
 }
 
-#destroyerSize2 {
+#destroyer {
     height: 60px;
     width: 30px;
     background-color: var(--destroyer);
