@@ -1,7 +1,11 @@
 /** @module settings */
 
-import { setVolume,volume } from "../../utility/state";
-import { getInputElement } from "../../utility/helperFunctions";
+import { setVolume,volume } from "../../utility/state.js";
+import { getInputElement,getElementById } from "../../utility/helperFunctions.js";
+
+getElementById("backButton")?.addEventListener("click", () => window.location.href = "/");
+
+
 
 const volumeElmmt = getInputElement('volume');
 
@@ -20,4 +24,6 @@ function handleVolumeChange(e) {
         setVolume(target.value)
     }
 }
+
+
 
