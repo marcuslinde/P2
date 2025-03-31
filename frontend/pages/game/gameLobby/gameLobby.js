@@ -1,7 +1,7 @@
 import { deleteGame, fetchGameData } from "./gameFunctions.js";
-import { Game, setGame } from "../utility/state.js";
-import { getElementById } from "../utility/helperFunctions.js";
-import { setBanner, setLoading } from "../utility/ui.js";
+import { Game, setGame } from "../../../utility/state.js";
+import { getElementById } from "../../../utility/helperFunctions.js";
+import { setBanner, setLoading } from "../../../utility/ui.js";
 
 
 

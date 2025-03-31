@@ -2,9 +2,9 @@
  * @module
  * @typedef {"left"|"right"} boardSide
  */
-import { getElementById, querySelectorAll } from '../utility/helperFunctions.js';
+import { getElementById, querySelectorAll } from '../../utility/helperFunctions.js';
 import { createShips } from './ships.js';
-import { boardHeight, boardWidth } from './board.js';
+import { boardHeight, boardWidth } from '../game/gameHelpers/board.js';
 
 /** Array f ship div elements*/
 const shipsClass = createShips();

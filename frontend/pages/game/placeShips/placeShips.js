@@ -5,13 +5,13 @@
  * @typedef {"vertical"|"horizontal"} rotation
 */
 import { deleteGame } from "./gameFunctions.js";
-import { Game, setGame, User } from "../utility/state.js";
-import { setLoading } from "../utility/ui.js";
-import { getElementById } from "../utility/helperFunctions.js";
+import { Game, setGame, User } from "../../../utility/state.js";
+import { setLoading } from "../../../utility/ui.js";
+import { getElementById } from "../../../utility/helperFunctions.js";
 import { fetchGameData, submitShips } from "./gameFunctions.js";
-import { boardWidth, boardHeight } from "./board.js";
-import { querySelectorAll } from "../utility/helperFunctions.js";
-import { createShips, Ship } from "./ships.js";
+import { boardWidth, boardHeight } from "../board.js";
+import { querySelectorAll } from "../../../utility/helperFunctions.js";
+import { createShips, Ship } from "../ships.js";
 
 checkIfReady();
 initializeFields()
@@ -184,6 +184,7 @@ function rotateShip() {
     currentHoveredShip.style.transform = "rotate(" + newRotation + "deg)";
     currentHoveredShip.setAttribute("data-rotation", newRotation);
 }
+
 // calls the rotateShip function when "r" key is pressed
 document.addEventListener("keydown", (e) => {
     if (e.key.toLowerCase() === "r" && currentHoveredShip)

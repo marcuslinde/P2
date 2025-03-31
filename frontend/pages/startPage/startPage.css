@@ -1,4 +1,4 @@
-@import url('./styles.css'); /* import main styles*/
+@import url('../../styles.css'); /* import main styles*/
 
 
 #profileButton img {
@@ -49,4 +49,4 @@
   
 .hidden {
     display: none;
-  }
+}
