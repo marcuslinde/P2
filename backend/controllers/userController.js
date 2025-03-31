@@ -63,7 +63,7 @@ export const createUser = async (req, res) => { //async so we can call await
 
     try {
         await newUser.save();
-        res.status(201).json({ success: true, data: newUser });//201 means something created
+        res.status(201).json({ success: true, newUser: newUser });//201 means something created
 
     } catch (error) {
         console.log("Error in creating user :", error.message);

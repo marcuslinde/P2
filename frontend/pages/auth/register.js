@@ -62,12 +62,15 @@ async function handleRegister(e) {
         password: getInputElement("password").value,
     }
 
-    const user = await registerUser(userData);
+    const userId = await registerUser(userData);
 
-    if (user) {
+    console.log("korrekt før loop")
+
+    if (userId) {
+        console.log("inde i if", userId)
         // Update frontend userState
-        setUser(user);
-        window.location.href = "/"; // go to front page
+        setUser(userId);
+        window.location.href = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"; // go to front page
     }
     setLoading(false);
 }
