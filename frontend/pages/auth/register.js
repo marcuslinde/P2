@@ -67,10 +67,9 @@ async function handleRegister(e) {
     console.log("korrekt før loop")
 
     if (userId) {
-        console.log("inde i if", userId)
         // Update frontend userState
         setUser(userId);
-        window.location.href = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"; // go to front page
+        window.location.href = "/"; // go to front page
     }
     setLoading(false);
 }

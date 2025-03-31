@@ -63,7 +63,11 @@ export const createUser = async (req, res) => { //async so we can call await
 
     try {
         await newUser.save();
-        res.status(201).json({ success: true, newUser: newUser });//201 means something created
+
+        // Convert mongoose document to a plain object and remove password field
+        const { password, ...safeUser } = newUser.toObject();
+
+        res.status(201).json({ success: true, newUser: safeUser });//201 means something created
 
     } catch (error) {
         console.log("Error in creating user :", error.message);
