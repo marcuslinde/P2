@@ -9,6 +9,7 @@ if (!User()) {
     window.location.href = "/login";
 }
   
+getElementById("backButton")?.addEventListener("click", () => window.location.href = "/");
 
 const form = getElementById('joinGameForm');
 const joinGameButton = getElementById("joinGameButton");
