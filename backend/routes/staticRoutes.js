@@ -14,43 +14,43 @@ router.get('/', (req, res) => {
 });
 
 router.get('/login', (req, res) => {
-    res.sendFile(join(__dirname, '..', '..', 'frontend', 'templates', 'login.html'));
+    res.sendFile(join(__dirname, '..', '..', 'frontend', 'pages', 'login.html'));
 });
 
 router.get('/register', (req, res) => {
-    res.sendFile(join(__dirname, '..', '..', 'frontend', 'templates', 'register.html'));
+    res.sendFile(join(__dirname, '..', '..', 'frontend', 'pages', 'auth', 'register.html'));
 });
 
 router.get('/joinGame', (req, res) => {
-    res.sendFile(join(__dirname, '..', '..', 'frontend', 'templates', 'joinGame.html'));
+    res.sendFile(join(__dirname, '..', '..', 'frontend', 'pages', 'joinGame', 'joinGame.html'));
 });
 
 router.get('/createGame', (req, res) => {
-    res.sendFile(join(__dirname, '..', '..', 'frontend', 'templates', 'createGame.html'));
+    res.sendFile(join(__dirname, '..', '..', 'frontend', 'pages', 'createGame', 'createGame.html'));
 });
 
 router.get('/createBotGame', (req, res) => {
-    res.sendFile(join(__dirname, '..', '..', 'frontend', 'templates', 'createBotGame.html'));
+    res.sendFile(join(__dirname, '..', '..', 'frontend', 'pages', 'botGame', 'createBotGame.html'));
 });
 
 router.get('/profile', (req, res) => {
-    res.sendFile(join(__dirname, '..', '..', 'frontend', 'templates', 'profile.html'));
+    res.sendFile(join(__dirname, '..', '..', 'frontend', 'pages', 'profile', 'profile.html'));
 });
 
 router.get('/settings', (req, res) => {
-    res.sendFile(join(__dirname, '..', '..', 'frontend', 'templates', 'settings.html'));
+    res.sendFile(join(__dirname, '..', '..', 'frontend', 'pages', 'settings', 'settings.html'));
 });
 
 router.get('/placeShips', (req, res) => {
-    res.sendFile(join(__dirname, '..', '..', 'frontend', 'templates', 'placeShips.html'));
+    res.sendFile(join(__dirname, '..', '..', 'frontend', 'pages', 'placeShips', 'placeShips.html'));
 });
 
 router.get('/gameLobby', (req, res) => {
-    res.sendFile(join(__dirname, '..', '..', 'frontend', 'templates', 'gameLobby.html'));
+    res.sendFile(join(__dirname, '..', '..', 'frontend', 'pages', 'gameLobby', 'gameLobby.html'));
 });
 
 router.get('/game', (req, res) => {
-    res.sendFile(join(__dirname, '..', '..', 'frontend', 'templates', 'game.html'));
+    res.sendFile(join(__dirname, '..', '..', 'frontend', 'pages', 'game', 'game.html'));
 });
 
 
