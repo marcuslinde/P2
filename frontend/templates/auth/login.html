@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="../styles/auth.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js" defer></script>
+    <!--Howler library for sounds-->
+
+</head>
+
+<body>
+    <a class="display flex justify-align-center" href="/">
+        <img src="../resources/images/battleshipsLogoBoardered.png" alt="Battleships Logo" class="logo">
+    </a>
+
+    <div class="wrapper">
+        <div class="LoginWrapper flex justify-align-center center">
+            <div class="FormWrapper">
+                <h2> Login</h2>
+                <form id="loginForm">
+                    <label for="username">Username</label><br>
+                    <input type="text" id="username" placeholder="Username" name="username" autofocus required><br>
+                    <label for="password">Password</label><br>
+                    <input type="password" id="password" placeholder="Password" name="password" required><br>
+                    <input type="checkbox" id="rememberMe" name="rememberMe">
+                    <label for="rememberMe" id="rememberMeLabel">Remember me</label> <br>
+                    <input type="submit" value="Login" required>
+                </form>
+                <p>Not registered? </p>
+                <a href="/register" style="text-decoration: none;">
+                    Register here
+                </a>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="../scripts/userLogic/login.js"></script>
+    <script type="module" src="../scripts/utility/audioManager.js"></script>
+</body>
+
+</html>
