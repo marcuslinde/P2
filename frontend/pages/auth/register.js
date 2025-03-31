@@ -1,8 +1,8 @@
 /** @module register */
 
-import { setUser, User } from '../utility/state.js';
-import { setLoading } from '../utility/ui.js';
-import { getElementById, getInputElement } from '../utility/helperFunctions.js';
+import { setUser } from '../../utility/state.js';
+import { setLoading } from '../../utility/ui.js';
+import { getElementById, getInputElement } from '../../utility/helperFunctions.js';
 import { registerUser } from './userFunctions.js';
 
 const registerForm = document.getElementById("registerForm");

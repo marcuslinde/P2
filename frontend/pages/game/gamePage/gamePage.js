@@ -1,14 +1,15 @@
 /** 
  * @module game.js 
  * @typedef {number} field - defines a field so we get errors
- * @typedef {import('../ships.js').ship} ship - defines a ship so we can see errors
+ * @typedef {Ship} ship - defines a ship so we can see errors
  * @typedef {"left"|"right"} side
 */
 import { User, Game, setGame } from '../../../utility/state.js';
 import { setLoading } from '../../../utility/ui.js';
 import { getElementById } from '../../../utility/helperFunctions.js';
-import { boardHeight, boardWidth } from '../board.js';
-import { deleteGame, fetchGameData, fireShot } from '../gameFunctions.js';
+import { boardHeight, boardWidth } from '../gameHelpers/board.js';
+import { deleteGame, fetchGameData, fireShot } from '../gameHelpers/gameFunctions.js';
+import { Ship } from '../gameHelpers/ships.js';
 
 const howOftenToFetchDataInMS = 500;
 

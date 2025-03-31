@@ -4,14 +4,14 @@
  * @typedef {number} field
  * @typedef {"vertical"|"horizontal"} rotation
 */
-import { deleteGame } from "./gameFunctions.js";
+import { deleteGame } from "../gameHelpers/gameFunctions.js";
 import { Game, setGame, User } from "../../../utility/state.js";
 import { setLoading } from "../../../utility/ui.js";
 import { getElementById } from "../../../utility/helperFunctions.js";
-import { fetchGameData, submitShips } from "./gameFunctions.js";
-import { boardWidth, boardHeight } from "../board.js";
+import { fetchGameData, submitShips } from "../gameHelpers/gameFunctions.js";
+import { boardWidth, boardHeight } from "../gameHelpers/board.js";
 import { querySelectorAll } from "../../../utility/helperFunctions.js";
-import { createShips, Ship } from "../ships.js";
+import { createShips, Ship } from "../gameHelpers/ships.js";
 
 checkIfReady();
 initializeFields()

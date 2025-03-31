@@ -7,7 +7,6 @@ const apiBase = '/';
  * @returns {Promise<object>}  
  */
 export async function createGame(userId, gameCode, name) {
-
     try {
         const response = await fetch(apiBase + "game/create", {
             method: 'POST',
@@ -51,7 +50,6 @@ export async function fetchGameData(gameId) {
     }
 }
 
-
 /**
  * Sends a POST request to join a game using the provided lobby code and user ID.
  * @param {string} userId - The user's ID.
@@ -84,7 +82,6 @@ export async function joinGame(userId, gameCode, name) {
 
 }
 
-
 /**
  * calls the api for deleting games
  * @param {string} gameId 
@@ -109,7 +106,6 @@ export async function deleteGame(gameId) {
         console.error("Error checking game state:", error);
     }
 }
-
 
 /**
  * Update the game state on the backend with the player's board and ready status.
@@ -137,7 +133,6 @@ export async function submitShips(gameId, userId, ships) {
         throw error;
     }
 }
-
 
 /**
  * 

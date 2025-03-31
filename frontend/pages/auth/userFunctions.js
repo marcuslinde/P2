@@ -1,7 +1,4 @@
-const apiBase = '/'
-
-
-
+const apiBase = '/auth'
 /** calls the database for user validation and then sets the user in the frontend to a user object returned by the database
    * @function
    * @param {string} username
@@ -9,7 +6,7 @@ const apiBase = '/'
 */
 export async function login(username, password) {
     try {
-        const response = await fetch(apiBase + 'auth/login', {
+        const response = await fetch(apiBase + '/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username: username, password: password })
@@ -36,7 +33,7 @@ export async function login(username, password) {
 export async function registerUser(user) {
     try {
         // API CALL TO REGISTER USER
-        const response = await fetch(apiBase + 'auth/register', {
+        const response = await fetch(apiBase + '/register', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(user)
