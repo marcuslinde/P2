@@ -1,9 +1,10 @@
 /**
  * @module
  * @typedef {"left"|"right"} boardSide
+ * @typedef {Ship} ship
  */
 import { getElementById, querySelectorAll } from '../../utility/helperFunctions.js';
-import { createShips } from './ships.js';
+import { createShips, Ship } from '../game/gameHelpers/ships.js';
 import { boardHeight, boardWidth } from '../game/gameHelpers/board.js';
 
 /** Array f ship div elements*/
@@ -291,7 +292,7 @@ function onShipDrop(e) {
 }
 
 /** Find the object id of the ship 
- * @returns {import('./ships.js').ship} */
+ * @returns {ship} */
 function getShipObjectByID(ID) {
     let draggedShip = null;
     // finder hvilken class ship vi skal bruge ud fra html elementet

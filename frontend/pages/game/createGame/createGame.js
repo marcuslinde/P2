@@ -1,9 +1,9 @@
 /** @module createGame */
 
-import { getElementById, getInputElement } from "../../scripts/utility/helperFunctions.js";
-import { User, setGame } from '../../scripts/utility/state.js';
-import { setLoading } from "../../scripts/utility/ui.js";
-import { createGame } from "../game/gameFunctions.js";
+import { getElementById, getInputElement } from "../../../utility/helperFunctions.js";
+import { User, setGame } from "../../../utility/state.js";
+import { setLoading } from "../../../utility/ui.js";
+import { createGame } from "../gameHelpers/gameFunctions.js";
 
 
 if (!User()) {

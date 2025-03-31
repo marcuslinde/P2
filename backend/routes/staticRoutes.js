@@ -14,7 +14,7 @@ router.get('/', (req, res) => {
 });
 
 router.get('/login', (req, res) => {
-    res.sendFile(join(__dirname, '..', '..', 'frontend', 'pages', 'login.html'));
+    res.sendFile(join(__dirname, '..', '..', 'frontend', 'pages', 'auth', 'login.html'));
 });
 
 router.get('/register', (req, res) => {
@@ -22,15 +22,15 @@ router.get('/register', (req, res) => {
 });
 
 router.get('/joinGame', (req, res) => {
-    res.sendFile(join(__dirname, '..', '..', 'frontend', 'pages', 'joinGame', 'joinGame.html'));
+    res.sendFile(join(__dirname, '..', '..', 'frontend', 'pages', 'game', 'joinGame', 'joinGame.html'));
 });
 
 router.get('/createGame', (req, res) => {
-    res.sendFile(join(__dirname, '..', '..', 'frontend', 'pages', 'createGame', 'createGame.html'));
+    res.sendFile(join(__dirname, '..', '..', 'frontend', 'pages', 'game', 'createGame', 'createGame.html'));
 });
 
 router.get('/createBotGame', (req, res) => {
-    res.sendFile(join(__dirname, '..', '..', 'frontend', 'pages', 'botGame', 'createBotGame.html'));
+    res.sendFile(join(__dirname, '..', '..', 'frontend', 'pages', 'botGame', 'botGame.html'));
 });
 
 router.get('/profile', (req, res) => {
@@ -42,15 +42,15 @@ router.get('/settings', (req, res) => {
 });
 
 router.get('/placeShips', (req, res) => {
-    res.sendFile(join(__dirname, '..', '..', 'frontend', 'pages', 'placeShips', 'placeShips.html'));
+    res.sendFile(join(__dirname, '..', '..', 'frontend', 'pages', 'game', 'placeShips', 'placeShips.html'));
 });
 
 router.get('/gameLobby', (req, res) => {
-    res.sendFile(join(__dirname, '..', '..', 'frontend', 'pages', 'gameLobby', 'gameLobby.html'));
+    res.sendFile(join(__dirname, '..', '..', 'frontend', 'pages', 'game', 'gameLobby', 'gameLobby.html'));
 });
 
 router.get('/game', (req, res) => {
-    res.sendFile(join(__dirname, '..', '..', 'frontend', 'pages', 'game', 'game.html'));
+    res.sendFile(join(__dirname, '..', '..', 'frontend', 'pages', 'game', 'gamePage', 'gamePage.html'));
 });
 
 
