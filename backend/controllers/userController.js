@@ -69,6 +69,7 @@ export const createUser = async (req, res) => { //async so we can call await
 
         res.status(201).json({ success: true, newUser: safeUser });//201 means something created
 
+
     } catch (error) {
         console.log("Error in creating user :", error.message);
         res.status(500).json({ success: false, message: "Server error" });

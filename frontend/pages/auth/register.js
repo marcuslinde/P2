@@ -67,9 +67,11 @@ async function handleRegister(e) {
     console.log("korrekt før loop")
 
     if (userId) {
+
         // Update frontend userState
         setUser(userId);
         window.location.href = "/"; // go to front page
+
     }
     setLoading(false);
 }
