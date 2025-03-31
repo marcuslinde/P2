@@ -18,7 +18,9 @@ export async function login(username, password) {
         }
         const data = await response.json();
 
-        return data.user._id;
+
+        return data.user;
+
     }
     catch (err) {
         console.log(err);
@@ -46,7 +48,9 @@ export async function registerUser(user) {
 
         const data = await response.json()
 
-        return data.newUser._id;
+
+        return data.newUser;
+
     }
 
     catch (err) {
