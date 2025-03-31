@@ -69,5 +69,3 @@ export const createShips = () => {
   const carrier = new Ship("carrier", 5);
   return [destroyer, submarine, cruiser, battleship, carrier];
 }
-
-

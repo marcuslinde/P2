@@ -54,7 +54,7 @@ function botFireCannon() {
         firedAtField.classList.remove("occupiedField");
         firedAtField.classList.add("hitField");
         console.log("Hit shot");
-        game.game.enemyHits += 1;
+        game.enemyHits += 1;
     } else {
         firedAtField?.classList.add("missedField");
         console.log("Missed shot");
@@ -87,9 +87,11 @@ function checkWinCondition() {
 function gameLoop() {
     if (checkWinCondition() === 1) {
         window.alert("The bot won!");
+        window.location.href = "/"
     }
     else if (checkWinCondition() === 2) {
         alert("You have won!");
+        window.location.href = "/"
     }
     if (turn === 0) {
         console.log("Bot's Turn");
@@ -121,9 +123,16 @@ function assignOccupiedFields(coveredFields, side) {
  */
 function checkForOverlap(coveredFields, boardSide) {
     for (let i = 0; i < coveredFields.length; i++) {
-        const fieldElement = getElementById("leftfield" + (coveredFields[i]));
-        if (occupiedFieldArrayLeft.includes(fieldElement)) {
-            return true;
+        if(boardSide === "left"){
+            const fieldElement = getElementById("leftfield" + (coveredFields[i]));
+            if (occupiedFieldArrayLeft.includes(fieldElement)) {
+                return true;
+            }
+        } else{
+            const fieldElement = getElementById("rightfield" + (coveredFields[i]));
+            if (occupiedFieldArrayRight.includes(fieldElement)) {
+                return true;
+            }
         }
     }
     return false;
@@ -172,7 +181,7 @@ function randomizeShipPlacement(boardSide) {
             // Finder skibets id og gemmer elementet når placeret
             if (boardSide === "left") {
             
-                const shipElement = getElementById(ship.name + "Size" + ship.length);
+                const shipElement = getElementById(ship.name);
                 shipElement.style.display = "none";
             }
             placed = true;
