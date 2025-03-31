@@ -8,6 +8,7 @@ if (!User()) {
     window.location.href = "/login"; // go to front page
 }
 
+getElementById("backButton")?.addEventListener("click", () => window.location.href = "/");
 
 getElementById('username').innerHTML = "Username: " + `${User().name}`; 
 getElementById('userId').innerHTML = "User ID: " + `${User()._id}`; 

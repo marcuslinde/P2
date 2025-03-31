@@ -10,6 +10,8 @@ if (!User()) {
     window.location.href = "/login"; // go to login page
 }
 
+getElementById("backButton")?.addEventListener("click", () => window.location.href = "/");
+
 const form = getElementById("createGameForm");
 
 
