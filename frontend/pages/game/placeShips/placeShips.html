@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Battleships</title>
+    <link rel="stylesheet" href="../styles/game.css">
+</head>
+
+<body>
+    <button id="cancelButton">Leave game</button>
+
+    <div class="flex-justify-align-center">
+    <h2 id="turn"> place your ships </h2>
+    <div id="gameBoardWrapper" class="center">
+        <div>
+
+            <h2 id="yourName">  </h2>
+            <div class="gameBoard" id="gameBoard"></div>
+        </div>
+    </div>
+
+
+
+    <div class="functionWrapper">
+  
+        <div class="shipSelectionWrapper center">
+            <div id="carrier" class="ship" draggable="true"></div>
+            <div id="battleship" class="ship" draggable="true"></div>
+            <div id="submarine" class="ship" draggable="true"></div>
+            <div id="cruiser" class="ship" draggable="true"></div>
+            <div id="destroyer" class="ship" draggable="true"></div>
+        </div>
+        <div class="buttonWrapper">
+            <div id="gameButtonWrapper">
+                <input id="readyButton" type="button" value="Ready">
+            </div>
+            <div id="gameButtonWrapper">
+                <input id="randomizeButton" type="button" value="Randomize">
+            </div>
+            <div id="gameButtonWrapper">
+                <input id="resetButton" type="button" value="Reset">
+            </div>
+        </div>
+    </div>
+</div>
+    <script type="module" src="./placeShips.js"></script>
+
+    </div>
+</body>
+
+</html>

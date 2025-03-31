@@ -10,7 +10,7 @@ import {fetchGameData, deleteGame, submitShips, fireShot} from "../frontend/scri
 import { assert, expect, test, it } from "vitest";
 
 
-test("", ()=>{
+test("", () => {
 
 
 })

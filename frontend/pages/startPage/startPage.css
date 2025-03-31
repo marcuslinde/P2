@@ -1,0 +1,52 @@
+@import url('../../styles.css'); /* import main styles*/
+
+
+#profileButton img {
+    width: 50px;
+    z-index: 1;
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    padding: 5px;
+    transition: 0.4s all;
+    border: 3px solid rgba(0, 0, 0, 0);
+    border-radius: 10px;
+}
+
+#profileButton img:hover {
+    background-color: orange;
+    cursor: pointer;
+}
+
+#profileButton {
+    width: 100px;
+    height: 100px;
+}
+
+.headerLink {
+    display: block;
+    background-color: var(--black);
+    border: 2px solid var(--orange);
+    color: var(--text2);
+    margin: 50px 10px;
+    padding: 15px;
+    width: 300px;
+    text-decoration: none;
+}
+
+.headerLink:hover {
+    cursor: pointer; 
+    color: black;
+    background-color: var(--orange);
+}
+
+.headerWrapper {
+    width: 350px;
+    padding: 30 30px;
+    text-align: center;
+    font-size: clamp(16px, 2.5vw, 16px);
+}
+  
+.hidden {
+    display: none;
+}

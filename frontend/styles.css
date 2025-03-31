@@ -1,0 +1,102 @@
+/* import font*/
+@import url('https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Merriweather+Sans:ital,wght@0,300..800;1,300..800&family=Red+Hat+Text:ital,wght@0,300..700;1,300..700&display=swap');
+@import url('styles/loader.css');
+@import url('styles/banner.css');
+/*@import url('banner.css');*/
+/*Define color palette*/
+:root {
+    --background: #515A6B;
+    --secondary: #cccccc;
+    --text1: rgb(0, 0, 0);
+    --text2: rgb(240, 240, 240);
+    --blue: #0066da;
+    --link-color: rgb(248,143,58);
+    --orange: rgb(248,143,58);
+    --black: rgb(0, 0, 0);
+}
+
+html {
+    font-family: "Black Ops One", serif; 
+    color: var(--text1);
+    font-weight: 400;
+    font-style: normal;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-image: url("../resources/images/Battleships.png");
+    background-color: var(--secondary);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    height: 100vh;
+    /* 100vh betyder 100% af viewport*/
+    color: var(--text2);
+}
+
+.logo {
+    height: 20vh;
+
+    z-index: -1;
+}
+.center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.flex {
+    display: flex;
+}
+
+.justify-align-center {
+    justify-content: center;
+    align-items: center;
+}
+
+.wrapper {
+    height: 65vh;
+    align-content: center;
+}
+
+
+input {
+    border: none;
+    border-radius: 2px;
+}
+
+
+a {
+    color: var(--link-color);
+    cursor: pointer;
+}
+
+p {
+    margin: 5px 0;
+}
+
+input:not([type=checkbox]) {
+    padding: 3px;
+    margin-bottom: 10px;
+    margin-top: 5px;
+    width: 200px;
+}
+
+input[type=submit], [type=button] {
+    background-color: var(--black);
+    color: var(--text2);
+    padding: 10px;
+    width: 206px;
+    border: 2px solid var(--orange);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+input[type=submit]:hover {
+    color: var(--text1);
+    background-color: var(--orange);
+}
+input[type=submit]:active {
+    transform: scale(0.97);
+}
