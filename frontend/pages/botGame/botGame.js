@@ -239,6 +239,7 @@ function initializeFields() {
                 // Adds hover effect when dragging ship
                 field.addEventListener("drop", (e) => {
                     console.log("onShipDrop triggered");
+                    field.style.border = "1px solid black"
                     onShipDrop(e);
                 });
             }
