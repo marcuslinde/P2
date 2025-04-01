@@ -229,6 +229,7 @@ function initializeFields() {
             if (side == "left") {
                 field.addEventListener("dragover", (e) => {
                     e.preventDefault();
+
                     field.style.border = "2px solid black"
                 })
                 field.addEventListener("dragleave", (e) => {
