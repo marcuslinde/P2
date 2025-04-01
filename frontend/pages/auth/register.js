@@ -5,6 +5,8 @@ import { setLoading } from '../../utility/ui.js';
 import { getElementById, getInputElement } from '../../utility/helperFunctions.js';
 import { registerUser } from './userFunctions.js';
 
+getElementById("backButton")?.addEventListener("click", () => window.location.href = "/");
+
 const registerForm = document.getElementById("registerForm");
 
 registerForm?.addEventListener("submit", handleRegister)
