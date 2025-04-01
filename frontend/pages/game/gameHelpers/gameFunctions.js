@@ -140,13 +140,12 @@ export async function submitShips(gameId, userId, ships) {
  * @param {number} field 
  * @returns {Promise<object>}  
  */
-export async function fireShot(gameId, field) {
-
+export async function fireShot(gameId, userId, field) {
     try {
         const response = await fetch("/game/fireShot", {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ gameId: gameId, field: field })
+            body: JSON.stringify({ gameId: gameId, userId: userId, field: field })
         });
 
         if (!response.ok) {
@@ -155,7 +154,6 @@ export async function fireShot(gameId, field) {
         const updatedGame = await response.json();
         console.log("Shot fired successfully!");
         return updatedGame;
-
     } catch (error) {
         console.error("Error updating game:", error);
         throw error;

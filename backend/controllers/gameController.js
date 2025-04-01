@@ -198,42 +198,49 @@ export const submitShips = async (req, res) => {
  */
 export const fireShot = async (req, res) => {
   try {
-
-    // Expect gameId to be sent in the request body (this is the _id from MongoDB)
-    const { gameId, field } = req.body;
-    console.log("fire shot field:", field); // Debug log
+        // Expect gameId to be sent in the request body (this is the _id from MongoDB)
+    const { gameId, userId, field } = req.body;
+    if (!gameId || !userId) {
+      return res.status(400).json({ error: 'gameId and userId are required' });
+    }
+    
     
     // game gameId
-    if (!gameId) {
-      return res.status(400).json({ error: 'gameId are required' });
-    }
-
-    // find game
     const game = await Game.findById(gameId);
     if (!game) {
       return res.status(404).json({ error: 'Game not found' });
     }
-
+    
+    // Check that currentTurn exists and matches the userId
+    if (!game.currentTurn || game.currentTurn.toString() !== userId.toString()) {
+      return res.status(403).json({ error: 'Not your turn' });
+    }
+    
     // Find the player in the game document
-    const player = game.players.find(player => player.userId.toString() === game.currentTurn?.toString());
+    const player = game.players.find(player => player.userId.toString() === userId.toString());
     if (!player) {
       return res.status(400).json({ error: 'User not part of this game' });
     }
     
-    player.shots.push(field);
-
-    if (game.players[0].userId.toString() == game.currentTurn?.toString()) {
-      game.currentTurn = game.players[1].userId;
-    } else {
-      game.currentTurn = game.players[0].userId;
+    // Prevent duplicate shots on the same field
+    if (player.shots.includes(field)) {
+      return res.status(400).json({ error: 'Field already shot' });
     }
-
+    
+    // Register the shot
+    player.shots.push(field);
+    
+    // Find the other player and switch the turn
+    const otherPlayer = game.players.find(p => p.userId.toString() !== userId.toString());
+    if (!otherPlayer) {
+      return res.status(400).json({ error: 'Other player not found' });
+    }
+    game.currentTurn = otherPlayer.userId;
+    
     const updatedGame = await game.save();
     res.json(updatedGame);
-    
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Server error' });
   }
 };
-

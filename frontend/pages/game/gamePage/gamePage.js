@@ -189,7 +189,7 @@ async function handleFireShot(e) {
     const firedAtField = e.currentTarget;
     const field = parseInt(firedAtField.dataset.index, 10); // Field number
 
-    const updatedGame = await fireShot(Game()._id, field);
+    const updatedGame = await fireShot(Game()._id, User()._id, field);
 
     if (updatedGame) {
 
