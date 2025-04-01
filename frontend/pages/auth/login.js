@@ -4,6 +4,8 @@ import { setUser, User } from '../../utility/state.js';
 import { getElementById, getInputElement, getCookie, setCookie } from '../../utility/helperFunctions.js';
 import { login } from './userFunctions.js';
 
+
+getElementById("backButton")?.addEventListener("click", () => window.location.href = "/");
 const loginForm = getElementById("loginForm");
 const rememberMeBox = getInputElement("rememberMe");
 
