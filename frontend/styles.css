@@ -16,6 +16,7 @@
 }
 
 html {
+    transition: all 0.2s;
     font-family: "Black Ops One", serif; 
     color: var(--text1);
     font-weight: 400;
@@ -30,14 +31,14 @@ body {
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
-    height: 100vh;
-    /* 100vh betyder 100% af viewport*/
+    background-attachment: fixed;
+
+    height: 100vh; /* 100vh betyder 100% af view height*/
     color: var(--text2);
 }
 
 .logo {
     height: 20vh;
-
     z-index: -1;
 }
 .center {
@@ -60,12 +61,10 @@ body {
     align-content: center;
 }
 
-
 input {
     border: none;
     border-radius: 2px;
 }
-
 
 a {
     color: var(--link-color);

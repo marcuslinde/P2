@@ -5,15 +5,38 @@
     --battleship: #f88f3a;
     --cruiser: #bfb368;
     --destroyer: #65a9cd;
+    --boardColor: rgba(178, 178, 178, 0.611);
+    --fieldSize: 40px;
 }
 
+html {
+    transition: all 0.15s;
+}
+
+#yourName, #enemyName{
+    margin: 25px;
+    width: min-content;
+    padding: 10px;
+    border-radius: 7px;
+}
+
+#exitGameButton {
+    position: absolute;
+}
 
 .gameBoard {
-    background-color:var(--secondary);
+    background-color:var(--boardColor);
     display: grid;
-    grid-template-columns: repeat(10,1fr);
+    border-radius: 7px;
+    margin: 25px;
+    border: 3px solid black;
+    backdrop-filter: blur(5px);
+    grid-template-columns: repeat(10,1fr); /* laver 10 grid coloumns*/
+    grid-template-rows: repeat(10,1fr);
+    box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.44);
+    width: 400px;
+    height: 400px; /*10x10 height*/
 }
-
 
 .functionWrapper {
     display: flex;
@@ -34,27 +57,44 @@
 }
 
 #gameBoardWrapper{
-    height: 300px;
-    width: 700px;
-    margin-bottom: 100px;
-    margin-top: 100px;
-
+    width: 70%;
+    margin: auto;
     display: flex;
-    justify-content: space-between;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+#gameBoardWrapper div {
+    max-width: 460px; /*40x10 + 2x25 margin + 5 border */
 }
 
 .field {
-    height: 30px;
-    width: 30px;
+    transition: all 0.15s;
+    opacity: 1;
+    height: var(--fieldSize);
+    width: var(--fieldSize);
     border: 1px black;
     border-style: solid;
     box-sizing: border-box;
     cursor: pointer;
 }
 
+/* Fjerner border på fieldsene i toppen, siderne of bunden*/
+.gameBoard div:nth-child(n+1):nth-child(-n+10) {
+    border-top: none;
+}
+.gameBoard div:nth-child(10n-9) {
+    border-left: none;
+}
+.gameBoard div:nth-child(10n) {
+    border-right: none;
+}
+.gameBoard div:nth-child(n+91):nth-child(n+10) {
+    border-bottom: none;
+}
+
 .occupiedField {
-    height: 30px;
-    width: 30px;
+    height: var(--fieldSize);
+    width: var(--fieldSize);
     border: 1px black;
     border-style: solid;
     box-sizing: border-box;
@@ -87,60 +127,56 @@
 }
 
 .shipSelectionWrapper {
-    width: 500px;
-    height: 200px;
-    padding: 35px;
+    position: initial;
+    width: min-content;
+    margin-top: 100px;
+    padding: 10px;
     background: transparent;
+    box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.44);
     border: 2px solid rgba(255, 255, 255, 0.692);
     border-radius: 20px;
     backdrop-filter: blur(20px);
-    box-shadow: 0 0 30px rgba(0, 0, 0, 0.507);
+    box-shadow: 0 0 var(--fieldSize) rgba(0, 0, 0, 0.507);
     display: flex;
 }
 
 #carrier {
-    height: 150px;
-    width: 30px;
+    height: 200px;
     background-color: var(--carrier);
-    border: 1px black;
-    border-style: solid;
     margin: 30px;
 }
 
 #battleship {
-    height: 120px;
-    width: 30px;
+    height: 160px;
     background-color: var(--battleship);
-    border: 1px black;
-    border-style: solid;
     margin: 30px;
 }
 
 #cruiser {
-    height: 90px;
-    width: 30px;
+    height: 120px;
     background-color: var(--cruiser);
-    border: 1px black;
-    border-style: solid;
     margin: 30px;
 }
 
 #submarine {
-    height: 90px;
-    width: 30px;
+    height: 120px;
     background-color: var(--submarine);
-    border: 1px black;
-    border-style: solid;
     margin: 30px;
 }
 
 #destroyer {
-    height: 60px;
-    width: 30px;
+    height: 80px;
     background-color: var(--destroyer);
+    transform: rotate(100);
+    margin: 30px;
+}
+
+.ship {
+    transition: all 0.1s;
+    opacity: 1;
+    width: var(--fieldSize);
     border: 1px black;
     border-style: solid;
-    margin: 30px;
 }
 
 .ship:hover {
@@ -148,13 +184,9 @@
     opacity: 0.6;
 }
 
-
-.field.right {
-    background-color: var(--secondary);
-}
-
-.field.right:hover {
+.field:hover {
     filter: brightness(80%);
+    background-color: rgba(15, 15, 15, 0.271);
 }
 
 .field.right.missedField:hover {

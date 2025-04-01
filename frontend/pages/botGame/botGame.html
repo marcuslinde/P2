@@ -13,20 +13,22 @@
 
     <button id="exitGameButton" type="button"> Exit Game </button>
 
-    <h2 id ="turn" > place your ships </h2>
-    <div id="gameBoardWrapper" class="center">
+    <h2 id ="turn" class="center" > place your ships </h2>
+    <div id="gameBoardWrapper" class="flex">
         <div class="gameBoard" id="leftGameBoard"></div>
         <div class="gameBoard" id="rightGameBoard"></div>
     </div>
-    
+
+    <div class="shipSelectionWrapper center">
+        <div id="carrier" class="ship" draggable="true"></div>
+        <div id="battleship" class="ship" draggable="true"></div>
+        <div id="submarine" class="ship" draggable="true"></div>
+        <div id="cruiser" class="ship" draggable="true"></div>
+        <div id="destroyer" class="ship" draggable="true"></div>
+    </div>
+
     <div class="functionWrapper">
-        <div class="shipSelectionWrapper center">
-            <div id="carrier" class="ship" draggable="true"></div>
-            <div id="battleship" class="ship" draggable="true"></div>
-            <div id="submarine" class="ship" draggable="true"></div>
-            <div id="cruiser" class="ship" draggable="true"></div>
-            <div id="destroyer" class="ship" draggable="true"></div>
-        </div>
+    
         <div class="buttonWrapper">
             <div id="gameButtonWrapper">
                 <input id="readyButton" type="button" value="Ready">
