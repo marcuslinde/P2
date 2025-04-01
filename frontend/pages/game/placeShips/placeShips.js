@@ -22,10 +22,13 @@ getElementById("resetButton").addEventListener("click", resetShipPlacement);
 getElementById("randomizeButton").addEventListener("click", () => randomizeShipPlacement());
 getElementById("readyButton").addEventListener("click", handleSubmitShips);
 
-const howOftenToFetchDataInMS = 500;
+const howOftenToFetchDataInMS = 10000;
 
 /** @type {HTMLElement|null}*/
-let currentHoveredShip = null;
+let currentSelectedShip = null;
+
+/** @type {HTMLElement|null}*/
+let currentHoveredField = null;
 
 /** Holds the array of five ships */
 const shipsClass = createShips();
@@ -48,35 +51,44 @@ export function initializeFields() {
         field.id = "field" + (i + 1);  // sets the html field ID
 
         // Adds hover effect when dragging ship to left squares
-        field.addEventListener("dragover", (e) => {
+        field.addEventListener("mouseenter", (e) => {
             e.preventDefault();
-            if (currentHoveredShip) {
-                getAndPaintFieldsFor(i, getShipByName(currentHoveredShip.id))
+            currentHoveredField = getElementById("field" + (i+1));
+            console.log("field", currentHoveredField)
+
+            if (currentSelectedShip) {
+                getAndPaintFields()
             }
+            
         })
-        field.addEventListener("dragleave", (e) => {
+        field.addEventListener("mouseleave", (e) => {
             e.preventDefault();
-            if (currentHoveredShip) {
-                getAndRemovePaintFieldsFor(i, getShipByName(currentHoveredShip.id))
+            if (currentSelectedShip) {
+                getAndRemovePaintFields()
             }
+            currentHoveredField = null;
+            console.log("field", currentHoveredField)
+
         })
-        field.addEventListener("drop", (e) => {
+        field.addEventListener("click", (e) => {
             e.preventDefault()
-            getAndRemovePaintFieldsFor(i, getShipByName(currentHoveredShip.id))
-            onShipDrop(e)
+            if (currentSelectedShip) {
+                getAndRemovePaintFields();
+                onShipDrop(e)
+                currentSelectedShip = null;
+                currentHoveredField = null;
+            }
         });        // Adds hover effect when dragging ship
 
         gameboard.append(field);        // Tilføjer field div til gameboard div
     }
 }
-/** Finder de felter et skib vil lande på ud fra rotation of start punkt, og maler dem orange
- * @param {field} field 
- * @param {ship} ship 
- */
-function getAndPaintFieldsFor(field, ship) {
-    if (currentHoveredShip) {
-        let currentShip = getShipByName(currentHoveredShip.id)
-        let coveredFields = calculateCoveredFields(field + 1, currentShip.length, currentShip.rotation)
+/** Finder de felter et skib vil lande på ud fra rotation of start punkt, og maler dem orange */
+function getAndPaintFields() {
+    let fieldIndex = Number(currentHoveredField?.dataset.index);
+    if (currentSelectedShip) {
+        let currentShip = getShipByName(currentSelectedShip.id)
+        let coveredFields = calculateCoveredFields(fieldIndex, currentShip.length, currentShip.rotation)
         if (coveredFields) {
             for (let j = 0; j < currentShip.length; j++) {
                 getElementById("field" + coveredFields[j]).style.backgroundColor = "var(--orange)"
@@ -85,14 +97,12 @@ function getAndPaintFieldsFor(field, ship) {
     }
 }
 
-/** fjerner farven fra det sted hvor skibet "ville kunne lande på" hvis man slap det.
- * @param {field} field 
- * @param {ship} ship 
- */
-function getAndRemovePaintFieldsFor(field, ship) {
-    if (currentHoveredShip) {
-        let currentShip = getShipByName(currentHoveredShip.id)
-        let coveredFields = calculateCoveredFields(field + 1, currentShip.length, currentShip.rotation)
+/** fjerner farven fra det sted hvor skibet "ville kunne lande på" hvis man slap det.*/
+function getAndRemovePaintFields() {
+    let fieldIndex = Number(currentHoveredField?.dataset.index);
+    if (currentSelectedShip) {
+        let currentShip = getShipByName(currentSelectedShip.id)
+        let coveredFields = calculateCoveredFields(fieldIndex, currentShip.length, currentShip.rotation)
 
         if (coveredFields) {
             for (let j = 0; j < currentShip.length; j++) {
@@ -102,7 +112,6 @@ function getAndRemovePaintFieldsFor(field, ship) {
     }
 
 }
-
 
 /** recursive function that checks if both players have pressed 'ready' every x seconds */
 async function checkIfReady() {
@@ -123,6 +132,14 @@ async function checkIfReady() {
 
 //* Adds eventlistener for dragging a ship, which creates a cloneImage that is the one visible when dragging */
 shipsDiv.forEach(ship => {
+    ship.addEventListener("click", (e)=>{
+        e.preventDefault()
+        console.log("setShip")
+        ship.style.opacity = "0.5"
+        currentSelectedShip = ship;
+    })
+
+/*
     ship.addEventListener("dragstart", (e) => {
         let cloneImageShip = ship.cloneNode(true);
         if (cloneImageShip instanceof HTMLElement) {
@@ -149,101 +166,89 @@ shipsDiv.forEach(ship => {
                 document.body.removeChild(cloneImageShip);
             }, 300);
         }
-
-    })
-
-    ship.addEventListener("mouseover", (e) => {
-        currentHoveredShip = ship;
-    });
-
-    ship.addEventListener("mouseout", (e) => {
-        currentHoveredShip = null;
-    })
+    })*/
 })
 
-/** Helper function */
+/** Helper function 
+ * @param {string} name */
 function getShipByName(name) {
-    let draggedShip = null;
+    let ship = null;
     // finder hvilken class ship vi skal bruge ud fra html elementet
     if (name === "destroyer") {
-        draggedShip = shipsClass[0] // destoryer
+        ship = shipsClass[0] // destoryer
     } else if (name === "submarine") {
-        draggedShip = shipsClass[1]; // submarine
+        ship = shipsClass[1]; // submarine
     } else if (name === "cruiser") {
-        draggedShip = shipsClass[2]; // cruiser
+        ship = shipsClass[2]; // cruiser
     } else if (name === "battleship") {
-        draggedShip = shipsClass[3]; // battleship
+        ship = shipsClass[3]; // battleship
     } else if (name === "carrier") {
-        draggedShip = shipsClass[4]; // carrier
+        ship = shipsClass[4]; // carrier
     }
-    if (!draggedShip) {
+    if (!ship) {
         throw new Error("Couldn't handle ship draggin properly");
     }
-    return draggedShip
+    return ship
 }
 
 /** Logic for dropping a ship on a given field. the event (e) holds the field we are dropping on */
 function onShipDrop(e) {
     e.preventDefault();
+    if (!currentSelectedShip) {
+        return;
+    }
 
     const field = e.currentTarget;
-    const shipId = e.dataTransfer.getData("text/plain"); // text/plain fortæller at dataen vi leder efter er ren tekst
-    const shipElmnt = getElementById(shipId); // htmlElement
-    const ship = getShipByName(shipId); // ship class element
+   //  const shipId = e.dataTransfer.getData("text/plain"); // text/plain fortæller at dataen vi leder efter er ren tekst
+    //  const shipElmnt = getElementById(shipId); // htmlElement
+    const ship = getShipByName(currentSelectedShip.id); // ship class element
 
     const dropField = parseInt(field.dataset.index, 10);
     console.log("dropped on:", dropField)
 
     let coveredFields = calculateCoveredFields(dropField, ship.length, ship.rotation);
-
     if (!coveredFields) {
-        window.alert("Ship is out of bounds!");
-        return
+        throw new Error("couldn't calculate covered fields")
     }
-
-    if (checkForOverlap(coveredFields)) {
-        window.alert("Ship overlaps another ship.");
-        return;
-    }
-
-
     ship.setcoveredFields(coveredFields);
 
-    shipElmnt.style.display = "none"; // Gør html elementet usynligt når skibet bliver placeret
-
+    currentSelectedShip.style.display = "none"; // Gør html elementet usynligt når skibet bliver placeret
+    currentSelectedShip = null
     paintOccupiedFields(coveredFields);
-
-        
-
 }
 
 /** Changes the currentHovered ship rotation and updates the css to rotate the ship when " */
 function rotateShip() {
-    if (!currentHoveredShip) {
+    if (!currentSelectedShip)
         return;
-    }
-    const shipName = currentHoveredShip.getAttribute('id');
-    const ship = getShipByName(shipName);
+    
+    const ship = getShipByName(currentSelectedShip.id);
     ship.rotation == "horizontal" ? ship.setRotation("vertical") : ship.setRotation("horizontal");
 
-    let currentRotation = parseInt(currentHoveredShip.getAttribute("data-rotation") || "0", 10);
+    let currentRotation = parseInt(currentSelectedShip.getAttribute("data-rotation") || "0", 10);
     let newRotation = (currentRotation + 90) % 360;
-
-    currentHoveredShip.style.transform = "rotate(" + newRotation + "deg)";
-    currentHoveredShip.setAttribute("data-rotation", `${newRotation}`);
+    
+    currentSelectedShip.style.transform = "rotate(" + newRotation + "deg)";
+    currentSelectedShip.setAttribute("data-rotation", `${newRotation}`);
 }
 
 // calls the rotateShip function when "r" key is pressed
 document.addEventListener("keydown", (e) => {
-    if (e.key.toLowerCase() === "r" && currentHoveredShip)
-        rotateShip();
+    if (e.key.toLowerCase() === "r" && currentSelectedShip) {
+        if (currentHoveredField) {
+            getAndRemovePaintFields() // remove paint
+            rotateShip(); // rotate
+            getAndPaintFields() // add new paint, for new rotation
+        } else 
+            rotateShip(); // just rotate
+    }
 });
 
 /** Helper function to calculate what fields to the ship will take up. Returns null if out of bounds.
  * @param {number} start 
  * @param {number} length 
  * @param {rotation} rotation 
- * @returns {?Array<field>}
+ * @returns {?Array<field>|null} returens null, if theres an overlap or out of bounds
  */
 function calculateCoveredFields(start, length, rotation) {
     const startColumn = (start - 1) % boardWidth; // finder de næste felter ud fra start
@@ -288,8 +293,7 @@ function checkForOverlap(coveredFields) {
 }
 
 /** Tilføjer css styling til alle de fields med skibe på
- * @param {Array<field>} coveredFields
- */
+ * @param {Array<field>} coveredFields */
 function paintOccupiedFields(coveredFields) {
     coveredFields.forEach(index => {
         const fieldElement = getElementById("field" + (index));
@@ -298,6 +302,18 @@ function paintOccupiedFields(coveredFields) {
         occupiedFieldArrayLeft.push(fieldElement);
     });
 }
+
+/** Tilføjer css styling til alle de fields med skibe på
+ * @param {Array<field>} coveredFields */
+function unPaintOccupiedFields(coveredFields) {
+    coveredFields.forEach(index => {
+        const fieldElement = getElementById("field" + (index));
+        fieldElement.classList.remove("occupiedField")
+        fieldElement.style.background = "transparent"
+        occupiedFieldArrayLeft.push(fieldElement);
+    });
+}
+
 
 /** Calls the submitShip function and updates the "game" struct */
 async function handleSubmitShips(e) {
