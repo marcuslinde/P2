@@ -41,7 +41,7 @@ initializeBotGame(); // starts bot game
 getElementById("resetButton")?.addEventListener("click", resetShipPlacement);
 getElementById("randomizeButton")?.addEventListener("click", () => randomizeShipPlacement("left"));
 getElementById("readyButton")?.addEventListener("click", () => readyCheck());
-getElementById("exitGameButton")?.addEventListener("click", () => window.location.href = "/");
+getElementById("backButton")?.addEventListener("click", () => window.location.href = "/");
 
 /** handls the bot fire a shot */
 function botFireCannon() {
