@@ -30,6 +30,7 @@ let currentSelectedShip = null;
 /** @type {HTMLElement|null}*/
 let currentHoveredField = null;
 
+
 /** Holds the array of five ships */
 const shipsClass = createShips();
 
@@ -53,16 +54,18 @@ export function initializeFields() {
         // Adds hover effect when dragging ship to left squares
         field.addEventListener("mouseenter", (e) => {
             e.preventDefault();
+
             currentHoveredField = getElementById("field" + (i+1));
             console.log("field", currentHoveredField)
 
             if (currentSelectedShip) {
                 getAndPaintFields()
             }
-            
+
         })
         field.addEventListener("mouseleave", (e) => {
             e.preventDefault();
+
             if (currentSelectedShip) {
                 getAndRemovePaintFields()
             }
@@ -78,17 +81,20 @@ export function initializeFields() {
                 currentSelectedShip = null;
                 currentHoveredField = null;
             }
+
         });        // Adds hover effect when dragging ship
 
         gameboard.append(field);        // Tilføjer field div til gameboard div
     }
 }
+
 /** Finder de felter et skib vil lande på ud fra rotation of start punkt, og maler dem orange */
 function getAndPaintFields() {
     let fieldIndex = Number(currentHoveredField?.dataset.index);
     if (currentSelectedShip) {
         let currentShip = getShipByName(currentSelectedShip.id)
         let coveredFields = calculateCoveredFields(fieldIndex, currentShip.length, currentShip.rotation)
+
         if (coveredFields) {
             for (let j = 0; j < currentShip.length; j++) {
                 getElementById("field" + coveredFields[j]).style.backgroundColor = "var(--orange)"
@@ -97,12 +103,14 @@ function getAndPaintFields() {
     }
 }
 
+
 /** fjerner farven fra det sted hvor skibet "ville kunne lande på" hvis man slap det.*/
 function getAndRemovePaintFields() {
     let fieldIndex = Number(currentHoveredField?.dataset.index);
     if (currentSelectedShip) {
         let currentShip = getShipByName(currentSelectedShip.id)
         let coveredFields = calculateCoveredFields(fieldIndex, currentShip.length, currentShip.rotation)
+
 
         if (coveredFields) {
             for (let j = 0; j < currentShip.length; j++) {
@@ -112,6 +120,7 @@ function getAndRemovePaintFields() {
     }
 
 }
+
 
 /** recursive function that checks if both players have pressed 'ready' every x seconds */
 async function checkIfReady() {
@@ -210,26 +219,34 @@ function onShipDrop(e) {
     if (!coveredFields) {
         throw new Error("couldn't calculate covered fields")
     }
+
     ship.setcoveredFields(coveredFields);
 
     currentSelectedShip.style.display = "none"; // Gør html elementet usynligt når skibet bliver placeret
     currentSelectedShip = null
     paintOccupiedFields(coveredFields);
+
+        
+
 }
 
 /** Changes the currentHovered ship rotation and updates the css to rotate the ship when " */
 function rotateShip() {
+
     if (!currentSelectedShip)
         return;
     
     const ship = getShipByName(currentSelectedShip.id);
+
     ship.rotation == "horizontal" ? ship.setRotation("vertical") : ship.setRotation("horizontal");
 
     let currentRotation = parseInt(currentSelectedShip.getAttribute("data-rotation") || "0", 10);
     let newRotation = (currentRotation + 90) % 360;
+
     
     currentSelectedShip.style.transform = "rotate(" + newRotation + "deg)";
     currentSelectedShip.setAttribute("data-rotation", `${newRotation}`);
+
 }
 
 // calls the rotateShip function when "r" key is pressed
