@@ -100,9 +100,17 @@ input[type=submit]:active {
     transform: scale(0.97);
 }
 
-#backButton{
-      position: absolute;
-      top: 10px;  /* Adjust as needed */
-      left: 10px; /* Adjust as needed */
-      z-index: 1000; /* Ensure it's above other content if needed */
-}
+#backButton {
+    position: absolute;
+    top: 10px;
+    left: -50px;
+    z-index: 1000;
+    background: transparent;
+    border: none;
+    padding: 0;
+  }
+  
+  #backButton img {
+    width: 55px; /* Adjust size as needed */
+    height: auto;
+  }
