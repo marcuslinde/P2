@@ -22,7 +22,7 @@ getElementById("resetButton").addEventListener("click", resetShipPlacement);
 getElementById("randomizeButton").addEventListener("click", () => randomizeShipPlacement());
 getElementById("readyButton").addEventListener("click", handleSubmitShips);
 
-const howOftenToFetchDataInMS = 10000;
+const howOftenToFetchDataInMS = 500;
 
 /** @type {HTMLElement|null}*/
 let currentSelectedShip = null;
