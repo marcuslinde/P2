@@ -52,11 +52,11 @@ async function handleLogin(e) {
     const username = getInputElement("username").value;
     const password = getInputElement("password").value;
 
-    const userId = await login(username, password);
+    const user = await login(username, password);
     
-    if (userId) {
+    if (user) {
     // Update frontend userState
-        setUser(userId);
+        setUser(user);
         setUserCookies(username, password);
         window.location.href = "/"; // go to front page
     }

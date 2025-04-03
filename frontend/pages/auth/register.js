@@ -64,14 +64,12 @@ async function handleRegister(e) {
         password: getInputElement("password").value,
     }
 
-    const userId = await registerUser(userData);
+    const user = await registerUser(userData);
 
-    console.log("korrekt før loop")
-
-    if (userId) {
+    if (user) {
 
         // Update frontend userState
-        setUser(userId);
+        setUser(user);
         window.location.href = "/"; // go to front page
 
     }
