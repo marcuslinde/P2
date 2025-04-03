@@ -10,6 +10,7 @@ import { getElementById } from '../../../utility/helperFunctions.js';
 import { boardHeight, boardWidth } from '../gameHelpers/board.js';
 import { deleteGame, fetchGameData, fireShot } from '../gameHelpers/gameFunctions.js';
 import { Ship } from '../gameHelpers/ships.js';
+import { cannonSound, splashSound, lose } from '../../../utility/audioManager.js';
 
 const howOftenToFetchDataInMS = 500;
 
@@ -196,8 +197,10 @@ async function handleFireShot(e) {
 
         if (checkIfHit(field)) {
             firedAtField.classList.add("hitField");
+            cannonSound.play();
         } else {
             firedAtField.classList.add("missedField");
+            splashSound.play();
         }
         setGame(updatedGame);
 
@@ -223,7 +226,6 @@ function checkIfHit(field) {
 }
 
 function checkWinCondition() {
-
     const playerShots = Game().players[playerIndex].shots;
     /**@type {Array<ship>} */
     const enemyShips = Game().players[enemyIndex].ships;
@@ -257,12 +259,13 @@ function checkWinCondition() {
         window.location.href = "/";
         
     } else if (allPlayerShipsSunk) {
-        alert(`${Game().players[enemyIndex].name} won!`);
-        setGame(null);
-        setTimeout(()=>{
-            window.location.href = "/";
-        },3000)
-        return true;
+        // lose.play();
+            alert(`${Game().players[enemyIndex].name} won!`);
+            setGame(null);
+            setTimeout(()=>{
+                window.location.href = "/";
+            },3000)
+            return true;
     }
     return false;
 }
