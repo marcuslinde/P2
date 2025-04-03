@@ -2,10 +2,11 @@
 
 import { setVolume,volume } from "../../utility/state.js";
 import { getInputElement,getElementById } from "../../utility/helperFunctions.js";
+import { music } from "../../utility/audioManager.js";
 
-getElementById("backButton")?.addEventListener("click", () => window.location.href = "/");
 
 
+getElementById("backButton").addEventListener("click", () => window.location.href = "/");
 
 const volumeElmmt = getInputElement('volume');
 
@@ -22,6 +23,7 @@ function handleVolumeChange(e) {
     const target = e.target;
     if (target instanceof (HTMLInputElement)) {
         setVolume(target.value)
+        music.volume(Number(target.value));
     }
 }
 

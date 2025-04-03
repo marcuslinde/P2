@@ -3,7 +3,7 @@ import { User, setUser, Game, setGame } from '../../utility/state.js';
 import { getElementById } from '../../utility/helperFunctions.js';
 import { showElement, hideElement } from '../../utility/helperFunctions.js';
 import { setLoading } from '../../utility/ui.js';
-
+import '../../utility/audioManager.js';
 
 
 // checks if the user is in a game
