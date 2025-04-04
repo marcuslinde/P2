@@ -6,6 +6,7 @@
 import { getElementById, querySelectorAll } from '../../utility/helperFunctions.js';
 import { createShips, Ship } from '../game/gameHelpers/ships.js';
 import { boardHeight, boardWidth } from '../game/gameHelpers/board.js';
+import { cannonSound, splashSound } from '../../utility/audioManager.js';
 
 /** Array f ship div elements*/
 const shipsClass = createShips();
@@ -53,10 +54,12 @@ function botFireCannon() {
     } else if (occupiedFieldArrayLeft.includes(firedAtField)) {
         firedAtField.classList.remove("occupiedField");
         firedAtField.classList.add("hitField");
+        cannonSound.play();
         console.log("Hit shot");
         game.enemyHits += 1;
     } else {
         firedAtField?.classList.add("missedField");
+        splashSound.play();
         console.log("Missed shot");
     }
     turn = 1;
@@ -95,8 +98,9 @@ function gameLoop() {
     }
     if (turn === 0) {
         console.log("Bot's Turn");
-        botFireCannon();
-    } else {
+        setTimeout(() => {botFireCannon();
+        }, 1000)}
+    else {
         console.log("Player's Turn");
     }
 }
@@ -325,6 +329,7 @@ function getShipObjectByID(ID) {
 }
 /** handels shots made by player event */
 function fireCannon(e) {
+    e.preventDefault()
     if (game.gameState === "Begun"){
         const firedAtField = e.currentTarget
         if (firedAtField.dataset.side === "left") {
@@ -336,12 +341,13 @@ function fireCannon(e) {
         else if (occupiedFieldArrayRight.includes(firedAtField)) {
             firedAtField.classList.remove("occupiedField");
             firedAtField.classList.add("hitField");
+            cannonSound.play();
             console.log("Hit shot");
             game.ownHits += 1;
         } else {
             firedAtField.classList.add("missedField");
+            splashSound.play();
 
-        console.log("Missed shot");
             console.log("Missed shot");
         }
         turn = 0;
