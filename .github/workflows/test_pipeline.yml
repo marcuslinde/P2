@@ -31,7 +31,7 @@ jobs:
 
     - name: Search for console.log statements in frontend
       run: |
-        if grep -r --exclude-dir=node_modules "console\.log" ./frontend; then
+        if grep -r "console\.log" ./frontend; then
           echo "❌ console.log statements found!"
           exit 1
         else
