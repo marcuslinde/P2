@@ -1,5 +1,5 @@
 /** @module settings */
-
+import '../../utility/redirection.js'
 import { setVolume,volume } from "../../utility/state.js";
 import { getInputElement,getElementById } from "../../utility/helperFunctions.js";
 import { music } from "../../utility/audioManager.js";

@@ -13,16 +13,30 @@ jobs:
 
     - name: add .env file
       run: |
+        echo "ATLAS_URI='mongodb+srv://cls0:BqoQvMjBEVSU3myD@cluster0.qzam1.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'" > .env
         echo "ATLAS_URI='mongodb+srv://cls0:BqoQvMjBEVSU3myD@cluster0.qzam1.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'" > backend/.env
 
     - name: Install dependencies
       run: |
         npm install
+    
+    - name: run unit tests
+      run: |
+        npm run test
 
     - name: can run 
       run: |
         npm start &
         sleep 5
+
+    - name: Search for console.log statements
+      run: |
+        if grep -r --exclude-dir=node_modules --exclude="*.test.js" "console\.log" .; then
+          echo "❌ console.log statements found!"
+          exit 1
+        else
+          echo "✅ No console.log statements found."
+        fi
 
     - name: Test if server is running
       run: |

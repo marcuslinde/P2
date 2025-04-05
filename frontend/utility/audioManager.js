@@ -1,6 +1,6 @@
 /** @module audioManager */
 import "https://cdn.jsdelivr.net/npm/howler@2.2.3/dist/howler.min.js";
-import { volume } from "./state.js";
+
 export let clickSound = new Howl({
     src: ["/resources/sounds/mouse_click.wav"],
     volume: 0.01,
@@ -21,7 +21,7 @@ document.addEventListener("click", () => {
 }); 
 
 music.play(); 
-console.log(music.volume(Number(volume())))
+
 
 export let cannonSound = new Howl({
     src: ["/resources/sounds/bomb1.mp3"],

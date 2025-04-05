@@ -1,5 +1,5 @@
 /** @module profile */
-
+import '../../utility/redirection.js'
 
 import { User } from "../../utility/state.js";
 import { getElementById } from "../../utility/helperFunctions.js";

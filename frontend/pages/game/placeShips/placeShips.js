@@ -4,13 +4,12 @@
  * @typedef {number} field
  * @typedef {"vertical"|"horizontal"} rotation
 */
-import { deleteGame } from "../gameHelpers/gameFunctions.js";
+import '../../utility/redirection.js'
 import { Game, setGame, User } from "../../../utility/state.js";
 import { setLoading } from "../../../utility/ui.js";
-import { getElementById } from "../../../utility/helperFunctions.js";
-import { fetchGameData, submitShips } from "../gameHelpers/gameFunctions.js";
+import { getElementById, querySelectorAll } from "../../../utility/helperFunctions.js";
 import { boardWidth, boardHeight } from "../gameHelpers/board.js";
-import { querySelectorAll } from "../../../utility/helperFunctions.js";
+import { deleteGame, getGameByID, submitShips  } from "../gameHelpers/gameFunctions.js";
 import { createShips, Ship } from "../gameHelpers/ships.js";
 
 checkIfReady();
@@ -124,7 +123,7 @@ function getAndRemovePaintFields() {
 
 /** recursive function that checks if both players have pressed 'ready' every x seconds */
 async function checkIfReady() {
-    const gameData = await fetchGameData(Game()._id);
+    const gameData = await getGameByID(Game()._id);
     // timeout so we dont fetch constantly
     setTimeout(() => {
         console.log('Waiting for enemy');

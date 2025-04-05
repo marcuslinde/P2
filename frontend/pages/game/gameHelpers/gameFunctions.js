@@ -33,7 +33,7 @@ export async function createGame(userId, gameCode, name) {
  * @param {string} gameId 
  * @returns {Promise<object>}  
  */
-export async function fetchGameData(gameId) {
+export async function getGameByID(gameId) {
     try {
         // Fetch from the dedicated endpoint
         const response = await fetch(`/game/data?gameId=${gameId}`);

@@ -8,7 +8,7 @@ import { User, Game, setGame } from '../../../utility/state.js';
 import { setLoading } from '../../../utility/ui.js';
 import { getElementById } from '../../../utility/helperFunctions.js';
 import { boardHeight, boardWidth } from '../gameHelpers/board.js';
-import { deleteGame, fetchGameData, fireShot } from '../gameHelpers/gameFunctions.js';
+import { deleteGame, getGameByID, fireShot } from '../gameHelpers/gameFunctions.js';
 import { Ship } from '../gameHelpers/ships.js';
 import { cannonSound, splashSound, lose } from '../../../utility/audioManager.js';
 
@@ -168,9 +168,9 @@ function paintShotsOnBoards() {
 
 }
 
-/** calls the fetchGameData function and updates the ui based on the results */
+/** calls the getGameByID function and updates the ui based on the results */
 async function handleFetchGameData() {
-    const gameData = await fetchGameData(Game()._id);
+    const gameData = await getGameByID(Game()._id);
     console.log("gamedata fetched")
     if (gameData) {
         setGame(gameData)
