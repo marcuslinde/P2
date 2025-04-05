@@ -39,8 +39,8 @@ export const login = async (req, res) => { //async so we can call await
     }
 
     try {
-        /* find user with password and username*/
-        const user = await User.findOne({ 'name': `${username}`, 'password': `${password}` }, 'name password');
+        /* find user with password and username and email*/
+        const user = await User.findOne({ 'name': `${username}`, 'password': `${password}` }, 'name email');
 
         if (!user) {
             return res.status(404).json({ success: false, message: "Invalid username or password" });
