@@ -55,12 +55,9 @@ export function initializeFields() {
             e.preventDefault();
 
             currentHoveredField = getElementById("field" + (i+1));
-            console.log("field", currentHoveredField)
-
             if (currentSelectedShip) {
                 getAndPaintFields()
             }
-
         })
         field.addEventListener("mouseleave", (e) => {
             e.preventDefault();
@@ -69,8 +66,6 @@ export function initializeFields() {
                 getAndRemovePaintFields()
             }
             currentHoveredField = null;
-            console.log("field", currentHoveredField)
-
         })
         field.addEventListener("click", (e) => {
             e.preventDefault()
@@ -126,7 +121,6 @@ async function checkIfReady() {
     const gameData = await getGameByID(Game()._id);
     // timeout so we dont fetch constantly
     setTimeout(() => {
-        console.log('Waiting for enemy');
 
         if (gameData.players[1].ready && gameData.players[0].ready) {
             setGame(gameData)
@@ -142,7 +136,6 @@ async function checkIfReady() {
 shipsDiv.forEach(ship => {
     ship.addEventListener("click", (e)=>{
         e.preventDefault()
-        console.log("setShip")
         ship.style.opacity = "0.5"
         currentSelectedShip = ship;
     })
@@ -212,7 +205,6 @@ function onShipDrop(e) {
     const ship = getShipByName(currentSelectedShip.id); // ship class element
 
     const dropField = parseInt(field.dataset.index, 10);
-    console.log("dropped on:", dropField)
 
     let coveredFields = calculateCoveredFields(dropField, ship.length, ship.rotation);
     if (!coveredFields) {
@@ -281,7 +273,6 @@ function calculateCoveredFields(start, length, rotation) {
     for (let i = 0; i < length; i++) {
         if (rotation == "vertical") {
             occupiedFields.push(start + 10 * i);
-            console.log("pushed field", start + 10);
         } else if (rotation == "horizontal") {
             occupiedFields.push(start + i);
         }

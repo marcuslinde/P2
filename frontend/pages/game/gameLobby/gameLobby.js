@@ -18,17 +18,12 @@ async function checkForEnemy() {
     const gameData = await getGameByID(Game()._id);
 
     setTimeout(() => { 
-        console.log('Waiting for enemy'); 
-
-
         if (!gameData.players[1]) {
             checkForEnemy()
         } else {
             setGame(gameData)
             window.location.href = "/placeShips"
         }
-        
-        
     }, 500)
 }
 

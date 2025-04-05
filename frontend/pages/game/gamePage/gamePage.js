@@ -24,7 +24,6 @@ initializeGame()
 /**  initalizes the fields and fetches game data;
  * @function */
 async function initializeGame() {
-    console.log("Initializing game...")
     setLoading(true)
     await handleFetchGameData()
     if (!Game()) {
@@ -171,7 +170,6 @@ function paintShotsOnBoards() {
 /** calls the getGameByID function and updates the ui based on the results */
 async function handleFetchGameData() {
     const gameData = await getGameByID(Game()._id);
-    console.log("gamedata fetched")
     if (gameData) {
         setGame(gameData)
     } else {

@@ -3,7 +3,6 @@ import { setLoading } from './ui.js'
 import { getUserById } from '../pages/auth/userFunctions.js'
 import { getGameByID } from '../pages/game/gameHelpers/gameFunctions.js'
 
-
 // check for user status and redirect to right pages
 if (!User() || !User()._id || !User().name) {
     setUser(null)
@@ -34,7 +33,6 @@ if (Game()) {
 
 }
 
-
 /** Gets the user by id, to check if still exists in database */
 async function checkForUserInDB() {
     setLoading(true)
@@ -50,14 +48,11 @@ async function checkForUserInDB() {
     setLoading(false)
 }
 
-
-
 /** Gets the game by id, to check if exists in database */
 async function checkForGameInDB() {
     setLoading(true)
 
     const game = await getGameByID(Game()._id)
-    console.log("game", game)
 
     if (game) {
         setGame(game);

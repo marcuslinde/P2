@@ -152,10 +152,8 @@ export async function fireShot(gameId, userId, field) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         const updatedGame = await response.json();
-        console.log("Shot fired successfully!");
         return updatedGame;
     } catch (error) {
-        console.error("Error updating game:", error);
         throw error;
     }
 }

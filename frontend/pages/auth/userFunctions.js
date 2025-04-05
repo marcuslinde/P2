@@ -23,7 +23,7 @@ export async function login(username, password) {
 
     }
     catch (err) {
-        console.log(err);
+        throw err
     }
 }
 
@@ -54,7 +54,7 @@ export async function registerUser(user) {
     }
 
     catch (err) {
-        console.log(err);
+        throw err
     }
 }
 

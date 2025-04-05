@@ -16,8 +16,6 @@ export let music = new Howl({
 
 document.addEventListener("click", () => {
     clickSound.play();
-    console.log(music.volume())
-
 }); 
 
 music.play(); 

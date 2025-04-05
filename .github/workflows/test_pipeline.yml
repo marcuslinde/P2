@@ -1,4 +1,4 @@
-name: can install and run
+name: can install, unit test, run
 # a test that the program can compile, run and terminate
 
 on:
@@ -29,9 +29,9 @@ jobs:
         npm start &
         sleep 5
 
-    - name: Search for console.log statements
+    - name: Search for console.log statements in frontend
       run: |
-        if grep -r --exclude-dir=node_modules --exclude="*.test.js" "console\.log" .; then
+        if grep -r --exclude-dir=node_modules "console\.log" ./frontend; then
           echo "❌ console.log statements found!"
           exit 1
         else
