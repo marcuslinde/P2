@@ -1,3 +1,4 @@
+import Game from "../models/game.js";
 import User from "../models/User.js";
 import mongoose from "mongoose";
 
@@ -30,6 +31,54 @@ export const getUser = async (req, res) => {
     }
 }
 
+export const getUserStats = async (req, res) => {
+    const { id } = req.params;
+  
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(404).json({ success: false, message: "Invalid User Id" });
+    }
+  
+    try {
+      // Find all games where the user is a player
+      const games = await Game.find({ 'players.userId': id });
+      
+      let wins = 0;
+      
+      // Her implementeres logik for count wins
+      /* games.forEach(game => {
+        if (game.status === 'finished') {
+          const userPlayer = game.players.find(
+            p => p.userId.toString() === id.toString()
+          );
+          const opponentPlayer = game.players.find(
+            p => p.userId.toString() !== id.toString()
+          );
+          if (userPlayer && opponentPlayer) {
+            const allOpponentShipsSunk = opponentPlayer.ships.every(ship => ship.isSunk);
+            if (allOpponentShipsSunk) {
+              wins++;
+            }
+          }
+        }
+      });*/
+      
+      const totalGames = games.length;
+      const winRatio = totalGames > 0 ? wins / totalGames : 0;
+      
+      return res.status(200).json({
+        success: true,
+        stats: {
+          totalGames,
+          wins,
+          winRatio: winRatio.toFixed(2)
+        }
+      });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ success: false, message: "Server error" });
+    }
+  };
+
 export const login = async (req, res) => { //async so we can call await
     const username = req.body.username; //user sending data
     const password = req.body.password; //user sending data
@@ -40,7 +89,7 @@ export const login = async (req, res) => { //async so we can call await
 
     try {
         /* find user with password and username and email*/
-        const user = await User.findOne({ 'name': `${username}`, 'password': `${password}` }, 'name email');
+        const user = await User.findOne({ 'name': `${username}`, 'password': `${password}` }, 'name email _id');
 
         if (!user) {
             return res.status(404).json({ success: false, message: "Invalid username or password" });

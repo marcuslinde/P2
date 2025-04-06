@@ -6,31 +6,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profile</title>
     <base href="/pages/profile/" target="_blank">
-    <link rel="stylesheet" href="./profile.css">
-
+    <link rel="stylesheet" href="profile.css">
+    
 </head>
 
 
 <body class="flex justify-align-center">
+    <button id="backButton" type="button"> 
+        <img src="../../resources/images/backArrow.png" alt="Back to homepage">
+    </button>
 
-    <div>
-
-        <button id="backButton" type="button"> 
-            <img src="../../resources/images/backArrow.png" alt="Back to homepage">
-        </button>
-        <h2 id="username"> Username: xxx</h2>
-        <h4 id="userId"> User ID: xxx</h4>
-        <h4 id="email"> Email: xxx</h4>
-
-        <h3> games played: xxx</h3>
-        <h3> Win rate: xxx</h3>
-
-
-
-            <a>
-                <h3> Game history: xxx</h3>
-            </a>
+    <div class="background">
+        <h2 id="user-container-title" style="line-height: 0.5em; align-self:flex-start;">User profile:</h2>
+        <div class="user-container">
+            <div class="userInfo-container">
+                <h4 id="username">Username: xxx</h4>
+                <h4 id="mail">Mail: xxx</h4>
+                <h4 id="totalGames">Total games: xxx</h4>
+            </div>
+            <div class="userStats-container">
+                <h4 id="won">Games won: xxx</h4>
+                <h4 id="ratio">Win Ratio: xxx</h4>
+            </div>
         </div>
+        <h2 id="recentGames-container-title" style="line-height: 0.5em; align-self:flex-start;">Recent games:</h2>
+        <div class="recentGames-container">
+            <div class=""></div>
+        </div>
+
     </div>
 
     <script type="module" src="profile.js"></script>
