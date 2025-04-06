@@ -37,6 +37,6 @@ const GameSchema = new Schema({
   currentTurn: { type: Schema.Types.ObjectId, ref: 'User' } // Set once both players are ready
 }, { timestamps: true });
 
-const Game = mongoose.model('Game', GameSchema);
+const Game = mongoose.models.Game || mongoose.model('Game', GameSchema);
 
 export default Game;
