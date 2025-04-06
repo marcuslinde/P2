@@ -3,7 +3,7 @@
 import { setUser } from '../../utility/state.js';
 import { setLoading } from '../../utility/ui.js';
 import { getElementById, getInputElement } from '../../utility/helperFunctions.js';
-import { registerUser } from './userFunctions.js';
+import { registerUser } from './authFunctions.js';
 
 getElementById("backButton")?.addEventListener("click", () => window.location.href = "/");
 

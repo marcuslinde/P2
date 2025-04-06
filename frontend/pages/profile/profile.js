@@ -3,6 +3,8 @@
 import { User } from "../../utility/state.js";
 import { getElementById } from "../../utility/helperFunctions.js";
 
+const apiBase = '/api/user'
+
 if (!User()) {
     window.location.href = "/login"; // go to front page
 }
@@ -10,7 +12,7 @@ if (!User()) {
 getElementById("backButton")?.addEventListener("click", () => window.location.href = "/");
 
 async function fetchUserStats(userId) {
-    const response = await fetch(`/auth/${userId}/stats`);
+    const response = await fetch(apiBase + `/${userId}/stats`);
     const stats = await response.json();
 
     console.log(stats);
