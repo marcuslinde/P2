@@ -14,7 +14,7 @@ if (!User() || !User()._id || !User().name) {
 // check for game status and redirect to right pages
 if (Game()) {
     // check for game in database
-    await checkForGameInDB()
+    await checkForGameInDB() 
 
     // redirect to right page
     if (Game().status = "waiting") {
