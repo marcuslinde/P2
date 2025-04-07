@@ -14,7 +14,7 @@ export const getAllUsers = async (req, res) => {
     }
 }
 
-export const getUser = async (req, res) => {
+export const getUserById = async (req, res) => {
     const { id } = req.params;
     console.log("id: ", id); //debugging to see in terminal
 

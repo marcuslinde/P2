@@ -5,11 +5,13 @@
  * @typedef {"vertical"|"horizontal"} rotation
 */
 
-import { deleteGame, fetchGameData, submitShips } from "../gameHelpers/gameFunctions.js";
+
 import { Game, setGame, User } from "../../../utility/state.js";
 import { setLoading } from "../../../utility/ui.js";
 import { getElementById, querySelectorAll } from "../../../utility/helperFunctions.js";
 import { boardWidth, boardHeight } from "../gameHelpers/board.js";
+
+
 import { createShips, Ship } from "../gameHelpers/ships.js";
 
 checkIfReady();
@@ -50,22 +52,28 @@ export function initializeBoardFields() {
         // When hovering over a field, update the ghost ship display.
         field.addEventListener("mouseenter", (e) => {
             e.preventDefault();
+
             currentHoveredField = getElementById("field" + (i + 1));
+
             if (currentSelectedShip) {
                 updateGhostShipDisplay("var(--orange)");
             }
+
         });
 
         // When leaving a field, remove the ghost ship display.
+
         field.addEventListener("mouseleave", (e) => {
             e.preventDefault();
             if (currentSelectedShip) {
                 updateGhostShipDisplay("transparent");
             }
             currentHoveredField = null;
+
         });
 
         // When clicking a field, attempt to place the selected ship.
+
         field.addEventListener("click", (e) => {
             e.preventDefault();
             if (currentSelectedShip) {
@@ -140,6 +148,7 @@ function getShipByName(name) {
     }
 }
 
+
 /**
  * Places the selected ship on the board when a field is clicked.
  * @param {Event} e - The click event.
@@ -154,6 +163,7 @@ function placeShip(e) {
         if (!shipData) {
             deselectCurrentShip();
             return;
+
         }
         
         const dropField = parseInt(field.dataset.index, 10);
@@ -173,6 +183,7 @@ function placeShip(e) {
         deselectCurrentShip();
     }
 }
+
 
 /**
  * Deselects the currently selected ship and resets related states.
@@ -257,6 +268,7 @@ function isOverlap(fields) {
     }
 }
 
+
 /**
  * Marks the provided fields as occupied by a ship.
  * @param {Array<field>} fields 
@@ -275,6 +287,7 @@ function markFieldsOccupied(fields) {
         });
     } catch (error) {
         console.error("Error in markFieldsOccupied:", error);
+
     }
 }
 
@@ -333,6 +346,7 @@ document.addEventListener("keydown", (e) => {
  * Recursively checks if both players are ready at regular intervals.
  * Fixed race condition by moving the timeout inside the promise resolution.
  */
+
 async function checkIfReady() {
     try {
         const gameData = await fetchGameData(Game()._id);
