@@ -32,6 +32,7 @@ let game = { enemyHits: 0, ownHits:0, gameState: ""}
 let turn = 1;
 
 if (turn == 0) {
+    console.log("test")
     botFireCannon();
     turn = 1;
 }
@@ -54,13 +55,16 @@ function botFireCannon() {
         firedAtField.classList.remove("occupiedField");
         firedAtField.classList.add("hitField");
         cannonSound.play();
+        console.log("Hit shot");
         game.enemyHits += 1;
     } else {
         firedAtField?.classList.add("missedField");
         splashSound.play();
+        console.log("Missed shot");
     }
     turn = 1;
     gameLoop();
+    console.log("Bot fired at:", firedAtField?.id);
 }
 
 /** Gets random target for the bot to shot at */
@@ -93,9 +97,11 @@ function gameLoop() {
         window.location.href = "/"
     }
     if (turn === 0) {
+        console.log("Bot's Turn");
         setTimeout(() => {botFireCannon();
         }, 1000)}
     else {
+        console.log("Player's Turn");
     }
 }
 
@@ -164,6 +170,7 @@ function randomizeShipPlacement(boardSide) {
             
             if (rotation % 180 === 0) {
                for (let j = 0; j < ship.length; j++) { // Lodret placering
+                    console.log(droppedField)
                     coveredFields.push(droppedField + j * boardWidth);
                 }
             } else {
@@ -184,6 +191,7 @@ function randomizeShipPlacement(boardSide) {
             placed = true;
         }
     })
+    console.log(boardSide === "left" ? occupiedFieldArrayLeft : occupiedFieldArrayRight);
 }
 
 function resetShipPlacement() {
@@ -235,6 +243,7 @@ function initializeFields() {
 
                 // Adds hover effect when dragging ship
                 field.addEventListener("drop", (e) => {
+                    console.log("onShipDrop triggered");
                     field.style.border = "1px solid black"
                     onShipDrop(e);
                 });
@@ -294,6 +303,7 @@ function onShipDrop(e) {
 
     assignOccupiedFields(coveredFields, side);
 
+    console.log(occupiedFieldArrayLeft)
 }
 
 /** Find the object id of the ship 
@@ -332,12 +342,16 @@ function fireCannon(e) {
             firedAtField.classList.remove("occupiedField");
             firedAtField.classList.add("hitField");
             cannonSound.play();
+            console.log("Hit shot");
             game.ownHits += 1;
         } else {
             firedAtField.classList.add("missedField");
             splashSound.play();
+
+            console.log("Missed shot");
         }
         turn = 0;
+        console.log(turn)
         gameLoop();
     }
     else {
@@ -381,6 +395,7 @@ function setShipEventListener() {
 
 /** checks if player is done the necessary steps to start the game  */
 function readyCheck() {
+    console.log(occupiedFieldArrayLeft.length)
     if (occupiedFieldArrayLeft.length === 17) {
         getElementById("turn").textContent = "Battle begun";
         game.gameState = "Begun"

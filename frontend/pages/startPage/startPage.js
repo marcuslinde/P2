@@ -1,29 +1,47 @@
 /** @module register */
-import '../../utility/redirection.js'
-import '../../utility/audioManager.js';
-import { User, setUser } from '../../utility/state.js';
+import { User, setUser, Game, setGame } from '../../utility/state.js';
 import { getElementById } from '../../utility/helperFunctions.js';
-import { showElementWithID, hideElementWithID } from '../../utility/helperFunctions.js';
+import { showElement, hideElement } from '../../utility/helperFunctions.js';
+import { setLoading } from '../../utility/ui.js';
+import '../../utility/audioManager.js';
+
+
+// checks if the user is in a game
+if (Game()) {
+    // backend code to check if game exists
+    setLoading(true)
+    setTimeout(() => {
+        if (Game().status = "waiting") {
+            window.location.href = "/gameLobby"   
+        } else if (Game().status = "active") {
+            window.location.href = "/game"
+        }
+        
+        setLoading(false)
+
+    }, 1000)
+
+}
 
 
 // Adjust display based on login state
 if (User()) {
-    hideElementWithID("login");
-    hideElementWithID("register")
-    showElementWithID("joinGame");
-    showElementWithID("createGame");
-    showElementWithID("createBotGame")
-    showElementWithID("signOut");
-    showElementWithID("settings");
-    showElementWithID("profileButton");
+    hideElement("login");
+    hideElement("register")
+    showElement("joinGame");
+    showElement("createGame");
+    showElement("createBotGame")
+    showElement("signOut");
+    showElement("settings");
+    showElement("profileButton");
 } else {
-    showElementWithID("login");
-    showElementWithID("register")
-    hideElementWithID("joinGame");
-    hideElementWithID("createGame");
-    hideElementWithID("signOut");
-    showElementWithID("settings");
-    hideElementWithID("profileButton");
+    showElement("login");
+    showElement("register")
+    hideElement("joinGame");
+    hideElement("createGame");
+    hideElement("signOut");
+    showElement("settings");
+    hideElement("profileButton");
 }
 
 const signOutButton = getElementById("signOut");

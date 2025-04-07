@@ -1,4 +1,4 @@
-import { deleteGame, getGameByID } from "../gameHelpers/gameFunctions.js";
+import { deleteGame, fetchGameData } from "../gameHelpers/gameFunctions.js";
 import { Game, setGame } from "../../../utility/state.js";
 import { getElementById } from "../../../utility/helperFunctions.js";
 import { setBanner, setLoading } from "../../../utility/ui.js";
@@ -15,15 +15,20 @@ getElementById("cancelButton").addEventListener("click", handleDeleteGame)
 
 
 async function checkForEnemy() {
-    const gameData = await getGameByID(Game()._id);
+    const gameData = await fetchGameData(Game()._id);
 
     setTimeout(() => { 
+        console.log('Waiting for enemy'); 
+
+
         if (!gameData.players[1]) {
             checkForEnemy()
         } else {
             setGame(gameData)
             window.location.href = "/placeShips"
         }
+        
+        
     }, 500)
 }
 
