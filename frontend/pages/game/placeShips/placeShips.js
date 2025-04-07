@@ -178,13 +178,25 @@ function placeShip(e) {
  * Deselects the currently selected ship and resets related states.
  */
 function deselectCurrentShip() {
+    let shipData = null;
     if (currentSelectedShip) {
+        // Capture ship data before resetting currentSelectedShip
+        shipData = getShipByName(currentSelectedShip.id);
         currentSelectedShip.style.opacity = "1";
         currentSelectedShip = null;
     }
-    // Clear the ghost display when deselecting
-    if (currentHoveredField) {
-        updateGhostShipDisplay("transparent");
+    // Clear the ghost display using the captured ship data
+    if (currentHoveredField && shipData) {
+        const fieldIndex = Number(currentHoveredField.dataset.index);
+        const ghostFields = calculateCoveredFields(fieldIndex, shipData.length, shipData.rotation);
+        if (ghostFields) {
+            ghostFields.forEach(fieldId => {
+                const fieldElement = getElementById("field" + fieldId);
+                if (fieldElement) {
+                    fieldElement.style.backgroundColor = "transparent";
+                }
+            });
+        }
     }
     currentHoveredField = null;
 }
