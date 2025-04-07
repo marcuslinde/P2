@@ -10,6 +10,7 @@ import { Game, setGame, User } from "../../../utility/state.js";
 import { setLoading } from "../../../utility/ui.js";
 import { getElementById, querySelectorAll } from "../../../utility/helperFunctions.js";
 import { boardWidth, boardHeight } from "../gameHelpers/board.js";
+import { getGameByID, submitShips, deleteGame } from "../gameHelpers/gameFunctions.js"
 
 
 import { createShips, Ship } from "../gameHelpers/ships.js";
@@ -349,7 +350,7 @@ document.addEventListener("keydown", (e) => {
 
 async function checkIfReady() {
     try {
-        const gameData = await fetchGameData(Game()._id);
+        const gameData = await getGameByID(Game()._id);
         
         if (gameData && gameData.players && 
             gameData.players[1].ready && gameData.players[0].ready) {
