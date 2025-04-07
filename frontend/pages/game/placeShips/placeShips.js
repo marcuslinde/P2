@@ -182,6 +182,10 @@ function deselectCurrentShip() {
         currentSelectedShip.style.opacity = "1";
         currentSelectedShip = null;
     }
+    // Clear the ghost display when deselecting
+    if (currentHoveredField) {
+        updateGhostShipDisplay("transparent");
+    }
     currentHoveredField = null;
 }
 
