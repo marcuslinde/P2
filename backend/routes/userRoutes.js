@@ -1,5 +1,6 @@
 import express from "express";
-import {getAllUsers, getUserById, createUser, deleteUser, login} from "../controllers/userController.js";
+
+import { getAllUsers, getUserById, getUserStats, deleteUser } from "../controllers/userController.js";
 
 const router = express.Router();
 
@@ -9,11 +10,8 @@ router.get("/", getAllUsers);
 // Get a single user
 router.get("/:id", getUserById);
 
-// POST a logged in user
-router.post("/login/", login);
-
-// POST a new user
-router.post("/register", createUser);
+// Get a user's stats
+router.get("/:id/stats", getUserStats);
 
 // Delete a user
 router.delete("/:id", deleteUser);

@@ -1,4 +1,4 @@
-const apiBase = '/';
+const apiBase = '/api/game';
 
 /**
  * Calls the api for creating game, and returns the response.
@@ -8,7 +8,7 @@ const apiBase = '/';
  */
 export async function createGame(userId, gameCode, name) {
     try {
-        const response = await fetch(apiBase + "game/create", {
+        const response = await fetch(apiBase + "/create", {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ userId: userId, gameCode: gameCode, name: name })
@@ -36,7 +36,7 @@ export async function createGame(userId, gameCode, name) {
 export async function getGameByID(gameId) {
     try {
         // Fetch from the dedicated endpoint
-        const response = await fetch(`/game/data?gameId=${gameId}`);
+        const response = await fetch(apiBase + `/data?gameId=${gameId}`);
         if (!response.ok) {
             throw new Error(`Server error: ${response.status}`)
         }
@@ -59,7 +59,7 @@ export async function getGameByID(gameId) {
 export async function joinGame(userId, gameCode, name) {
 
     try {
-        const response = await fetch(apiBase + "game/join", {
+        const response = await fetch(apiBase + "/join", {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
@@ -91,7 +91,7 @@ export async function deleteGame(gameId) {
 
     try {
         // Fetch from the dedicated endpoint
-        const response = await fetch(`/game/delete/${gameId}`, {
+        const response = await fetch(apiBase + `/delete/${gameId}`, {
             method: 'DELETE',
         });
         if (!response.ok) {
@@ -116,7 +116,7 @@ export async function deleteGame(gameId) {
  */
 export async function submitShips(gameId, userId, ships) {
     try {
-        const response = await fetch("/game/submitShips", {
+        const response = await fetch(apiBase + "/submitShips", {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ gameId: gameId, userId: userId, ships: ships })
@@ -142,7 +142,7 @@ export async function submitShips(gameId, userId, ships) {
  */
 export async function fireShot(gameId, userId, field) {
     try {
-        const response = await fetch("/game/fireShot", {
+        const response = await fetch(apiBase + "/fireShot", {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ gameId: gameId, userId: userId, field: field })
@@ -166,7 +166,7 @@ async function checkGameStatus() {
 
     try {
         // Fetch from the dedicated endpoint
-        const response = await fetch(`/game/data?gameId=${gameID()}`);
+        const response = await fetch(apiBase + `/data?gameId=${gameID()}`);
         if (!response.ok) throw new Error(`Server error: ${response.status}`);
 
         const gameData = await response.json();
@@ -187,7 +187,7 @@ async function checkCurrentTurn() {
     if (!gameID()) return;
 
     try {
-        const response = await fetch(`/game/data?gameId=${gameID()}`);
+        const response = await fetch(apiBase + `/data?gameId=${gameID()}`);
         if (!response.ok) throw new Error(`Server error: ${response.status}`);
 
         const gameData = await response.json();

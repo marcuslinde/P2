@@ -1,4 +1,4 @@
-const apiBase = '/auth'
+const apiBase = '/api/auth'
 /** calls the database for user validation and then sets the user in the frontend to a user object returned by the database
    * @function
    * @param {string} username

@@ -1,3 +1,4 @@
+import Game from "../models/game.js";
 import User from "../models/User.js";
 import mongoose from "mongoose";
 
@@ -30,51 +31,53 @@ export const getUserById = async (req, res) => {
     }
 }
 
-export const login = async (req, res) => { //async so we can call await
-    const username = req.body.username; //user sending data
-    const password = req.body.password; //user sending data
-
-    if (!username || !password) {//middleware
-        return res.status(400).json({ success: false, message: "Provide all fields" });
+export const getUserStats = async (req, res) => {
+    const { id } = req.params;
+  
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(404).json({ success: false, message: "Invalid User Id" });
     }
-
+  
     try {
-        /* find user with password and username*/
-        const user = await User.findOne({ 'name': `${username}`, 'password': `${password}` }, 'name password');
-
-        if (!user) {
-            return res.status(404).json({ success: false, message: "Invalid username or password" });
+      // Find all games where the user is a player
+      const games = await Game.find({ 'players.userId': id });
+      
+      let wins = 0;
+      
+      // Her implementeres logik for count wins
+      /* games.forEach(game => {
+        if (game.status === 'finished') {
+          const userPlayer = game.players.find(
+            p => p.userId.toString() === id.toString()
+          );
+          const opponentPlayer = game.players.find(
+            p => p.userId.toString() !== id.toString()
+          );
+          if (userPlayer && opponentPlayer) {
+            const allOpponentShipsSunk = opponentPlayer.ships.every(ship => ship.isSunk);
+            if (allOpponentShipsSunk) {
+              wins++;
+            }
+          }
         }
-
-        res.status(200).json({ success: true, message: "User found", user: user });
-
+      });*/
+      
+      const totalGames = games.length;
+      const winRatio = totalGames > 0 ? wins / totalGames : 0;
+      
+      return res.status(200).json({
+        success: true,
+        stats: {
+          totalGames,
+          wins,
+          winRatio: winRatio.toFixed(2)
+        }
+      });
     } catch (error) {
-        res.status(404).json({ success: false, message: "User not found" });
+      console.error(error);
+      return res.status(500).json({ success: false, message: "Server error" });
     }
-}
-
-export const createUser = async (req, res) => { //async so we can call await
-    const user = req.body; //user sending data
-
-    if (!user.name || !user.email || !user.password) {//middleware
-        return res.status(400).json({ success: false, message: "Provide all fields" });
-    }
-    const newUser = new User(user);
-
-    try {
-        await newUser.save();
-
-        // Convert mongoose document to a plain object and remove password field
-        const { password, ...safeUser } = newUser.toObject();
-
-        res.status(201).json({ success: true, newUser: safeUser });//201 means something created
-
-
-    } catch (error) {
-        console.log("Error in creating user :", error.message);
-        res.status(500).json({ success: false, message: "Server error" });
-    }
-}
+  };
 
 export const deleteUser = async (req, res) => {
     const { id } = req.params;

@@ -1,12 +1,12 @@
 import Game from "../models/game.js";
 import mongoose from "mongoose";
 
-
 /**
  * // Create a new game (lobby creation)
  * @param {any} req 
  * @param {any} res 
  */
+
 export const createGame = async (req, res) => {
   try {
     const { gameCode, userId, name } = req.body;

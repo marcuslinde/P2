@@ -1,8 +1,9 @@
 /** @module profile */
-import '../../utility/redirection.js'
 
 import { User } from "../../utility/state.js";
 import { getElementById } from "../../utility/helperFunctions.js";
+
+const apiBase = '/api/user'
 
 if (!User()) {
     window.location.href = "/login"; // go to front page
@@ -10,6 +11,17 @@ if (!User()) {
 
 getElementById("backButton")?.addEventListener("click", () => window.location.href = "/");
 
-getElementById('username').innerHTML = "Username: " + `${User().name}`; 
-getElementById('userId').innerHTML = "User ID: " + `${User()._id}`; 
-getElementById('email').innerHTML = "Email: " + `${User().email}`; 
+async function fetchUserStats(userId) {
+    const response = await fetch(apiBase + `/${userId}/stats`);
+    const stats = await response.json();
+
+    console.log(stats);
+    
+    getElementById('won').innerHTML = "Games won: " + `${stats.stats.wins}`; 
+    getElementById('ratio').innerHTML = "Win ratio: " + `${stats.stats.winRatio}`; 
+    getElementById('totalGames').innerHTML = "Total games: " + `${stats.stats.totalGames}`; 
+    getElementById('username').innerHTML = "Username: " + `${User().name}`; 
+    getElementById('mail').innerHTML = "Mail: " + `${User().email}`;
+  }
+
+fetchUserStats(`${User()._id}`);
