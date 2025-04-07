@@ -33,7 +33,7 @@ export async function createGame(userId, gameCode, name) {
  * @param {string} gameId 
  * @returns {Promise<object>}  
  */
-export async function fetchGameData(gameId) {
+export async function getGameByID(gameId) {
     try {
         // Fetch from the dedicated endpoint
         const response = await fetch(apiBase + `/data?gameId=${gameId}`);
@@ -152,10 +152,8 @@ export async function fireShot(gameId, userId, field) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         const updatedGame = await response.json();
-        console.log("Shot fired successfully!");
         return updatedGame;
     } catch (error) {
-        console.error("Error updating game:", error);
         throw error;
     }
 }

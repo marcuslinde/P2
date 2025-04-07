@@ -1,5 +1,6 @@
 import express from "express";
-import { getAllUsers, getUser, getUserStats, deleteUser } from "../controllers/userController.js";
+
+import { getAllUsers, getUserById, getUserStats, deleteUser } from "../controllers/userController.js";
 
 const router = express.Router();
 
@@ -7,7 +8,7 @@ const router = express.Router();
 router.get("/", getAllUsers);
 
 // Get a single user
-router.get("/:id", getUser);
+router.get("/:id", getUserById);
 
 // Get a user's stats
 router.get("/:id/stats", getUserStats);
