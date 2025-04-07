@@ -3,6 +3,7 @@ import express from 'express';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import staticRoutes from './routes/staticRoutes.js';
+import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import gameRoutes from './routes/gameRoutes.js';
 import setupWebhooks from './webhooks.js';
@@ -23,12 +24,9 @@ app.use(express.static(join(__dirname, '..', 'frontend')));
 //----------ROUTES----------
 // static pages navigation routes:
 app.use(staticRoutes);
-
-// auth routes:
-app.use("/auth", userRoutes);
-//app.use('route navn', filnavn)
-
-app.use("/game", gameRoutes)
+app.use("/api/auth", authRoutes);
+app.use("/api/user", userRoutes);
+app.use("/api/game", gameRoutes);
 
 // Initialize webhooks AFTER app is created
 setupWebhooks(app);
