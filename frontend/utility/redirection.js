@@ -20,7 +20,7 @@ if (Game()) {
     if (Game().status = "waiting") {
        window.location.href = "/gameLobby"
     } else if (Game().status = "placingShips") {
-        window.location.href = "/placeShips"
+        window.location.href = "/placingShips"
     } else if (Game().status = "active") {
         window.location.href = "/game"
     } else if (Game().status = "finished") {

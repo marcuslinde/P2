@@ -4,7 +4,7 @@
  * @typedef {number} field
  * @typedef {"vertical"|"horizontal"} rotation
 */
-import '../../utility/redirection.js'
+
 import { Game, setGame, User } from "../../../utility/state.js";
 import { setLoading } from "../../../utility/ui.js";
 import { getElementById, querySelectorAll } from "../../../utility/helperFunctions.js";
