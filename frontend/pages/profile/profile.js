@@ -12,9 +12,10 @@ if (!User()) {
 getElementById("backButton")?.addEventListener("click", () => window.location.href = "/");
 
 async function fetchUserStats(userId) {
-  const response = await fetch(apiBase + `/${userId}/stats`);
-  const stats = await response.json();
+    const response = await fetch(apiBase + `/${userId}/stats`);
+    const stats = await response.json();
 
+    console.log(stats);
     
     getElementById('won').innerHTML = "Games won: " + `${stats.stats.wins}`; 
     getElementById('ratio').innerHTML = "Win ratio: " + `${stats.stats.winRatio}`; 
