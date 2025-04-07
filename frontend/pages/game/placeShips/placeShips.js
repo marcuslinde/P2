@@ -29,7 +29,7 @@ let currentSelectedShip = null;
 let currentHoveredField = null;
 
 /** Holds the array of ship objects */
-const ships = createShips();
+const ships = createShips(); 
 /** @type {Array<HTMLElement>} */
 const shipElements = querySelectorAll(".ship");
 /** @type {Array<number>} */
