@@ -5,6 +5,7 @@
  * @typedef {"vertical"|"horizontal"} rotation
 */
 
+
 import { deleteGame, fetchGameData, submitShips } from "../gameHelpers/gameFunctions.js";
 import { Game, setGame, User } from "../../../utility/state.js";
 import { setLoading } from "../../../utility/ui.js";
@@ -29,7 +30,7 @@ let currentSelectedShip = null;
 let currentHoveredField = null;
 
 /** Holds the array of ship objects */
-const ships = createShips(); 
+const ships = createShips();
 /** @type {Array<HTMLElement>} */
 const shipElements = querySelectorAll(".ship");
 /** @type {Array<number>} */
@@ -50,7 +51,9 @@ export function initializeBoardFields() {
         // When hovering over a field, update the ghost ship display.
         field.addEventListener("mouseenter", (e) => {
             e.preventDefault();
+
             currentHoveredField = getElementById("field" + (i + 1));
+
             if (currentSelectedShip) {
                 updateGhostShipDisplay("var(--orange)");
             }
@@ -140,6 +143,7 @@ function getShipByName(name) {
     }
 }
 
+
 /**
  * Places the selected ship on the board when a field is clicked.
  * @param {Event} e - The click event.
@@ -151,6 +155,7 @@ function placeShip(e) {
     try {
         const field = e.currentTarget;
         const shipData = getShipByName(currentSelectedShip.id);
+        
         if (!shipData) {
             deselectCurrentShip();
             return;
@@ -159,6 +164,7 @@ function placeShip(e) {
         const dropField = parseInt(field.dataset.index, 10);
         
         const coveredFields = calculateCoveredFields(dropField, shipData.length, shipData.rotation);
+        
         if (!coveredFields) {
             // Invalid placement, don't deselect the ship to allow trying again
             return;
@@ -173,6 +179,7 @@ function placeShip(e) {
         deselectCurrentShip();
     }
 }
+
 
 /**
  * Deselects the currently selected ship and resets related states.
@@ -245,6 +252,7 @@ function isOverlap(fields) {
     }
 }
 
+
 /**
  * Marks the provided fields as occupied by a ship.
  * @param {Array<field>} fields 
@@ -265,6 +273,7 @@ function markFieldsOccupied(fields) {
         console.error("Error in markFieldsOccupied:", error);
     }
 }
+
 
 /**
  * Rotates the currently selected ship and updates its visual representation.
@@ -316,6 +325,7 @@ document.addEventListener("keydown", (e) => {
         }
     }
 });
+
 
 /**
  * Recursively checks if both players are ready at regular intervals.
