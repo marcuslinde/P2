@@ -348,7 +348,6 @@ async function checkIfReady() {
         const gameData = await getGameByID(Game()._id);
         
         if (!gameData) {
-            console.log("NOOOOO")
             window.alert("Enemy left the game!")
             setGame(null)
             setTimeout(() => {
