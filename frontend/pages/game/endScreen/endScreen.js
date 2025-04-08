@@ -57,8 +57,6 @@ async function initializeFields() {
 }
 
 
-console.log(Game())
-
 /** Sets the visible player names  */
 function setGameNames() {
     getElementById("enemyName").innerHTML = Game().players[playerIndex].name;
