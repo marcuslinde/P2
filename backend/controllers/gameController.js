@@ -1,12 +1,12 @@
 import Game from "../models/game.js";
 import mongoose from "mongoose";
 
-
 /**
  * // Create a new game (lobby creation)
  * @param {any} req 
  * @param {any} res 
  */
+
 export const createGame = async (req, res) => {
   try {
     const { gameCode, userId, name } = req.body;
@@ -123,7 +123,6 @@ export async function getGameData(req, res) {
  */
 export const deleteGame = async (req, res) => {
   const { id } = req.params;
-  console.log("gameId: ", id); //debugging to see in terminal
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(404).json({ success: false, message: "Invalid Game Id" });
   }

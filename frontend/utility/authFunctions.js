@@ -1,4 +1,4 @@
-const apiBase = '/auth'
+const apiBase = '/api/auth'
 /** calls the database for user validation and then sets the user in the frontend to a user object returned by the database
    * @function
    * @param {string} username
@@ -23,7 +23,7 @@ export async function login(username, password) {
 
     }
     catch (err) {
-        console.log(err);
+        throw err
     }
 }
 
@@ -54,6 +54,6 @@ export async function registerUser(user) {
     }
 
     catch (err) {
-        console.log(err);
+        throw err
     }
 }

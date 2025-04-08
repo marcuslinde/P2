@@ -6,6 +6,7 @@
 import { getElementById, querySelectorAll } from '../../utility/helperFunctions.js';
 import { createShips, Ship } from '../game/gameHelpers/ships.js';
 import { boardHeight, boardWidth } from '../game/gameHelpers/board.js';
+import { cannonSound, splashSound } from '../../utility/audioManager.js';
 
 /** Array f ship div elements*/
 const shipsClass = createShips();
@@ -31,7 +32,6 @@ let game = { enemyHits: 0, ownHits:0, gameState: ""}
 let turn = 1;
 
 if (turn == 0) {
-    console.log("test")
     botFireCannon();
     turn = 1;
 }
@@ -53,15 +53,14 @@ function botFireCannon() {
     } else if (occupiedFieldArrayLeft.includes(firedAtField)) {
         firedAtField.classList.remove("occupiedField");
         firedAtField.classList.add("hitField");
-        console.log("Hit shot");
+        cannonSound.play();
         game.enemyHits += 1;
     } else {
         firedAtField?.classList.add("missedField");
-        console.log("Missed shot");
+        splashSound.play();
     }
     turn = 1;
     gameLoop();
-    console.log("Bot fired at:", firedAtField?.id);
 }
 
 /** Gets random target for the bot to shot at */
@@ -94,10 +93,9 @@ function gameLoop() {
         window.location.href = "/"
     }
     if (turn === 0) {
-        console.log("Bot's Turn");
-        botFireCannon();
-    } else {
-        console.log("Player's Turn");
+        setTimeout(() => {botFireCannon();
+        }, 1000)}
+    else {
     }
 }
 
@@ -166,7 +164,6 @@ function randomizeShipPlacement(boardSide) {
             
             if (rotation % 180 === 0) {
                for (let j = 0; j < ship.length; j++) { // Lodret placering
-                    console.log(droppedField)
                     coveredFields.push(droppedField + j * boardWidth);
                 }
             } else {
@@ -187,7 +184,6 @@ function randomizeShipPlacement(boardSide) {
             placed = true;
         }
     })
-    console.log(boardSide === "left" ? occupiedFieldArrayLeft : occupiedFieldArrayRight);
 }
 
 function resetShipPlacement() {
@@ -239,7 +235,6 @@ function initializeFields() {
 
                 // Adds hover effect when dragging ship
                 field.addEventListener("drop", (e) => {
-                    console.log("onShipDrop triggered");
                     field.style.border = "1px solid black"
                     onShipDrop(e);
                 });
@@ -299,7 +294,6 @@ function onShipDrop(e) {
 
     assignOccupiedFields(coveredFields, side);
 
-    console.log(occupiedFieldArrayLeft)
 }
 
 /** Find the object id of the ship 
@@ -325,6 +319,7 @@ function getShipObjectByID(ID) {
 }
 /** handels shots made by player event */
 function fireCannon(e) {
+    e.preventDefault()
     if (game.gameState === "Begun"){
         const firedAtField = e.currentTarget
         if (firedAtField.dataset.side === "left") {
@@ -336,16 +331,13 @@ function fireCannon(e) {
         else if (occupiedFieldArrayRight.includes(firedAtField)) {
             firedAtField.classList.remove("occupiedField");
             firedAtField.classList.add("hitField");
-            console.log("Hit shot");
+            cannonSound.play();
             game.ownHits += 1;
         } else {
             firedAtField.classList.add("missedField");
-
-        console.log("Missed shot");
-            console.log("Missed shot");
+            splashSound.play();
         }
         turn = 0;
-        console.log(turn)
         gameLoop();
     }
     else {
@@ -389,7 +381,6 @@ function setShipEventListener() {
 
 /** checks if player is done the necessary steps to start the game  */
 function readyCheck() {
-    console.log(occupiedFieldArrayLeft.length)
     if (occupiedFieldArrayLeft.length === 17) {
         getElementById("turn").textContent = "Battle begun";
         game.gameState = "Begun"

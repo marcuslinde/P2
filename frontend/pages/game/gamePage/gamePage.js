@@ -8,8 +8,9 @@ import { User, Game, setGame } from '../../../utility/state.js';
 import { setLoading } from '../../../utility/ui.js';
 import { getElementById } from '../../../utility/helperFunctions.js';
 import { boardHeight, boardWidth } from '../gameHelpers/board.js';
-import { deleteGame, fetchGameData, fireShot } from '../gameHelpers/gameFunctions.js';
+import { deleteGame, getGameByID, fireShot } from '../gameHelpers/gameFunctions.js';
 import { Ship } from '../gameHelpers/ships.js';
+import { cannonSound, splashSound, lose } from '../../../utility/audioManager.js';
 
 const howOftenToFetchDataInMS = 500;
 
@@ -23,7 +24,6 @@ initializeGame()
 /**  initalizes the fields and fetches game data;
  * @function */
 async function initializeGame() {
-    console.log("Initializing game...")
     setLoading(true)
     await handleFetchGameData()
     if (!Game()) {
@@ -167,10 +167,9 @@ function paintShotsOnBoards() {
 
 }
 
-/** calls the fetchGameData function and updates the ui based on the results */
+/** calls the getGameByID function and updates the ui based on the results */
 async function handleFetchGameData() {
-    const gameData = await fetchGameData(Game()._id);
-    console.log("gamedata fetched")
+    const gameData = await getGameByID(Game()._id);
     if (gameData) {
         setGame(gameData)
     } else {
@@ -196,8 +195,10 @@ async function handleFireShot(e) {
 
         if (checkIfHit(field)) {
             firedAtField.classList.add("hitField");
+            cannonSound.play();
         } else {
             firedAtField.classList.add("missedField");
+            splashSound.play();
         }
         setGame(updatedGame);
 
@@ -223,7 +224,6 @@ function checkIfHit(field) {
 }
 
 function checkWinCondition() {
-
     const playerShots = Game().players[playerIndex].shots;
     /**@type {Array<ship>} */
     const enemyShips = Game().players[enemyIndex].ships;
@@ -257,12 +257,13 @@ function checkWinCondition() {
         window.location.href = "/";
         
     } else if (allPlayerShipsSunk) {
-        alert(`${Game().players[enemyIndex].name} won!`);
-        setGame(null);
-        setTimeout(()=>{
-            window.location.href = "/";
-        },3000)
-        return true;
+        // lose.play();
+            alert(`${Game().players[enemyIndex].name} won!`);
+            setGame(null);
+            setTimeout(()=>{
+                window.location.href = "/";
+            },3000)
+            return true;
     }
     return false;
 }

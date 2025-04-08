@@ -4,404 +4,507 @@
  * @typedef {number} field
  * @typedef {"vertical"|"horizontal"} rotation
 */
-import { deleteGame } from "../gameHelpers/gameFunctions.js";
+
 import { Game, setGame, User } from "../../../utility/state.js";
 import { setLoading } from "../../../utility/ui.js";
-import { getElementById } from "../../../utility/helperFunctions.js";
-import { fetchGameData, submitShips } from "../gameHelpers/gameFunctions.js";
+import { getElementById, querySelectorAll } from "../../../utility/helperFunctions.js";
 import { boardWidth, boardHeight } from "../gameHelpers/board.js";
-import { querySelectorAll } from "../../../utility/helperFunctions.js";
+import { getGameByID, submitShips, deleteGame } from "../gameHelpers/gameFunctions.js"
 import { createShips, Ship } from "../gameHelpers/ships.js";
 
 checkIfReady();
-initializeFields()
+initializeBoardFields();
 
-// Event listeners der kalder deres respektive funktioner
-getElementById("cancelButton").addEventListener("click", handleDeleteGame)
+// Event listeners for game control buttons
+getElementById("cancelButton").addEventListener("click", handleDeleteGame);
 getElementById("resetButton").addEventListener("click", resetShipPlacement);
-getElementById("randomizeButton").addEventListener("click", () => randomizeShipPlacement());
+getElementById("randomizeButton").addEventListener("click", randomizeShipPlacement);
 getElementById("readyButton").addEventListener("click", handleSubmitShips);
 
-const howOftenToFetchDataInMS = 500;
+const fetchIntervalMS = 500;
 
-/** @type {HTMLElement|null}*/
+/** @type {HTMLElement|null} */
 let currentSelectedShip = null;
-
-/** @type {HTMLElement|null}*/
+/** @type {HTMLElement|null} */
 let currentHoveredField = null;
 
-
-/** Holds the array of five ships */
-const shipsClass = createShips();
-
+/** Holds the array of ship objects */
+const ships = createShips();
 /** @type {Array<HTMLElement>} */
-const shipsDiv = querySelectorAll(".ship");
+const shipElements = querySelectorAll(".ship");
+/** @type {Array<number>} */
+const occupiedFieldIds = [];
 
-/** @type {Array<HTMLElement>}  */
-const occupiedFieldArrayLeft = [];
-
-
-/** Creates 100 fields to fill the game boards and adds drag and drop functionalty to them */
-export function initializeFields() {
-    let gameboard = getElementById("gameBoard");
+/** 
+ * Initializes the game board fields and attaches event listeners for hover and click.
+ */
+export function initializeBoardFields() {
+    const gameboard = getElementById("gameBoard");
 
     for (let i = 0; i < boardWidth * boardHeight; i++) {
         const field = document.createElement("div");
         field.classList.add("field");
         field.dataset.index = String(i + 1);
-        field.id = "field" + (i + 1);  // sets the html field ID
+        field.id = "field" + (i + 1);
 
-        // Adds hover effect when dragging ship to left squares
+        // When hovering over a field, update the ghost ship display.
         field.addEventListener("mouseenter", (e) => {
             e.preventDefault();
 
-            currentHoveredField = getElementById("field" + (i+1));
-            console.log("field", currentHoveredField)
+            currentHoveredField = getElementById("field" + (i + 1));
 
             if (currentSelectedShip) {
-                getAndPaintFields()
+                updateGhostShipDisplay("var(--orange)");
             }
 
-        })
+        });
+
+        // When leaving a field, remove the ghost ship display.
+
         field.addEventListener("mouseleave", (e) => {
             e.preventDefault();
-
             if (currentSelectedShip) {
-                getAndRemovePaintFields()
+                updateGhostShipDisplay("transparent");
             }
             currentHoveredField = null;
-            console.log("field", currentHoveredField)
 
-        })
+        });
+
+        // When clicking a field, attempt to place the selected ship.
+
         field.addEventListener("click", (e) => {
-            e.preventDefault()
+            e.preventDefault();
             if (currentSelectedShip) {
-                getAndRemovePaintFields();
-                onShipDrop(e)
-                currentSelectedShip = null;
-                currentHoveredField = null;
+                updateGhostShipDisplay("transparent"); // clear ghost display
+                placeShip(e);
             }
+        });
 
-        });        // Adds hover effect when dragging ship
-
-        gameboard.append(field);        // Tilføjer field div til gameboard div
+        gameboard.append(field);
     }
 }
 
-/** Finder de felter et skib vil lande på ud fra rotation of start punkt, og maler dem orange */
-function getAndPaintFields() {
-    let fieldIndex = Number(currentHoveredField?.dataset.index);
-    if (currentSelectedShip) {
-        let currentShip = getShipByName(currentSelectedShip.id)
-        let coveredFields = calculateCoveredFields(fieldIndex, currentShip.length, currentShip.rotation)
-
-        if (coveredFields) {
-            for (let j = 0; j < currentShip.length; j++) {
-                getElementById("field" + coveredFields[j]).style.backgroundColor = "var(--orange)"
+/**
+ * Updates the display of the ghost ship on the board.
+ * @param {string} color - The color to apply ("var(--orange)" for display, "transparent" for clearing).
+ */
+function updateGhostShipDisplay(color) {
+    // Added defensive check for currentHoveredField
+    if (!currentHoveredField || !currentSelectedShip) return;
+    
+    const fieldIndex = Number(currentHoveredField.dataset.index);
+    const shipData = getShipByName(currentSelectedShip.id);
+    if (!shipData) return;
+    
+    const ghostFields = calculateCoveredFields(fieldIndex, shipData.length, shipData.rotation);
+    if (ghostFields) {
+        ghostFields.forEach(fieldId => {
+            try {
+                const fieldElement = getElementById("field" + fieldId);
+                if (fieldElement) {
+                    fieldElement.style.backgroundColor = color;
+                }
+            } catch (error) {
+                console.error("Error updating ghost ship display:", error);
             }
-        }
+        });
     }
 }
 
-
-/** fjerner farven fra det sted hvor skibet "ville kunne lande på" hvis man slap det.*/
-function getAndRemovePaintFields() {
-    let fieldIndex = Number(currentHoveredField?.dataset.index);
-    if (currentSelectedShip) {
-        let currentShip = getShipByName(currentSelectedShip.id)
-        let coveredFields = calculateCoveredFields(fieldIndex, currentShip.length, currentShip.rotation)
-
-
-        if (coveredFields) {
-            for (let j = 0; j < currentShip.length; j++) {
-                getElementById("field" + coveredFields[j]).style.backgroundColor = "transparent"
-            }
-        }
-    }
-
-}
-
-
-/** recursive function that checks if both players have pressed 'ready' every x seconds */
-async function checkIfReady() {
-    const gameData = await fetchGameData(Game()._id);
-    // timeout so we dont fetch constantly
-    setTimeout(() => {
-        console.log('Waiting for enemy');
-
-        if (gameData.players[1].ready && gameData.players[0].ready) {
-            setGame(gameData)
-            window.location.href = "/game"
-
-        } else {
-            checkIfReady()
-        }
-    }, howOftenToFetchDataInMS)
-}
-
-//* Adds eventlistener for dragging a ship, which creates a cloneImage that is the one visible when dragging */
-shipsDiv.forEach(ship => {
-    ship.addEventListener("click", (e)=>{
-        e.preventDefault()
-        console.log("setShip")
-        ship.style.opacity = "0.5"
-        currentSelectedShip = ship;
-    })
-
-/*
-    ship.addEventListener("dragstart", (e) => {
-        let cloneImageShip = ship.cloneNode(true);
-        if (cloneImageShip instanceof HTMLElement) {
-
-            // Sætter skibet rotation (transform) til klonens
-            const style = getComputedStyle(ship);
-            cloneImageShip.style.transform = style.transform
-
-            // Placerer klonen så den ikke er synlig
-
-            cloneImageShip.style.position = "absolute";
-            cloneImageShip.style.top = "-2000px";
-            cloneImageShip.style.left = "-2000px";
-
-            document.body.appendChild(cloneImageShip);
-
-            // Sætter klonen til at være drag image
-            if (e.dataTransfer !== null) {
-                e.dataTransfer.setDragImage(cloneImageShip, 0, 0);
-                e.dataTransfer.setData("text/plain", ship.id);
-            }
-            // Fjerne klonen efter e queuen (timeren er sat til 0 millisekunder)
-            setTimeout(() => {
-                document.body.removeChild(cloneImageShip);
-            }, 300);
-        }
-    })*/
-})
-
-/** Helper function 
- * @param {string} name */
+/**
+ * Retrieves the ship object corresponding to the provided ship element name.
+ * @param {string} name
+ * @returns {Ship|null}
+ */
 function getShipByName(name) {
-    let ship = null;
-    // finder hvilken class ship vi skal bruge ud fra html elementet
-    if (name === "destroyer") {
-        ship = shipsClass[0] // destoryer
-    } else if (name === "submarine") {
-        ship = shipsClass[1]; // submarine
-    } else if (name === "cruiser") {
-        ship = shipsClass[2]; // cruiser
-    } else if (name === "battleship") {
-        ship = shipsClass[3]; // battleship
-    } else if (name === "carrier") {
-        ship = shipsClass[4]; // carrier
+    try {
+        let shipData = null;
+        switch (name) {
+            case "destroyer":
+                shipData = ships[0];
+                break;
+            case "submarine":
+                shipData = ships[1];
+                break;
+            case "cruiser":
+                shipData = ships[2];
+                break;
+            case "battleship":
+                shipData = ships[3];
+                break;
+            case "carrier":
+                shipData = ships[4];
+                break;
+            default:
+                console.error("Unknown ship name:", name);
+                return null;
+        }
+        return shipData;
+    } catch (error) {
+        console.error("Error in getShipByName:", error);
+        return null;
     }
-    if (!ship) {
-        throw new Error("Couldn't handle ship draggin properly");
-    }
-    return ship
 }
 
-/** Logic for dropping a ship on a given field. the event (e) holds the field we are dropping on */
-function onShipDrop(e) {
+
+/**
+ * Places the selected ship on the board when a field is clicked.
+ * @param {Event} e - The click event.
+ */
+function placeShip(e) {
     e.preventDefault();
-    if (!currentSelectedShip) {
-        return;
-    }
+    if (!currentSelectedShip) return;
+    
+    try {
+        const field = e.currentTarget;
+        const shipData = getShipByName(currentSelectedShip.id);
+        if (!shipData) {
+            deselectCurrentShip();
+            return;
 
-    const field = e.currentTarget;
-   //  const shipId = e.dataTransfer.getData("text/plain"); // text/plain fortæller at dataen vi leder efter er ren tekst
-    //  const shipElmnt = getElementById(shipId); // htmlElement
-    const ship = getShipByName(currentSelectedShip.id); // ship class element
-
-    const dropField = parseInt(field.dataset.index, 10);
-    console.log("dropped on:", dropField)
-
-    let coveredFields = calculateCoveredFields(dropField, ship.length, ship.rotation);
-    if (!coveredFields) {
-        throw new Error("couldn't calculate covered fields")
-    }
-
-    ship.setcoveredFields(coveredFields);
-
-    currentSelectedShip.style.display = "none"; // Gør html elementet usynligt når skibet bliver placeret
-    currentSelectedShip = null
-    paintOccupiedFields(coveredFields);
-
+        }
         
-
+        const dropField = parseInt(field.dataset.index, 10);
+        
+        const coveredFields = calculateCoveredFields(dropField, shipData.length, shipData.rotation);
+        if (!coveredFields) {
+            // Invalid placement, don't deselect the ship to allow trying again
+            return;
+        }
+        
+        shipData.setcoveredFields(coveredFields);
+        currentSelectedShip.style.display = "none"; // Hide ship element after placement
+        markFieldsOccupied(coveredFields);
+        deselectCurrentShip();
+    } catch (error) {
+        console.error("Error in placeShip:", error);
+        deselectCurrentShip();
+    }
 }
 
-/** Changes the currentHovered ship rotation and updates the css to rotate the ship when " */
+
+/**
+ * Deselects the currently selected ship and resets related states.
+ */
+function deselectCurrentShip() {
+    let shipData = null;
+    if (currentSelectedShip) {
+        // Capture ship data before resetting currentSelectedShip
+        shipData = getShipByName(currentSelectedShip.id);
+        currentSelectedShip.style.opacity = "1";
+        currentSelectedShip = null;
+    }
+    // Clear the ghost display using the captured ship data
+    if (currentHoveredField && shipData) {
+        const fieldIndex = Number(currentHoveredField.dataset.index);
+        const ghostFields = calculateCoveredFields(fieldIndex, shipData.length, shipData.rotation);
+        if (ghostFields) {
+            ghostFields.forEach(fieldId => {
+                const fieldElement = getElementById("field" + fieldId);
+                if (fieldElement) {
+                    fieldElement.style.backgroundColor = "transparent";
+                }
+            });
+        }
+    }
+    currentHoveredField = null;
+}
+
+/**
+ * Calculates the board fields a ship will cover given a starting field.
+ * Returns null if placement is invalid or overlaps.
+ * @param {number} start - The starting field number.
+ * @param {number} length - The ship length.
+ * @param {rotation} rotation - The ship rotation.
+ * @returns {?Array<field>|null}
+ */
+function calculateCoveredFields(start, length, rotation) {
+    try {
+        const startColumn = (start - 1) % boardWidth;
+        const startRow = Math.floor((start - 1) / boardWidth);
+
+        if (rotation === "vertical" && startRow + length > boardHeight) {
+            return null;
+        } else if (rotation === "horizontal" && startColumn + length > boardWidth) {
+            return null;
+        }
+
+        const fields = [];
+        for (let i = 0; i < length; i++) {
+            if (rotation === "vertical") {
+                fields.push(start + boardWidth * i);
+            } else {
+                fields.push(start + i);
+            }
+        }
+        if (isOverlap(fields)) {
+            return null;
+        }
+        return fields;
+    } catch (error) {
+        console.error("Error in calculateCoveredFields:", error);
+        return null;
+    }
+}
+
+/**
+ * Checks whether any of the provided fields are already occupied.
+ * @param {Array<field>} fields 
+ * @returns {boolean}
+ */
+function isOverlap(fields) {
+    try {
+        for (const fieldId of fields) {
+            if (occupiedFieldIds.includes(fieldId)) {
+                return true;
+            }
+        }
+        return false;
+    } catch (error) {
+        console.error("Error in isOverlap:", error);
+        return true; // Safer to return true on error
+    }
+}
+
+
+/**
+ * Marks the provided fields as occupied by a ship.
+ * @param {Array<field>} fields 
+ */
+function markFieldsOccupied(fields) {
+    try {
+        fields.forEach(fieldId => {
+            const fieldElement = getElementById("field" + fieldId);
+            if (fieldElement) {
+                fieldElement.style.backgroundColor = "var(--orange)";
+                fieldElement.classList.add("occupiedField");
+                if (!occupiedFieldIds.includes(fieldId)) {
+                    occupiedFieldIds.push(fieldId);
+                }
+            }
+        });
+    } catch (error) {
+        console.error("Error in markFieldsOccupied:", error);
+
+    }
+}
+
+/**
+ * Rotates the currently selected ship and updates its visual representation.
+ * Checks if rotation would keep the ship in bounds if there's a hovered field.
+ */
 function rotateShip() {
-
-    if (!currentSelectedShip)
-        return;
+    if (!currentSelectedShip) return;
     
-    const ship = getShipByName(currentSelectedShip.id);
-
-    ship.rotation == "horizontal" ? ship.setRotation("vertical") : ship.setRotation("horizontal");
-
-    let currentRotation = parseInt(currentSelectedShip.getAttribute("data-rotation") || "0", 10);
-    let newRotation = (currentRotation + 90) % 360;
-
-    
-    currentSelectedShip.style.transform = "rotate(" + newRotation + "deg)";
-    currentSelectedShip.setAttribute("data-rotation", `${newRotation}`);
-
+    try {
+        const shipData = getShipByName(currentSelectedShip.id);
+        if (!shipData) return;
+        
+        const newRotation = shipData.rotation === "horizontal" ? "vertical" : "horizontal";
+        
+        // Check if rotation would be valid when hovering over a field
+        if (currentHoveredField) {
+            const fieldIndex = Number(currentHoveredField.dataset.index);
+            const possibleFields = calculateCoveredFields(fieldIndex, shipData.length, newRotation);
+            if (!possibleFields) {
+                // Invalid rotation, don't rotate
+                return;
+            }
+        }
+        
+        // Toggle ship rotation
+        shipData.rotation = newRotation;
+        
+        // Update visual rotation of the ship element
+        const currentRotationDeg = parseInt(currentSelectedShip.getAttribute("data-rotation") || "0", 10);
+        const newRotationDeg = (currentRotationDeg + 90) % 360;
+        currentSelectedShip.style.transform = `rotate(${newRotationDeg}deg)`;
+        currentSelectedShip.setAttribute("data-rotation", `${newRotationDeg}`);
+    } catch (error) {
+        console.error("Error in rotateShip:", error);
+    }
 }
 
-// calls the rotateShip function when "r" key is pressed
+// Add escape key handler to deselect ship
 document.addEventListener("keydown", (e) => {
-    if (e.key.toLowerCase() === "r" && currentSelectedShip) {
+    if (e.key === "Escape") {
+        deselectCurrentShip();
+    } else if (e.key.toLowerCase() === "r" && currentSelectedShip) {
         if (currentHoveredField) {
-            getAndRemovePaintFields() // remove paint
-            rotateShip(); // rotate
-            getAndPaintFields() // add new paint, for new rotation
-        } else 
-            rotateShip(); // just rotate
+            updateGhostShipDisplay("transparent");
+            rotateShip();
+            updateGhostShipDisplay("var(--orange)");
+        } else {
+            rotateShip();
+        }
     }
 });
 
-/** Helper function to calculate what fields to the ship will take up. Returns null if out of bounds.
- * @param {number} start 
- * @param {number} length 
- * @param {rotation} rotation 
- * @returns {?Array<field>|null} returens null, if theres an overlap or out of bounds
+/**
+ * Recursively checks if both players are ready at regular intervals.
+ * Fixed race condition by moving the timeout inside the promise resolution.
  */
-function calculateCoveredFields(start, length, rotation) {
-    const startColumn = (start - 1) % boardWidth; // finder de næste felter ud fra start
-    const startRow = Math.floor((start - 1) / boardWidth);
 
-    if (rotation == "vertical" && startRow + length > boardHeight) {
-        return null;
-    } else if (rotation == "horizontal" && startColumn + length > boardWidth) {
-        return null;
-    }
-
-    let occupiedFields = [];
-
-    for (let i = 0; i < length; i++) {
-        if (rotation == "vertical") {
-            occupiedFields.push(start + 10 * i);
-            console.log("pushed field", start + 10);
-        } else if (rotation == "horizontal") {
-            occupiedFields.push(start + i);
+async function checkIfReady() {
+    try {
+        const gameData = await getGameByID(Game()._id);
+        
+        if (gameData && gameData.players && 
+            gameData.players[1].ready && gameData.players[0].ready) {
+            setGame(gameData);
+            window.location.href = "/game";
+        } else {
+            // Only set the next check after this one completes
+            setTimeout(() => checkIfReady(), fetchIntervalMS);
         }
+    } catch (error) {
+        console.error("Error checking if ready:", error);
+        // Still retry on error, but with a delay
+        setTimeout(() => checkIfReady(), fetchIntervalMS);
     }
-    if (checkForOverlap(occupiedFields)) {
-        return null;
-    }
-
-    return occupiedFields;
 }
 
-/** checks if there already are any ships on the fields
- * @function
- * @param {Array<field>} coveredFields
- * @returns {boolean}
+// Attach event listeners to ship elements for selection
+shipElements.forEach(ship => {
+    ship.addEventListener("click", (e) => {
+        e.preventDefault();
+        // Deselect previous ship if any
+        if (currentSelectedShip) {
+            currentSelectedShip.style.opacity = "1";
+        }
+        // Only select if ship is visible (not placed yet)
+        if (ship.style.display !== "none") {
+            ship.style.opacity = "0.5";
+            currentSelectedShip = ship;
+        }
+    });
+    
+    // Right-click to deselect ship
+    ship.addEventListener("contextmenu", (e) => {
+        e.preventDefault();
+        if (currentSelectedShip === ship) {
+            deselectCurrentShip();
+        }
+    });
+});
+
+/**
+ * Randomizes the placement of ships on the board.
  */
-function checkForOverlap(coveredFields) {
-    for (let i = 0; i < coveredFields.length; i++) {
-        const fieldElement = getElementById("field" + (coveredFields[i]));
-        if (occupiedFieldArrayLeft.includes(fieldElement)) {
-            return true;
-        }
-    }
-    return false;
-}
-
-/** Tilføjer css styling til alle de fields med skibe på
- * @param {Array<field>} coveredFields */
-function paintOccupiedFields(coveredFields) {
-    coveredFields.forEach(index => {
-        const fieldElement = getElementById("field" + (index));
-        fieldElement.style.background = "var(--orange)"
-        fieldElement.classList.add("occupiedField");
-        occupiedFieldArrayLeft.push(fieldElement);
-    });
-}
-
-/** Tilføjer css styling til alle de fields med skibe på
- * @param {Array<field>} coveredFields */
-function unPaintOccupiedFields(coveredFields) {
-    coveredFields.forEach(index => {
-        const fieldElement = getElementById("field" + (index));
-        fieldElement.classList.remove("occupiedField")
-        fieldElement.style.background = "transparent"
-        occupiedFieldArrayLeft.push(fieldElement);
-    });
-}
-
-
-/** Calls the submitShip function and updates the "game" struct */
-async function handleSubmitShips(e) {
-    e.preventDefault();
-    setLoading(true)
-
-    const updatedGame = await submitShips(Game()._id, User()._id, shipsClass)
-
-    if (updatedGame) {
-        setGame(updatedGame);
-    }
-}
-
-/** Places the ships randomly*/
 export function randomizeShipPlacement() {
     resetShipPlacement();
 
-    // Går over arrayet af ship classes for at placere alle skibene
-    shipsClass.forEach(ship => {
+    ships.forEach(shipData => {
         let placed = false;
+        let attempts = 0;
+        const maxAttempts = 100; // Prevent infinite loops
+        
+        while (!placed && attempts < maxAttempts) {
+            attempts++;
+            // Randomly set ship rotation
+            Math.random() < 0.5 ? shipData.setRotation("vertical") : shipData.setRotation("horizontal");
+            const randomField = Math.floor(Math.random() * (boardWidth * boardHeight)) + 1;
+            const coveredFields = calculateCoveredFields(randomField, shipData.length, shipData.rotation);
+            if (!coveredFields) continue;
 
-        while (!placed) {
-            // Sætter skibets rotation til 0 hvis et tilfældigt tal fra 0-1 er mindre en 0.5
-            Math.random() < 0.5 ? ship.setRotation("vertical") : ship.setRotation("horizontal");
-            let field = Math.floor(Math.random() * 100) + 1;
-            let coveredFields = calculateCoveredFields(field, ship.length, ship.rotation)
-            if (!coveredFields || checkForOverlap(coveredFields)) continue; // Prøver en ny position
+            markFieldsOccupied(coveredFields);
+            shipData.setcoveredFields(coveredFields);
 
-            paintOccupiedFields(coveredFields);
-
-            ship.setcoveredFields(coveredFields);
-
-            // Finder skibets id og gemmer elementet når placeret
-            const shipElement = getElementById(ship.name);
-            shipElement.style.display = "none";
+            const shipElement = getElementById(shipData.name);
+            if (shipElement) {
+                shipElement.style.display = "none";
+            }
 
             placed = true;
         }
-    })
-
+        
+        if (!placed) {
+            console.error(`Failed to place ${shipData.name} after ${maxAttempts} attempts`);
+        }
+    });
 }
 
-/** Clears the board*/
+/**
+ * Resets the board and ship placements to their initial state.
+ */
 export function resetShipPlacement() {
-    // Finder alle left elementer og fjerner occupiedField classen hvis de har den
-    const fields = querySelectorAll(".field");
+    try {
+        // Clear all occupied field classes and background colors
+        const fields = querySelectorAll(".field");
+        fields.forEach(field => {
+            field.classList.remove("occupiedField");
+            field.style.backgroundColor = ""; // Reset background color
+        });
+        occupiedFieldIds.length = 0; // Clear the array
 
-    fields.forEach((field) => field.classList.remove("occupiedField"));
-
-    occupiedFieldArrayLeft.length = 0;
-
-    // Finder elementer med class "ship" og gør dem synlige igen og fjerne rotation)
-    const ships = querySelectorAll(".ship");
-    for (let i = 0; i < ships.length; i++) {
-        ships[i].style.display = "block";
-        ships[i].style.transform = "rotate(0deg)";
-        ships[i].setAttribute("data-rotation", "0");
+        // Reset ship elements visibility and rotation
+        const shipsOnBoard = querySelectorAll(".ship");
+        shipsOnBoard.forEach(ship => {
+            ship.style.display = "block";
+            ship.style.opacity = "1";
+            ship.style.transform = "rotate(0deg)";
+            ship.setAttribute("data-rotation", "0");
+        });
+        
+        // Reset the ships data structure
+        ships.forEach(ship => {
+            ship.setcoveredFields([]);
+            ship.setRotation("vertical");
+        });
+        
+        // Reset current selections
+        deselectCurrentShip();
+    } catch (error) {
+        console.error("Error in resetShipPlacement:", error);
     }
 }
 
-/** Calls the deleteGame function and changes to frontpage if the game is deleted */
-async function handleDeleteGame(e) {
-    e.preventDefault()
-    setLoading(true)
-    const isDeleted = await deleteGame(Game()._id);
+/**
+ * Submits the ship placement to the game server.
+ * @param {Event} e 
+ */
+async function handleSubmitShips(e) {
+    e.preventDefault();
+    try {
+        setLoading(true);
+        // Check if all ships are placed
+        const allShipsPlaced = ships.every(ship => ship.coveredFields.length > 0);
+        if (!allShipsPlaced) {
+            window.alert("Please place all ships before submitting");
+            setLoading(false);
+            return;
+        }
 
-    if (isDeleted) {
-        setGame(null)
-        window.location.href = "/"
-    } else {
-        window.alert("could not delete game");
+        const updatedGame = await submitShips(Game()._id, User()._id, ships);
+        if (updatedGame) {
+            setGame(updatedGame);
+        }
+    } catch (error) {
+        console.error("Error in handleSubmitShips:", error);
+        setLoading(false);
     }
-    setLoading(false);
+}
+
+/**
+ * Deletes the game and redirects to the front page.
+ * @param {Event} e 
+ */
+async function handleDeleteGame(e) {
+    e.preventDefault();
+    try {
+        setLoading(true);
+        const isDeleted = await deleteGame(Game()._id);
+
+        if (isDeleted) {
+            setGame(null);
+            window.location.href = "/";
+        } else {
+            window.alert("Could not delete game");
+        }
+    } catch (error) {
+        console.error("Error in handleDeleteGame:", error);
+        window.alert("Error deleting game");
+    } finally {
+        setLoading(false);
+    }
 }
