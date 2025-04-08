@@ -1,6 +1,6 @@
 import {Game, setUser, User, setGame } from './state.js'
 import { setLoading } from './ui.js'
-import { getUserById } from '../pages/auth/userFunctions.js'
+import { getUserById } from './userFunctions.js'
 import { getGameByID } from '../pages/game/gameHelpers/gameFunctions.js'
 
 // check for user status and redirect to right pages

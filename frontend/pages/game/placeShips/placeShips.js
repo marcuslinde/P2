@@ -5,14 +5,11 @@
  * @typedef {"vertical"|"horizontal"} rotation
 */
 
-
 import { Game, setGame, User } from "../../../utility/state.js";
 import { setLoading } from "../../../utility/ui.js";
 import { getElementById, querySelectorAll } from "../../../utility/helperFunctions.js";
 import { boardWidth, boardHeight } from "../gameHelpers/board.js";
 import { getGameByID, submitShips, deleteGame } from "../gameHelpers/gameFunctions.js"
-
-
 import { createShips, Ship } from "../gameHelpers/ships.js";
 
 checkIfReady();
