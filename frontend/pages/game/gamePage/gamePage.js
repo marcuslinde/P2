@@ -89,13 +89,8 @@ export async function initializeFields() {
 
 /** Sets the visible player names  */
 function setGameNames() {
-    if (Game().status == 'active') {
-        if (Game().players[0].name == User().name) {
-            getElementById("enemyName").innerHTML = Game().players[1].name;
-        } else {
-            getElementById("enemyName").innerHTML = Game().players[0].name;
-        }
-    }
+    getElementById("enemyName").innerHTML = Game().players[playerIndex].name;
+    getElementById("enemyName").innerHTML = Game().players[enemyIndex].name;
 }
 
 /** checks whos turn it is by fetching from the database.

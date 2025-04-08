@@ -2,6 +2,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Merriweather+Sans:ital,wght@0,300..800;1,300..800&family=Red+Hat+Text:ital,wght@0,300..700;1,300..700&display=swap');
 @import url('styles/loader.css');
 @import url('styles/banner.css');
+
 /*@import url('banner.css');*/
 /*Define color palette*/
 :root {
@@ -10,14 +11,14 @@
     --text1: rgb(0, 0, 0);
     --text2: rgb(240, 240, 240);
     --blue: #0066da;
-    --link-color: rgb(248,143,58);
-    --orange: rgb(248,143,58);
+    --link-color: rgb(248, 143, 58);
+    --orange: rgb(248, 143, 58);
     --black: rgb(0, 0, 0);
 }
 
 html {
     transition: all 0.2s;
-    font-family: "Black Ops One", serif; 
+    font-family: "Black Ops One", serif;
     color: var(--text1);
     font-weight: 400;
     font-style: normal;
@@ -33,7 +34,8 @@ body {
     background-size: cover;
     background-attachment: fixed;
 
-    height: 100vh; /* 100vh betyder 100% af view height*/
+    height: 100vh;
+    /* 100vh betyder 100% af view height*/
     color: var(--text2);
 }
 
@@ -41,6 +43,7 @@ body {
     height: 20vh;
     z-index: -1;
 }
+
 .center {
     display: block;
     margin-left: auto;
@@ -82,7 +85,9 @@ input:not([type=checkbox]) {
     width: 200px;
 }
 
-input[type=submit], [type=button] {
+input[type=submit],
+[type=button], button {
+    cursor: pointer;
     background-color: var(--black);
     color: var(--text2);
     padding: 10px;
@@ -92,11 +97,12 @@ input[type=submit], [type=button] {
     transition: all 0.2s;
 }
 
-input[type=submit]:hover {
+input[type=submit]:hover, button:hover {
     color: var(--text1);
     background-color: var(--orange);
 }
-input[type=submit]:active {
+
+input[type=submit]:active, button:active {
     transform: scale(0.97);
 }
 
@@ -108,9 +114,10 @@ input[type=submit]:active {
     background: transparent;
     border: none;
     padding: 0;
-  }
-  
-  #backButton img {
-    width: 55px; /* Adjust size as needed */
+}
+
+#backButton img {
+    width: 55px;
+    /* Adjust size as needed */
     height: auto;
-  }
+}

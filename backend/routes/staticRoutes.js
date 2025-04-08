@@ -53,6 +53,10 @@ router.get('/game', (req, res) => {
     res.sendFile(join(__dirname, '..', '..', 'frontend', 'pages', 'game', 'gamePage', 'gamePage.html'));
 });
 
+router.get('/endScreen', (req, res) => {
+    res.sendFile(join(__dirname, '..', '..', 'frontend', 'pages', 'game', 'endScreen', 'endScreen.html'));
+});
+
 
 
 
