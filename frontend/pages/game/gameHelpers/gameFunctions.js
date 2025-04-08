@@ -135,6 +135,35 @@ export async function submitShips(gameId, userId, ships) {
 }
 
 /**
+ * Update the stauts of the game
+ * @param {string} gameId
+ * @param {string} gameStatus - The new status of the game
+ * @returns {Promise<object>} - The updated game data from the backend.
+ */
+
+export async function updateGameStatus(gameId, gameStatus) {
+    try {
+        const response = await fetch(apiBase + "/updateGameStatus", {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ gameId: gameId, gameStatus: gameStatus })
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const updatedGame = await response.json();
+        return updatedGame;
+    }
+
+    catch {
+        console.error("Error updating game:", error);
+        throw error;
+    }
+}
+
+/**
  * 
  * @param {string} gameId 
  * @param {number} field 
