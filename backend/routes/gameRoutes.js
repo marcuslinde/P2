@@ -1,5 +1,5 @@
 import express from "express";
-import { createGame, joinGame, submitShips, getGameData, deleteGame, fireShot } from "../controllers/gameController.js";
+import { createGame, joinGame, submitShips, getGameData, deleteGame, fireShot, updateGameStatus } from "../controllers/gameController.js";
 
 const router = express.Router();
 
@@ -12,9 +12,11 @@ router.put('/join', joinGame);
 // Route to update game details (e.g., ship placements and readiness)
 router.put('/submitShips', submitShips);
 
-// fires a shot;
+// Fires a shot;
 router.put('/fireShot', fireShot);
 
+// Updates game status
+router.put('/updateGameStatus', updateGameStatus);
 // Route to get data of game
 router.get('/data', getGameData);
 

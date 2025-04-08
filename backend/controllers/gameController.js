@@ -189,6 +189,38 @@ export const submitShips = async (req, res) => {
   }
 };
 
+/**
+ * Update game state to finished when win con is met
+ * @param {any} req 
+ * @param {any} res 
+ */
+
+export const updateGameStatus = async (req, res) => {
+  try {
+    const {gameId, gameStatus} = req.body;
+    if (!gameId) {
+      return res.status(400).json({error: 'gameId are required'});
+    }
+
+    const game = await Game.findById(gameId);
+    if (!game) {
+      return res.status(404).json({ error: 'Game not found' });
+    }
+
+    if (gameStatus == 'finished') {
+      game.status = 'finished';
+    }
+
+    const updatedGame = await game.save();
+    res.json(updatedGame);
+    }
+
+  catch(error) {
+    console.error(error);
+    res.status(500).json({ error: 'Server error' });
+  }
+}
+
 
 /**
  * Update game details (e.g., updating ship placements and setting "ready")

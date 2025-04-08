@@ -8,7 +8,7 @@ import { User, Game, setGame } from '../../../utility/state.js';
 import { setLoading } from '../../../utility/ui.js';
 import { getElementById } from '../../../utility/helperFunctions.js';
 import { boardHeight, boardWidth } from '../gameHelpers/board.js';
-import { deleteGame, getGameByID, fireShot } from '../gameHelpers/gameFunctions.js';
+import { deleteGame, getGameByID, fireShot, updateGameStatus } from '../gameHelpers/gameFunctions.js';
 import { Ship } from '../gameHelpers/ships.js';
 import { cannonSound, splashSound, lose } from '../../../utility/audioManager.js';
 
@@ -207,7 +207,24 @@ async function handleFireShot(e) {
     }
 }
 
-/** helper function to check if a shot hits a ship or not. */
+/** Calls the udateGameStatus function 
+ * @param {string} gameStatus - Status of game
+*/
+async function handleUpdateGameStatus(gameStatus) {
+    try {
+        setLoading(true);
+        const updatedGame = await updateGameStatus(Game()._id, gameStatus);
+        if (updatedGame) {
+            setGame(updatedGame);
+        }
+    } catch (error) {
+        console.error("Error in handleUpdateGameStatus:", error);
+    } finally {
+        setLoading(false);
+    }
+}
+
+/** Helper function to check if a shot hits a ship or not. */
 function checkIfHit(field) {
     const checkPlayer = Game().players[0].userId === User()._id ? 1 : 0;
     
@@ -253,7 +270,8 @@ function checkWinCondition() {
     if (allEnemyShipsSunk) {
         alert("Victory! All enemy ships have been sunk!");
         setGame(null);
-        handleDeleteGame();
+        // handleDeleteGame();
+        handleUpdateGameStatus('finished')
         window.location.href = "/";
         
     } else if (allPlayerShipsSunk) {
