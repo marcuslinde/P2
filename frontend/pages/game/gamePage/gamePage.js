@@ -218,6 +218,7 @@ async function handleUpdateGameStatus(gameStatus) {
         if (updatedGame) {
             setGame(updatedGame);
         }
+        window.location.href = "/endScreen";
     } catch (error) {
         console.error("Error in handleUpdateGameStatus:", error);
     } finally {
@@ -268,21 +269,8 @@ function checkWinCondition() {
     });
 
 
-    if (allEnemyShipsSunk) {
-        alert("Victory! All enemy ships have been sunk!");
-        setGame(null);
-        // handleDeleteGame();
+    if (allEnemyShipsSunk || allPlayerShipsSunk) {
         handleUpdateGameStatus('finished')
-        window.location.href = "/";
-        
-    } else if (allPlayerShipsSunk) {
-        // lose.play();
-            alert(`${Game().players[enemyIndex].name} won!`);
-            setGame(null);
-            setTimeout(()=>{
-                window.location.href = "/";
-            },3000)
-            return true;
     }
     return false;
 }

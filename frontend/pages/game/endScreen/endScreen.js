@@ -30,6 +30,7 @@ getElementById("homeButton").addEventListener("click",() =>{
 
 
 
+
 /** Creates 100 fields to fill the game boards and adds drag and drop functionalty to them */
 async function initializeFields() {
     let gameboard = getElementById("leftGameBoard");
@@ -55,10 +56,21 @@ async function initializeFields() {
     }
 }
 
+
+console.log(Game())
+
 /** Sets the visible player names  */
 function setGameNames() {
     getElementById("enemyName").innerHTML = Game().players[playerIndex].name;
     getElementById("enemyName").innerHTML = Game().players[enemyIndex].name;
+    const winnerDisplayElement = getElementById("winnerDisplay")
+
+    winnerDisplayElement.innerHTML = "Well fought, sailor!"
+    if (Game().winner === User()._id) {
+        // winnerDisplayElement.innerHTML = `Congratulations sailor, you won the battle!`
+    } else {
+        // winnerDisplayElement.innerHTML = `${Game().players[enemyIndex].name} won the battle!`
+    }
 }
 
 
