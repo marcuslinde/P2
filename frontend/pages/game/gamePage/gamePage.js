@@ -106,6 +106,12 @@ async function checkTurn() {
     const turnElmnt = getElementById("turn");
 
     setTimeout(() => {
+        if (!Game()) {
+            window.alert("Enemy left the game!");
+            setTimeout(() => {
+                window.location.href = "/"; // Gå til forsiden
+            }, 0);
+        }
         if (User()._id !== Game().currentTurn) {
             turnElmnt.innerHTML = "Enemy turn"
 
