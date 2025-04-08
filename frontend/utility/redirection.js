@@ -6,7 +6,9 @@ import { getGameByID } from '../pages/game/gameHelpers/gameFunctions.js'
 // check for user status and redirect to right pages
 if (!User() || !User()._id || !User().name) {
     setUser(null)
-    window.location.href = "/login"
+    if (window.location.href[window.location.href.length-1] !== "/") {
+        window.location.href = "/";
+    }
 } else {
     await checkForUserInDB()
 }
