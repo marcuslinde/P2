@@ -15,10 +15,7 @@ volumeElmmt.value = volume() ?? "0.5"; // 0.5 is default volume
 
 volumeElmmt.addEventListener("change", handleVolumeChange);
 
-/**
- * Handles the volume change event.
- * @param {Event} e - The event object.
- */
+/** Handles the volume change event */
 function handleVolumeChange(e) {
     const target = e.target;
     if (target instanceof (HTMLInputElement)) {

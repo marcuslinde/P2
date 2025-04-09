@@ -16,7 +16,7 @@ checkIfReady();
 initializeBoardFields();
 
 // Event listeners for game control buttons
-getElementById("cancelButton").addEventListener("click", handleDeleteGame);
+getElementById("exitGameButton").addEventListener("click", handleDeleteGame);
 getElementById("resetButton").addEventListener("click", resetShipPlacement);
 getElementById("randomizeButton").addEventListener("click", randomizeShipPlacement);
 getElementById("readyButton").addEventListener("click", handleSubmitShips);
@@ -147,10 +147,7 @@ function getShipByName(name) {
 }
 
 
-/**
- * Places the selected ship on the board when a field is clicked.
- * @param {Event} e - The click event.
- */
+/** Places the selected ship on the board when a field is clicked.*/
 function placeShip(e) {
     e.preventDefault();
     if (!currentSelectedShip) return;
@@ -346,9 +343,19 @@ document.addEventListener("keydown", (e) => {
  */
 
 async function checkIfReady() {
+
     try {
         const gameData = await getGameByID(Game()._id);
         
+        if (!gameData) {
+            window.alert("Enemy left the game!")
+            setGame(null)
+            setTimeout(() => {
+                window.location.href = "/"
+            }, 1);
+        }  
+
+
         if (gameData && gameData.players && 
             gameData.players[1].ready && gameData.players[0].ready) {
             setGame(gameData);
@@ -357,11 +364,10 @@ async function checkIfReady() {
             // Only set the next check after this one completes
             setTimeout(() => checkIfReady(), fetchIntervalMS);
         }
-    } catch (error) {
-        console.error("Error checking if ready:", error);
-        // Still retry on error, but with a delay
-        setTimeout(() => checkIfReady(), fetchIntervalMS);
+    } catch (err) {
+        throw err;
     }
+
 }
 
 // Attach event listeners to ship elements for selection
@@ -459,10 +465,7 @@ export function resetShipPlacement() {
     }
 }
 
-/**
- * Submits the ship placement to the game server.
- * @param {Event} e 
- */
+/** Submits the ship placement to the game server. */
 async function handleSubmitShips(e) {
     e.preventDefault();
     try {

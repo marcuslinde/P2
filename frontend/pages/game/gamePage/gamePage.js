@@ -89,13 +89,8 @@ export async function initializeFields() {
 
 /** Sets the visible player names  */
 function setGameNames() {
-    if (Game().status == 'active') {
-        if (Game().players[0].name == User().name) {
-            getElementById("enemyName").innerHTML = Game().players[1].name;
-        } else {
-            getElementById("enemyName").innerHTML = Game().players[0].name;
-        }
-    }
+    getElementById("enemyName").innerHTML = Game().players[playerIndex].name;
+    getElementById("enemyName").innerHTML = Game().players[enemyIndex].name;
 }
 
 /** checks whos turn it is by fetching from the database.
@@ -106,6 +101,12 @@ async function checkTurn() {
     const turnElmnt = getElementById("turn");
 
     setTimeout(() => {
+        if (!Game()) {
+            window.alert("Enemy left the game!");
+            setTimeout(() => {
+                window.location.href = "/"; // Gå til forsiden
+            }, 0);
+        }
         if (User()._id !== Game().currentTurn) {
             turnElmnt.innerHTML = "Enemy turn"
 
@@ -217,6 +218,7 @@ async function handleUpdateGameStatus(gameStatus) {
         if (updatedGame) {
             setGame(updatedGame);
         }
+        window.location.href = "/endScreen";
     } catch (error) {
         console.error("Error in handleUpdateGameStatus:", error);
     } finally {
@@ -267,21 +269,8 @@ function checkWinCondition() {
     });
 
 
-    if (allEnemyShipsSunk) {
-        alert("Victory! All enemy ships have been sunk!");
-        setGame(null);
-        // handleDeleteGame();
+    if (allEnemyShipsSunk || allPlayerShipsSunk) {
         handleUpdateGameStatus('finished')
-        window.location.href = "/";
-        
-    } else if (allPlayerShipsSunk) {
-        // lose.play();
-            alert(`${Game().players[enemyIndex].name} won!`);
-            setGame(null);
-            setTimeout(()=>{
-                window.location.href = "/";
-            },3000)
-            return true;
     }
     return false;
 }

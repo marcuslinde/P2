@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Battleships</title>
+    <base href="/pages/game/endScreen/" target="_blank">
+    <link rel="stylesheet" href="../gameStyles.css">
+</head>
+
+<body>
+
+
+    <h1 id="winnerDisplay" class="center"> Won the game!</h1>
+
+    <button id="homeButton" class="center"> Go Home </button>
+    <div id="gameBoardWrapper" class="center">
+        <div>
+            <h2 id="yourName"> You </h2>
+            <div class="gameBoard" id="leftGameBoard"></div>
+        </div>
+
+        <div>
+            <h2 id="enemyName"> </h2>
+            <div class="gameBoard" id="rightGameBoard"></div>
+        </div>
+    </div>
+
+
+    <!--Importer scripts som om at /frontend er root directory-->
+    <script type="module" src="./endScreen.js"></script>
+    </div>
+</body>
+
+</html>

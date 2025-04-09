@@ -94,7 +94,7 @@ html {
     border: 1px black;
     border-style: solid;
     box-sizing: border-box;
-    background-color: var(--link-color);
+    background-color: var(--link-color) !important;
 }
 
 .field.right.occupiedField {
@@ -197,14 +197,12 @@ html {
     padding: 3px;
 }
 
-#turn {
+#turn, #exitGameButton, #homeButton, #winnerDisplay  {
     background-color: #141414;
+    color: var(--text2);
     width: fit-content;
     padding: 10px;
     border: #000000;
     border-radius: 5px;
 }
-
-
-
 

@@ -157,9 +157,8 @@ export async function updateGameStatus(gameId, gameStatus) {
         return updatedGame;
     }
 
-    catch {
-        console.error("Error updating game:", error);
-        throw error;
+    catch(err) {
+        throw err;
     }
 }
 
