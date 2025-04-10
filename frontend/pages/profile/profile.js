@@ -1,6 +1,6 @@
 /** @module profile */
 
-import { User } from "../../utility/state.js";
+import { User, setUser } from "../../utility/state.js";
 import { getElementById } from "../../utility/helperFunctions.js";
 import { setBanner } from "../../utility/ui.js";
 import { deleteUser } from "../../utility/userFunctions.js";
@@ -47,6 +47,7 @@ async function handleDeleteUserConfirmButton(e){
   const isDeleted = await deleteUser(User()._id);
 
   if (isDeleted) {
+    setUser(null)
       window.location.href = "/"
   } else {
       window.alert("could not delete user");
