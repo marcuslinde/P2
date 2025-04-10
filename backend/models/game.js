@@ -25,17 +25,20 @@ const GameSchema = new Schema({
   players: {
     type: [PlayerSchema],
     required: true,
+    winner : null,
     // Allow one or two players in a game
     validate: {
       validator: function(v) {
         return v.length <= 2;
       },
       message: 'A game can have at most 2 players.'
-    }
+    },
+
   },
   status: { type: String, enum: ['waiting', 'active', 'finished'], default: 'waiting' },
   currentTurn: { type: Schema.Types.ObjectId, ref: 'User' } // Set once both players are ready
-}, { timestamps: true });
+},
+    { timestamps: true });
 
 const Game = mongoose.models.Game || mongoose.model('Game', GameSchema);
 export default Game;
