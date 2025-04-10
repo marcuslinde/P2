@@ -105,3 +105,12 @@
     color: white;
     border-bottom: 1px solid rgba(255, 255, 255, 0.5);
 }
+
+.deleteUserButton:hover {
+    background-color:  rgb(199, 0, 0) !important;
+    border: none !important;
+}
+
+.titleContainer {
+    width: 100%;
+}

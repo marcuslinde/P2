@@ -3,7 +3,6 @@ const saltRounds = 10;
 
 export async function hashPassword(password) {
     const hashedPassword = await bcrypt.hash(password, saltRounds);
-    console.log('Hashed Password:', hashedPassword);
     return hashedPassword;
 }
 
