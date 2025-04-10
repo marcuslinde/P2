@@ -1,5 +1,14 @@
 import express from "express";
-import { createGame, joinGame, submitShips, getGameData, deleteGame, fireShot, updateGameStatus } from "../controllers/gameController.js";
+import {
+    createGame,
+    joinGame,
+    submitShips,
+    getGameData,
+    deleteGame,
+    fireShot,
+    updateGameStatus,
+    getActiveGamesForUser
+} from "../controllers/gameController.js";
 
 const router = express.Router();
 
@@ -22,5 +31,7 @@ router.get('/data', getGameData);
 
 router.delete('/delete/:id', deleteGame);
 
+
+router.get('/active', getActiveGamesForUser);
 
 export default router;

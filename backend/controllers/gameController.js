@@ -207,7 +207,7 @@ export const updateGameStatus = async (req, res) => {
       return res.status(404).json({ error: 'Game not found' });
     }
 
-    if (gameStatus == 'finished') {
+    if (gameStatus === 'finished') {
       game.status = 'finished';
     }
 
@@ -220,6 +220,31 @@ export const updateGameStatus = async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 }
+
+
+export const getActiveGamesForUser = async (req, res) => {
+  try {
+    const { userId } = req.query;
+
+    if (!userId) {
+      return res.status(400).json({ error: 'userId is required' });
+    }
+
+    const activeGames = await Game.find({
+      status: 'active',
+      'players.userId': userId,
+    });
+
+    if (activeGames.length === 0) {
+      return res.status(404).json({ error: 'No active games found for this user' });
+    }
+
+    res.status(200).json(activeGames);
+  } catch (error) {
+    console.error('Error fetching active games:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
 
 
 /**
