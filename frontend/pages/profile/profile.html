@@ -7,7 +7,6 @@
     <title>Profile</title>
     <base href="/pages/profile/" target="_blank">
     <link rel="stylesheet" href="profile.css">
-    
 </head>
 
 
@@ -17,7 +16,10 @@
     </button>
 
     <div class="background">
-        <h2 id="user-container-title" style="line-height: 0.5em; align-self:flex-start;">User profile:</h2>
+        <div class="titleContainer">
+            <h2 id="user-container-title" style="line-height: 0.5em; float: left;">User profile:</h2>
+            <input id="deleteUserButton" class="deleteUserButton" style="align-self:flex-end; float: right;" type="submit" value="Delete user">
+        </div>
         <div class="user-container">
             <div class="userInfo-container">
                 <h4 id="username">Username: xxx</h4>
@@ -34,6 +36,14 @@
             <div class=""></div>
         </div>
 
+    </div>
+
+    <div id="banner" class="banner">
+        <div class="bannerWrapper">
+            <h2>Are you sure you want to delete your account?</h2>
+            <input id="deleteUserConfirmButton" type="button" value="Yes">
+            <input id="cancelButton" type="button" value="Do not delete">
+        </div>
     </div>
 
     <script type="module" src="profile.js"></script>

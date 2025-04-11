@@ -1,4 +1,5 @@
 import User from "../models/User.js";
+import { comparePassword, hashPassword } from './encryption.js';
 
 // Login: Check provided credentials and return the user data (without the password)
 export const login = async (req, res) => {
@@ -10,11 +11,16 @@ export const login = async (req, res) => {
 
   try {
     // Adjust the query if you use email or another field for login
-    const user = await User.findOne({ name: username, password: password }, "name email _id");
+    const user = await User.findOne({ name: username }, "name email _id password");
     if (!user) {
       return res.status(404).json({ success: false, message: "Invalid username or password" });
     }
 
+    const isPasswordMatch = await comparePassword(user.password, password);
+
+    if (!isPasswordMatch) {
+      return res.status(404).json({ success: false, message: "Invalid username or password" });
+    }
     // You can also add token generation here if needed, e.g.:
     // const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
@@ -34,8 +40,10 @@ export const register = async (req, res) => {
   }
 
   try {
+    // Hash password
+    const hashedPassword = await hashPassword(password);
     // Create a new user
-    const newUser = new User({ name, email, password });
+    const newUser = new User({ name, email, password: hashedPassword }); 
     await newUser.save();
 
     // Remove sensitive fields before sending the response

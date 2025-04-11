@@ -21,3 +21,28 @@ export async function getUserById(id) {
     }
 
 }
+
+/**
+ * calls the api for deleting user
+ * @param {string} id 
+ * @returns {Promise<object>} 
+ */
+export async function deleteUser(id) {
+
+    try {
+        // Fetch from the dedicated endpoint
+        const response = await fetch(apiBase + `/${id}`, {
+            method: 'DELETE',
+        });
+        if (!response.ok) {
+            throw new Error(`Server error: ${response.status}`)
+        };
+
+        const data = await response.json();
+
+        return true;
+
+    } catch (error) {
+        console.error("Error deleting user", error);
+    }
+}

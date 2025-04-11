@@ -98,7 +98,7 @@ html {
 }
 
 .field.right.occupiedField {
-    background-color: initial;
+    background-color: initial !important;
 }
 /* Laver et rødt kryds på hitField ved at dele background-image op i 2 med hældningen 45% (den er transparent fra start til 50% - 1px og 50% + 1px til slut*/
 .hitField { 
