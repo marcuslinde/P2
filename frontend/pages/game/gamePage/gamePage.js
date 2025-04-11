@@ -241,7 +241,7 @@ function checkIfHit(field) {
     }
     return false;
 }
-
+//Ryan kig her ,': )
 function checkWinCondition() {
     const playerShots = Game().players[playerIndex].shots;
     /**@type {Array<ship>} */
@@ -257,7 +257,10 @@ function checkWinCondition() {
      * @type {boolean} */
     const allEnemyShipsSunk = enemyShips.every(ship => {
         if (!ship.coveredFields) return false;
+        Game().players.winner = Game().players[playerIndex]; //added Line
         return ship.coveredFields.every(field => playerShots.includes(field));
+        //Maybe add a boolean here
+
     });
 
 
@@ -265,12 +268,15 @@ function checkWinCondition() {
     * @type {boolean} */
     const allPlayerShipsSunk = playerShips.every(ship  => {
         if (!ship.coveredFields) return false;
+        Game().players.winner = Game().players[enemyIndex]; //added line
         return ship.coveredFields.every(field => enemyShots.includes(field));
     });
 
 
     if (allEnemyShipsSunk || allPlayerShipsSunk) {
         handleUpdateGameStatus('finished')
+        //Add win method
+        setGameNames();
     }
     return false;
 }

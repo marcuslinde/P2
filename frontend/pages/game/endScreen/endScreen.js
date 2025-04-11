@@ -63,11 +63,11 @@ function setGameNames() {
     getElementById("enemyName").innerHTML = Game().players[enemyIndex].name;
     const winnerDisplayElement = getElementById("winnerDisplay")
 
-    winnerDisplayElement.innerHTML = "Well fought, sailor!"
+
     if (Game().winner === User()._id) {
-        // winnerDisplayElement.innerHTML = `Congratulations sailor, you won the battle!`
+         winnerDisplayElement.innerHTML = `Congratulations sailor, you won the battle!` //husk
     } else {
-        // winnerDisplayElement.innerHTML = `${Game().players[enemyIndex].name} won the battle!`
+         winnerDisplayElement.innerHTML = `${Game().players[enemyIndex].name} won the battle!` // husk
     }
 }
 

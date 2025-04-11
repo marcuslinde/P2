@@ -232,7 +232,8 @@ export const getActiveGamesForUser = async (req, res) => {
 
     const activeGames = await Game.find({
       status: 'active',
-      'players.userId': userId,
+      //'players.userId': userId,
+      'players.userId': new mongoose.Types.ObjectId(userId)
     });
 
     if (activeGames.length === 0) {

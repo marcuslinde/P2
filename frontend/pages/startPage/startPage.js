@@ -4,10 +4,12 @@ import '../../utility/audioManager.js';
 import { User, setUser } from '../../utility/state.js';
 import { getElementById } from '../../utility/helperFunctions.js';
 import { showElementWithID, hideElementWithID } from '../../utility/helperFunctions.js';
+import {handleActiveGameRedirection} from "../game/gameHelpers/gameFunctions";
 
 
 // Adjust display based on login state
 if (User()) {
+
     hideElementWithID("login");
     hideElementWithID("register")
     showElementWithID("joinGame");
@@ -16,6 +18,7 @@ if (User()) {
     showElementWithID("signOut");
     showElementWithID("settings");
     showElementWithID("profileButton");
+    //handleActiveGameRedirection();
 } else {
     showElementWithID("login");
     showElementWithID("register")
