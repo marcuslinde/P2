@@ -16,6 +16,7 @@ if (User()) {
     showElementWithID("signOut");
     showElementWithID("settings");
     showElementWithID("profileButton");
+    handleActiveGameRedirection();
 } else {
     showElementWithID("login");
     showElementWithID("register")

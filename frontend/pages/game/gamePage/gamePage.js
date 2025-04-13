@@ -104,7 +104,7 @@ async function checkTurn() {
         if (!Game()) {
             window.alert("Enemy left the game!");
             setTimeout(() => {
-                window.location.href = "/"; // Gå til forsiden
+                window.location.href = "/"; // Gå til forsiden //!!!<---- skal fjernes
             }, 0);
         }
         if (User()._id !== Game().currentTurn) {
@@ -252,29 +252,34 @@ function checkWinCondition() {
     /**@type {Array<ship>} */
     const playerShips = Game().players[playerIndex].ships;
 
-    
+
     /** For each enemy ship, check if every field is included in the attacker's shots
      * @type {boolean} */
     const allEnemyShipsSunk = enemyShips.every(ship => {
         if (!ship.coveredFields) return false;
+        Game().players.winner = Game().players[playerIndex]; //added Line
         return ship.coveredFields.every(field => playerShots.includes(field));
+        //Maybe add a boolean here
+
     });
 
 
     /** For each enemy ship, check if every field is included in the attacker's shots
-    * @type {boolean} */
+     * @type {boolean} */
     const allPlayerShipsSunk = playerShips.every(ship  => {
         if (!ship.coveredFields) return false;
+        Game().players.winner = Game().players[enemyIndex]; //added line
         return ship.coveredFields.every(field => enemyShots.includes(field));
     });
 
 
     if (allEnemyShipsSunk || allPlayerShipsSunk) {
         handleUpdateGameStatus('finished')
+        //Add win method
+        setGameNames();
     }
     return false;
 }
-
 async function handleDeleteGame(e) {
     setLoading(true);
     e.preventDefault();
