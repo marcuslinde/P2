@@ -4,7 +4,7 @@ import '../../utility/audioManager.js';
 import { User, setUser } from '../../utility/state.js';
 import { getElementById } from '../../utility/helperFunctions.js';
 import { showElementWithID, hideElementWithID } from '../../utility/helperFunctions.js';
-
+import { handleActiveGameRedirection } from '../game/gameHelpers/gameFunctions.js';
 
 // Adjust display based on login state
 if (User()) {
