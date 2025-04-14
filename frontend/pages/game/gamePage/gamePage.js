@@ -122,7 +122,7 @@ async function checkTurn() {
 
 /** Makes sure the game is always in right status and exists */
 function checkGameState() {
-    if (!Game() || Game().status !== "active") {
+    if (!Game()) {
         window.alert("Error: no game found. Enemy might have left")
         window.location.href = "/"
     }
