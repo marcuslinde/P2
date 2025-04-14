@@ -231,12 +231,11 @@ async function checkCurrentTurn() {
 */
 
 
-//---new--//
 export async function handleActiveGameRedirection() {
     const user = User();
     if (!user || !user._id) return;
     try {
-        const activeGames = await fetchActiveGames(user._id); //<--------!!!------
+        const activeGames = await fetchActiveGames(user._id);
         if (activeGames.length > 0) {
             window.location.href = `/game/${activeGames[0]._id}`; //
         }
@@ -253,7 +252,6 @@ export async function fetchActiveGames(userId) {
         if (!response.ok) {
             // If no active game exists, our backend returns 404.
             if (response.status === 404) return [];
-            console.log("currently in fetchActiveGames, something failed");
             throw new Error(`Server error: ${response.status}`);
         }
         const activeGames = await response.json();
@@ -263,5 +261,3 @@ export async function fetchActiveGames(userId) {
         throw error;
     }
 }
-//-------//
-//-------//
