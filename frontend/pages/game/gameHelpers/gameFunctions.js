@@ -229,3 +229,35 @@ async function checkCurrentTurn() {
     }
 }
 */
+
+
+export async function handleActiveGameRedirection() {
+    const user = User();
+    if (!user || !user._id) return;
+    try {
+        const activeGames = await fetchActiveGames(user._id);
+        if (activeGames.length > 0) {
+            window.location.href = `/game/${activeGames[0]._id}`; //
+        }
+    } catch (error) {
+        console.error("Active game redirection failed:", error);
+    }
+}
+
+
+
+export async function fetchActiveGames(userId) {
+    try {
+        const response = await fetch(apiBase+`/active?userId=${userId}`);
+        if (!response.ok) {
+            // If no active game exists, our backend returns 404.
+            if (response.status === 404) return [];
+            throw new Error(`Server error: ${response.status}`);
+        }
+        const activeGames = await response.json();
+        return activeGames;
+    } catch (error) {
+        console.error("Error fetching active games:", error);
+        throw error;
+    }
+}
