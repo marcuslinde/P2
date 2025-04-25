@@ -11,15 +11,21 @@ import { boardHeight, boardWidth } from '../gameHelpers/board.js';
 import { deleteGame, getGameByID, fireShot, updateGameStatus } from '../gameHelpers/gameFunctions.js';
 import { Ship } from '../gameHelpers/ships.js';
 import { cannonSound, splashSound, lose } from '../../../utility/audioManager.js';
+import { gameUpdate, joinRoom, socket } from '../../../utility/socketFunctions.js';
 
-const howOftenToFetchDataInMS = 500;
+
+joinRoom(Game().gameCode)
+
+initializeGame()
+
+socket.on("gameUpdate", (room)=>{
+    checkTurn()
+})
 
 const playerIndex = User()._id == Game().players[0].userId ? 0 : 1; 
 const enemyIndex = playerIndex == 0 ? 1 : 0;
 
 getElementById("exitGameButton").addEventListener("click", handleDeleteGame)
-
-initializeGame()
 
 /**  initalizes the fields and fetches game data;
  * @function */
@@ -36,9 +42,7 @@ async function initializeGame() {
         paintShipsOnLeftBoard();
         paintShotsOnBoards();
         setGameNames();
-
         checkTurn();
-
     } else {
         window.location.href = "/"
     }
@@ -100,11 +104,10 @@ async function checkTurn() {
     await handleFetchGameData();
     const turnElmnt = getElementById("turn");
 
-    setTimeout(() => {
         if (!Game()) {
             window.alert("Enemy left the game!");
             setTimeout(() => {
-                window.location.href = "/"; // Gå til forsiden //!!!<---- skal fjernes
+                window.location.href = "/"; // Gå til forsiden // !!! <---- skal fjernes
             }, 0);
         }
         if (User()._id !== Game().currentTurn) {
@@ -116,8 +119,6 @@ async function checkTurn() {
         checkGameState();
         paintShotsOnBoards()
         checkWinCondition();
-        checkTurn();
-    }, howOftenToFetchDataInMS);
 }
 
 /** Makes sure the game is always in right status and exists */
@@ -202,7 +203,7 @@ async function handleFireShot(e) {
             splashSound.play();
         }
         setGame(updatedGame);
-
+        gameUpdate(Game().gameCode)
         // Prevent firing the same field twice
         firedAtField.parentNode.replaceChild(firedAtField.cloneNode(true), firedAtField);
     }

@@ -11,10 +11,15 @@ import { getElementById, querySelectorAll } from "../../../utility/helperFunctio
 import { boardWidth, boardHeight } from "../gameHelpers/board.js";
 import { getGameByID, submitShips, deleteGame } from "../gameHelpers/gameFunctions.js"
 import { createShips, Ship } from "../gameHelpers/ships.js";
+import { gameUpdate, joinRoom, socket } from "../../../utility/socketFunctions.js";
 
-checkIfReady();
+
 initializeBoardFields();
+joinRoom(Game().gameCode)
 
+socket.on("gameUpdate", (room)=>{
+    checkIfReady();
+})
 // Event listeners for game control buttons
 getElementById("exitGameButton").addEventListener("click", handleDeleteGame);
 getElementById("resetButton").addEventListener("click", resetShipPlacement);
@@ -146,7 +151,6 @@ function getShipByName(name) {
     }
 }
 
-
 /** Places the selected ship on the board when a field is clicked.*/
 function placeShip(e) {
     e.preventDefault();
@@ -180,9 +184,7 @@ function placeShip(e) {
 }
 
 
-/**
- * Deselects the currently selected ship and resets related states.
- */
+/** Deselects the currently selected ship and resets related states. */
 function deselectCurrentShip() {
     let shipData = null;
     if (currentSelectedShip) {
@@ -247,7 +249,7 @@ function calculateCoveredFields(start, length, rotation) {
 /**
  * Checks whether any of the provided fields are already occupied.
  * @param {Array<field>} fields 
- * @returns {boolean}
+ * @returns {boolean} 
  */
 function isOverlap(fields) {
     try {
@@ -263,11 +265,9 @@ function isOverlap(fields) {
     }
 }
 
-
 /**
  * Marks the provided fields as occupied by a ship.
- * @param {Array<field>} fields 
- */
+ * @param {Array<field>} fields  */
 function markFieldsOccupied(fields) {
     try {
         fields.forEach(fieldId => {
@@ -341,9 +341,7 @@ document.addEventListener("keydown", (e) => {
  * Recursively checks if both players are ready at regular intervals.
  * Fixed race condition by moving the timeout inside the promise resolution.
  */
-
 async function checkIfReady() {
-
     try {
         const gameData = await getGameByID(Game()._id);
         
@@ -355,15 +353,11 @@ async function checkIfReady() {
             }, 1);
         }  
 
-
         if (gameData && gameData.players && 
             gameData.players[1].ready && gameData.players[0].ready) {
             setGame(gameData);
             window.location.href = "/game";
-        } else {
-            // Only set the next check after this one completes
-            setTimeout(() => checkIfReady(), fetchIntervalMS);
-        }
+        } 
     } catch (err) {
         throw err;
     }
@@ -394,9 +388,7 @@ shipElements.forEach(ship => {
     });
 });
 
-/**
- * Randomizes the placement of ships on the board.
- */
+/** Randomizes the placement of ships on the board.*/
 export function randomizeShipPlacement() {
     resetShipPlacement();
 
@@ -430,9 +422,7 @@ export function randomizeShipPlacement() {
     });
 }
 
-/**
- * Resets the board and ship placements to their initial state.
- */
+/** * Resets the board and ship placements to their initial state. */
 export function resetShipPlacement() {
     try {
         // Clear all occupied field classes and background colors
@@ -470,7 +460,7 @@ async function handleSubmitShips(e) {
     e.preventDefault();
     try {
         setLoading(true);
-        // Check if all ships are placed
+        // @ts-ignore: Check if all ships are placed
         const allShipsPlaced = ships.every(ship => ship.coveredFields.length > 0);
         if (!allShipsPlaced) {
             window.alert("Please place all ships before submitting");
@@ -481,6 +471,7 @@ async function handleSubmitShips(e) {
         const updatedGame = await submitShips(Game()._id, User()._id, ships);
         if (updatedGame) {
             setGame(updatedGame);
+            gameUpdate(Game().gameCode)
         }
     } catch (error) {
         console.error("Error in handleSubmitShips:", error);
@@ -488,10 +479,7 @@ async function handleSubmitShips(e) {
     }
 }
 
-/**
- * Deletes the game and redirects to the front page.
- * @param {Event} e 
- */
+/** Deletes the game and redirects to the front page.*/
 async function handleDeleteGame(e) {
     e.preventDefault();
     try {
