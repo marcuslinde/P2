@@ -9,8 +9,6 @@ import { getElementById } from '../../../utility/helperFunctions.js';
 import { boardHeight, boardWidth } from '../gameHelpers/board.js';
 import { Ship } from '../gameHelpers/ships.js';
 
-const howOftenToFetchDataInMS = 500;
-
 const playerIndex = User()._id == Game().players[0].userId ? 0 : 1;
 const enemyIndex = playerIndex == 0 ? 1 : 0;
 
@@ -27,9 +25,6 @@ getElementById("homeButton").addEventListener("click",() =>{
     setGame(null)
     window.location.href = "/"
 })
-
-
-
 
 /** Creates 100 fields to fill the game boards and adds drag and drop functionalty to them */
 async function initializeFields() {
@@ -56,7 +51,6 @@ async function initializeFields() {
     }
 }
 
-
 /** Sets the visible player names  */
 function setGameNames() {
     getElementById("enemyName").innerHTML = Game().players[playerIndex].name;
@@ -70,8 +64,6 @@ function setGameNames() {
         // winnerDisplayElement.innerHTML = `${Game().players[enemyIndex].name} won the battle!`
     }
 }
-
-
 
 /** paints the ships on the left board*/
 async function paintShipsOnBoards() {
