@@ -34,7 +34,8 @@ const GameSchema = new Schema({
     }
   },
   status: { type: String, enum: ['waiting', 'active', 'finished'], default: 'waiting' },
-  currentTurn: { type: Schema.Types.ObjectId, ref: 'User' } // Set once both players are ready
+  currentTurn: { type: Schema.Types.ObjectId, ref: 'User' }, // Set once both players are ready
+  winner: { type: Schema.Types.ObjectId, ref: 'User', default: null }
 }, { timestamps: true });
 
 const Game = mongoose.models.Game || mongoose.model('Game', GameSchema);
