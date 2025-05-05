@@ -165,14 +165,14 @@ export const submitShips = async (req, res) => {
     if (!player) {
       return res.status(400).json({ error: 'User not part of this game' });
     }
-    
+
     // Update board (ship placements) and readiness flag if provided
     if (ships) {
       player.ships = ships;
     }
 
     player.ready = true;
-  
+
 
     // If both players have joined and are ready, update the game status and set the current turn
     if (game.players.length === 2 && game.players.every(p => p.ready)) {
@@ -182,7 +182,7 @@ export const submitShips = async (req, res) => {
 
     const updatedGame = await game.save();
     res.json(updatedGame);
-    
+
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Server error' });
@@ -202,7 +202,7 @@ export const updateGame = async (req, res) => {
     if (!gameId || !userId) {
       return res.status(400).json({ error: 'gameId and userId are required' });
     }
-    
+
     // game gameId
     const game = await Game.findById(gameId);
     if (!game) {
@@ -212,10 +212,10 @@ export const updateGame = async (req, res) => {
     if (!game.currentTurn || game.currentTurn.toString() !== userId.toString()) {
       return res.status(403).json({ error: 'Not your turn' });
     }
-    
+
     // Find spiller-objektet og modstanderen
-    const player    = game.players.find(p => p.userId.toString() === userId.toString());
-    const opponent  = game.players.find(p => p.userId.toString() !== userId.toString());
+    const player = game.players.find(p => p.userId.toString() === userId.toString());
+    const opponent = game.players.find(p => p.userId.toString() !== userId.toString());
     if (!player || !opponent) {
       return res.status(400).json({ error: 'Invalid players' });
     }
@@ -223,20 +223,21 @@ export const updateGame = async (req, res) => {
     if (player.shots.includes(field)) {
       return res.status(400).json({ error: 'Field already shot' });
     }
-    
+
 
     // 1) Registrér skuddet
     player.shots.push(field);
 
     // 2) Tjek for sunkne skibe hos modstanderen
     opponent.ships.forEach(ship => {
-        if (!ship.isSunk && ship.coveredFields.every(f => player.shots.includes(f))) {
-            ship.isSunk = true;
-        }
+      if (!ship.isSunk && ship.coveredFields.every(f => player.shots.includes(f))) {
+        ship.isSunk = true;
+      }
     });
 
     // 3) Tjek om modstanderen er slået
     const allOpponentSunk = opponent.ships.every(s => s.isSunk);
+
     if (allOpponentSunk) {
       game.status = 'finished';
       game.winner = player.userId;
@@ -254,3 +255,4 @@ export const updateGame = async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 };
+
