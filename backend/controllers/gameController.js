@@ -189,87 +189,66 @@ export const submitShips = async (req, res) => {
   }
 };
 
-/**
- * Update game state to finished when win con is met
- * @param {any} req 
- * @param {any} res 
- */
-
-export const updateGameStatus = async (req, res) => {
-  try {
-    const {gameId, gameStatus} = req.body;
-    if (!gameId) {
-      return res.status(400).json({error: 'gameId are required'});
-    }
-
-    const game = await Game.findById(gameId);
-    if (!game) {
-      return res.status(404).json({ error: 'Game not found' });
-    }
-
-    if (gameStatus == 'finished') {
-      game.status = 'finished';
-    }
-
-    const updatedGame = await game.save();
-    res.json(updatedGame);
-    }
-
-  catch(error) {
-    console.error(error);
-    res.status(500).json({ error: 'Server error' });
-  }
-}
-
 
 /**
  * Update game details (e.g., updating ship placements and setting "ready")
  * @param {any} req 
  * @param {any} res 
  */
-export const fireShot = async (req, res) => {
+export const updateGame = async (req, res) => {
   try {
-        // Expect gameId to be sent in the request body (this is the _id from MongoDB)
+    // Expect gameId to be sent in the request body (this is the _id from MongoDB)
     const { gameId, userId, field } = req.body;
     if (!gameId || !userId) {
       return res.status(400).json({ error: 'gameId and userId are required' });
     }
-    
     
     // game gameId
     const game = await Game.findById(gameId);
     if (!game) {
       return res.status(404).json({ error: 'Game not found' });
     }
-    
     // Check that currentTurn exists and matches the userId
     if (!game.currentTurn || game.currentTurn.toString() !== userId.toString()) {
       return res.status(403).json({ error: 'Not your turn' });
     }
     
-    // Find the player in the game document
-    const player = game.players.find(player => player.userId.toString() === userId.toString());
-    if (!player) {
-      return res.status(400).json({ error: 'User not part of this game' });
+    // Find spiller-objektet og modstanderen
+    const player    = game.players.find(p => p.userId.toString() === userId.toString());
+    const opponent  = game.players.find(p => p.userId.toString() !== userId.toString());
+    if (!player || !opponent) {
+      return res.status(400).json({ error: 'Invalid players' });
     }
-    
     // Prevent duplicate shots on the same field
     if (player.shots.includes(field)) {
       return res.status(400).json({ error: 'Field already shot' });
     }
     
-    // Register the shot
+
+    // 1) Registrér skuddet
     player.shots.push(field);
-    
-    // Find the other player and switch the turn
-    const otherPlayer = game.players.find(p => p.userId.toString() !== userId.toString());
-    if (!otherPlayer) {
-      return res.status(400).json({ error: 'Other player not found' });
+
+    // 2) Tjek for sunkne skibe hos modstanderen
+    opponent.ships.forEach(ship => {
+        if (!ship.isSunk && ship.coveredFields.every(f => player.shots.includes(f))) {
+            ship.isSunk = true;
+        }
+    });
+
+    // 3) Tjek om modstanderen er slået
+    const allOpponentSunk = opponent.ships.every(s => s.isSunk);
+    if (allOpponentSunk) {
+      game.status = 'finished';
+      game.winner = player.userId;
+    } else {
+      // 4) ellers skift tur
+      game.currentTurn = opponent.userId;
     }
-    game.currentTurn = otherPlayer.userId;
-    
+
+    // 5) Gem ALT i ét go
     const updatedGame = await game.save();
-    res.json(updatedGame);
+    return res.json(updatedGame);
+
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Server error' });

@@ -1,296 +1,223 @@
 /** 
  * @module game.js 
- * @typedef {number} field - defines a field so we get errors
- * @typedef {Ship} ship - defines a ship so we can see errors
+ * @typedef {number} field
+ * @typedef {Ship} ship
  * @typedef {"left"|"right"} side
-*/
+ */
 import { User, Game, setGame } from '../../../utility/state.js';
 import { setLoading } from '../../../utility/ui.js';
 import { getElementById } from '../../../utility/helperFunctions.js';
 import { boardHeight, boardWidth } from '../gameHelpers/board.js';
-import { deleteGame, getGameByID, fireShot, updateGameStatus } from '../gameHelpers/gameFunctions.js';
-import { Ship } from '../gameHelpers/ships.js';
-import { cannonSound, splashSound, lose } from '../../../utility/audioManager.js';
+import { deleteGame, getGameByID, fireShot } from '../gameHelpers/gameFunctions.js';
+import { cannonSound, splashSound } from '../../../utility/audioManager.js';
 import { gameUpdate, joinRoom, socket } from '../../../utility/socketFunctions.js';
 
+joinRoom(Game().gameCode);
+initializeGame();
+socket.on("gameUpdate", () => checkTurn());
 
-joinRoom(Game().gameCode)
+const playerIndex = User()._id === Game().players[0].userId ? 0 : 1;
+const enemyIndex  = playerIndex === 0 ? 1 : 0;
 
-initializeGame()
+getElementById("exitGameButton").addEventListener("click", handleDeleteGame);
 
-socket.on("gameUpdate", (room)=>{
-    checkTurn()
-})
 
-const playerIndex = User()._id == Game().players[0].userId ? 0 : 1; 
-const enemyIndex = playerIndex == 0 ? 1 : 0;
-
-getElementById("exitGameButton").addEventListener("click", handleDeleteGame)
-
-/**  initalizes the fields and fetches game data;
- * @function */
+/** Initialiserer spillet: felter, skibe, shots, tur osv. */
 async function initializeGame() {
-    setLoading(true)
-    await handleFetchGameData()
-    if (!Game()) {
-        window.alert("could not find game")
-            window.location.href = "/";
-    }
+  setLoading(true);
+  await handleFetchGameData();
 
-    if (Game()) {
-        initializeFields();
-        paintShipsOnLeftBoard();
-        paintShotsOnBoards();
-        setGameNames();
-        checkTurn();
-    } else {
-        window.location.href = "/"
-    }
-    setLoading(false)
+  if (!Game()) {
+    window.alert("Kunne ikke finde spillet");
+    return window.location.href = "/";
+  }
+
+  initializeFields();
+  paintShipsOnLeftBoard();
+  paintShotsOnBoards();
+  setGameNames();
+  await checkTurn();
+  setLoading(false);
 }
 
-/** Creates 100 fields to fill the game boards and adds drag and drop functionalty to them */
+
+/** Opretter 2×100 felter og bindes drag/drop eller klik */
 export async function initializeFields() {
-    let gameboard = getElementById("leftGameBoard");
-    let side = "left";
+  ["left", "right"].forEach(side => {
+    const board = getElementById(side + "GameBoard");
+    for (let i = 1; i <= boardWidth * boardHeight; i++) {
+      const field = document.createElement("div");
+      field.classList.add("field", side);
+      field.id = side + "field" + i;
+      field.dataset.side = side;
+      field.dataset.index = String(i);
 
-    for (let j = 0; j <= 1; j++) {
-        if (j == 1) {
-            gameboard = getElementById("rightGameBoard");
-            side = "right";
-        }
+      if (side === "left") {
+        field.addEventListener("dragover", e => { e.preventDefault(); field.style.border = "2px solid black"; });
+        field.addEventListener("dragleave", e => { e.preventDefault(); field.style.border = "1px solid black"; });
+      } else {
+        field.addEventListener("click", handleFireShot);
+      }
 
-        for (let i = 0; i < boardWidth * boardHeight; i++) {
-            const field = document.createElement("div");
-            field.classList.add("field");
-            field.classList.add(side);
-            field.id = side + "field" + (i + 1);
-            field.dataset.side = side;
-            field.dataset.index = String(i + 1);
-            // Adds hover effect when dragging ship to left squares
-
-            if (side == "left") {
-                field.addEventListener("dragover", (e) => {
-                    e.preventDefault();
-                    field.style.border = "2px solid black"
-                })
-                field.addEventListener("dragleave", (e) => {
-                    e.preventDefault();
-                    field.style.border = "1px solid black"
-                })
-
-
-            }
-            if (side == "right") {
-                field.addEventListener("click", handleFireShot);
-            }
-
-            // Tilføjer field div til gameboard div
-            gameboard.append(field);
-        }
+      board.append(field);
     }
+  });
 }
 
-/** Sets the visible player names  */
+
+/** Sætter spiller‐navne i UI */
 function setGameNames() {
-    getElementById("enemyName").innerHTML = Game().players[playerIndex].name;
-    getElementById("enemyName").innerHTML = Game().players[enemyIndex].name;
+  getElementById("yourName").textContent  = Game().players[playerIndex].name;
+  getElementById("enemyName").textContent = Game().players[enemyIndex].name;
 }
 
-/** checks whos turn it is by fetching from the database.
- * Recursive function that calls itself every x seconds, to check the game;
- * @function */
+
+/**
+ * Finder skibe der netop blev sunket, markerer dem isSunk=true
+ * og returnerer deres navne til popup.
+ */
+function getNewlySunkShips(ships, shots) {
+  const sunkNow = [];
+  ships.forEach(ship => {
+    if (!ship.isSunk && ship.coveredFields.every(f => shots.includes(f))) {
+      ship.isSunk = true;
+      sunkNow.push(ship.name);
+    }
+  });
+  return sunkNow;
+}
+
+/** Viser midlertidig popup med “X sunk!”-tekst */
+function showSunkMessage(shipNames) {
+  if (!shipNames.length) return;
+  const msg = document.createElement('div');
+  msg.classList.add('sunk-message');
+  msg.textContent = shipNames.map(n => `${n} sunk!`).join(' ');
+  document.body.appendChild(msg);
+  msg.addEventListener('animationend', () => msg.remove());
+}
+
+
+/** 
+ * Henter frisk state, tjekker om spillet er slut og opdaterer UI ellers. 
+ */
 async function checkTurn() {
-    await handleFetchGameData();
-    const turnElmnt = getElementById("turn");
+  await handleFetchGameData();
 
-        if (!Game()) {
-            window.alert("Enemy left the game!");
-            setTimeout(() => {
-                window.location.href = "/"; // Gå til forsiden // !!! <---- skal fjernes
-            }, 0);
-        }
-        if (User()._id !== Game().currentTurn) {
-            turnElmnt.innerHTML = "Enemy turn"
+  // 1) Hvis modstanderen forlod
+  if (!Game()) {
+    window.alert("Modstanderen forlod spillet");
+    return window.location.href = "/";
+  }
 
-        } else {
-            turnElmnt.innerHTML = "Your turn"
-        }
-        checkGameState();
-        paintShotsOnBoards()
-        checkWinCondition();
+  // 2) Hvis spillet er færdigt → redirect begge
+  if (Game().status === 'finished') {
+    const didWin = (Game().winner === User()._id);
+    sessionStorage.setItem('didWin', didWin);
+    return window.location.href = "/endScreen";
+  }
+
+  // 3) Ellers set tur‐tekst og opdater shots
+  const turnEl = getElementById("turn");
+  turnEl.textContent = (User()._id === Game().currentTurn) ? "Your turn" : "Enemy turn";
+  paintShotsOnBoards();
 }
 
-/** Makes sure the game is always in right status and exists */
-function checkGameState() {
-    if (!Game()) {
-        window.alert("Error: no game found. Enemy might have left")
-        window.location.href = "/"
-    }
 
-    if (Game().status === "active") {
-        setGameNames();
-    }
+/** Tegner egne skibe på venstre board */
+function paintShipsOnLeftBoard() {
+  Game().players[playerIndex].ships.forEach(ship =>
+    ship.coveredFields.forEach(f =>
+      getElementById("leftfield" + f).classList.add("occupiedField")
+    )
+  );
 }
 
-/** paints the ships on the left board*/
-async function paintShipsOnLeftBoard() {
-    Game().players[playerIndex].ships.forEach((ship) => {
-        ship.coveredFields.forEach((field) => {
-            getElementById("leftfield" + field).classList.add("occupiedField")
-        })
-    })
-}
-
-/** Paints the shots on both boards */
+/** Tegner hits/misses på begge boards */
 function paintShotsOnBoards() {
-    Game().players[enemyIndex].shots.forEach((shot) => {
-        let fieldElmnt = getElementById("leftfield" + shot);
-        
-
-            if (fieldElmnt.classList.contains("occupiedField")) {
-                fieldElmnt.classList.add("hitField");
-            } else {
-                fieldElmnt.classList.add("missedField");
-            }
-        
-    })
-
-    Game().players[playerIndex].shots.forEach((shot) => {
-        let fieldElmnt = getElementById("rightfield" + shot);
-
-            if (checkIfHit(shot)) {
-                fieldElmnt.classList.add("hitField");
-            } else {
-                fieldElmnt.classList.add("missedField");
-            }
-
-    })
-
+  // Fjendens skud på dit board
+  Game().players[enemyIndex].shots.forEach(s => {
+    const el = getElementById("leftfield" + s);
+    el.classList.add(el.classList.contains("occupiedField") ? "hitField" : "missedField");
+  });
+  // Dine skud på fjendens board
+  Game().players[playerIndex].shots.forEach(s => {
+    const el = getElementById("rightfield" + s);
+    el.classList.add(isHit(s) ? "hitField" : "missedField");
+  });
 }
 
-/** calls the getGameByID function and updates the ui based on the results */
+
+/** Henter spil‐data fra backend og gemmer i state */
 async function handleFetchGameData() {
-    const gameData = await getGameByID(Game()._id);
-    if (gameData) {
-        setGame(gameData)
-    } else {
-        setGame(null)
-    }
+  const gameData = await getGameByID(Game()._id);
+  setGame(gameData || null);
 }
 
-/** Calls the fireShot function, and updates the UI based on the result */
+
+/**
+ * Sender skud, opdaterer UI, viser sunk‐popup og redirecter hvis færdigt 
+ */
 async function handleFireShot(e) {
-    e.preventDefault();
+  e.preventDefault();
+  if (Game().currentTurn !== User()._id) return;
 
-    if (Game().currentTurn !== User()._id) {
-        return;
-    }
+  const td = e.currentTarget;
+  const field = parseInt(td.dataset.index, 10);
 
-    const firedAtField = e.currentTarget;
-    const field = parseInt(firedAtField.dataset.index, 10); // Field number
-
+  try {
     const updatedGame = await fireShot(Game()._id, User()._id, field);
+    if (!updatedGame) return;
 
-    if (updatedGame) {
-
-
-        if (checkIfHit(field)) {
-            firedAtField.classList.add("hitField");
-            cannonSound.play();
-        } else {
-            firedAtField.classList.add("missedField");
-            splashSound.play();
-        }
-        setGame(updatedGame);
-        gameUpdate(Game().gameCode)
-        // Prevent firing the same field twice
-        firedAtField.parentNode.replaceChild(firedAtField.cloneNode(true), firedAtField);
+    // Hit/Miss animation + lyd
+    if (isHit(field)) {
+      td.classList.add("hitField"); cannonSound.play();
+    } else {
+      td.classList.add("missedField"); splashSound.play();
     }
+
+    // Opdater state + socket‐broadcast
+    setGame(updatedGame);
+    gameUpdate(Game().gameCode);
+
+    // Sunk‐popup
+    const enemy      = Game().players[enemyIndex];
+    const sunkShips  = getNewlySunkShips(enemy.ships, Game().players[playerIndex].shots);
+    showSunkMessage(sunkShips);
+
+    // Hvis spillet nu er færdigt → redirect
+    if (updatedGame.status === 'finished') {
+      const didWin = (updatedGame.winner === User()._id);
+      sessionStorage.setItem('didWin', didWin);
+      return window.location.href = "/endScreen";
+    }
+
+    // Fjern click‐listener på feltet
+    td.replaceWith(td.cloneNode(true));
+  } catch (err) {
+    console.error("Error in handleFireShot:", err);
+  }
 }
 
-/** Calls the udateGameStatus function 
- * @param {string} gameStatus - Status of game
-*/
-async function handleUpdateGameStatus(gameStatus) {
-    try {
-        setLoading(true);
-        const updatedGame = await updateGameStatus(Game()._id, gameStatus);
-        if (updatedGame) {
-            setGame(updatedGame);
-        }
-        window.location.href = "/endScreen";
-    } catch (error) {
-        console.error("Error in handleUpdateGameStatus:", error);
-    } finally {
-        setLoading(false);
-    }
+
+/** Returnerer true hvis skud er på et skib */
+function isHit(field) {
+  const enemyShips = Game().players[
+    Game().players[0].userId === User()._id ? 1 : 0
+  ].ships;
+  return enemyShips.some(ship => ship.coveredFields.includes(field));
 }
 
-/** Helper function to check if a shot hits a ship or not. */
-function checkIfHit(field) {
-    const checkPlayer = Game().players[0].userId === User()._id ? 1 : 0;
-    
-    /** @type {Array<ship>} */
-    const enemyShips = Game().players[checkPlayer].ships;
 
-    for (let i = 0; i < enemyShips.length; i++) {
-        const ship = enemyShips[i];
-        if (ship.coveredFields && ship.coveredFields.includes(field)) {
-            return true;
-        }
-    }
-    return false;
-}
-
-function checkWinCondition() {
-    const playerShots = Game().players[playerIndex].shots;
-    /**@type {Array<ship>} */
-    const enemyShips = Game().players[enemyIndex].ships;
-
-    const enemyShots = Game().players[enemyIndex].shots;
-
-    /**@type {Array<ship>} */
-    const playerShips = Game().players[playerIndex].ships;
-
-
-    /** For each enemy ship, check if every field is included in the attacker's shots
-     * @type {boolean} */
-    const allEnemyShipsSunk = enemyShips.every(ship => {
-        if (!ship.coveredFields) return false;
-        Game().players.winner = Game().players[playerIndex]; //added Line
-        return ship.coveredFields.every(field => playerShots.includes(field));
-        //Maybe add a boolean here
-
-    });
-
-
-    /** For each enemy ship, check if every field is included in the attacker's shots
-     * @type {boolean} */
-    const allPlayerShipsSunk = playerShips.every(ship  => {
-        if (!ship.coveredFields) return false;
-        Game().players.winner = Game().players[enemyIndex]; //added line
-        return ship.coveredFields.every(field => enemyShots.includes(field));
-    });
-
-
-    if (allEnemyShipsSunk || allPlayerShipsSunk) {
-        handleUpdateGameStatus('finished')
-        //Add win method
-        setGameNames();
-    }
-    return false;
-}
+/** Slet spillet helt og redirect til forsiden */
 async function handleDeleteGame(e) {
-    setLoading(true);
-    e.preventDefault();
-    const response = await deleteGame(Game()._id)
-    if (response) {
-        setGame(null);
-        window.location.href = "/";
-    }
-
+  e.preventDefault();
+  setLoading(true);
+  try {
+    await deleteGame(Game()._id);
+    setGame(null);
+    window.location.href = "/";
+  } finally {
     setLoading(false);
+  }
 }
-
-

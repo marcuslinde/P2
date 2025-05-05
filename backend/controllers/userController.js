@@ -35,49 +35,42 @@ export const getUserStats = async (req, res) => {
     const { id } = req.params;
   
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(404).json({ success: false, message: "Invalid User Id" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Invalid User Id" });
     }
   
     try {
-      // Find all games where the user is a player
-      const games = await Game.find({ 'players.userId': id });
+        // 1) Antal færdige spil, hvor brugeren har deltaget
+        const totalGames = await Game.countDocuments({
+            status: "finished",
+            "players.userId": id,
+        });
+        
+        // 2) Antal sejre: hvor winner = brugeren
+        const wins = await Game.countDocuments({
+            status: "finished",
+            winner: id,
+        });
+
+       // 3) Beregn winRatio
+        const winRatio = totalGames > 0 ? (wins / totalGames).toFixed(2) : "0";
       
-      let wins = 0;
-      
-      // Her implementeres logik for count wins
-      /* games.forEach(game => {
-        if (game.status === 'finished') {
-          const userPlayer = game.players.find(
-            p => p.userId.toString() === id.toString()
-          );
-          const opponentPlayer = game.players.find(
-            p => p.userId.toString() !== id.toString()
-          );
-          if (userPlayer && opponentPlayer) {
-            const allOpponentShipsSunk = opponentPlayer.ships.every(ship => ship.isSunk);
-            if (allOpponentShipsSunk) {
-              wins++;
-            }
-          }
-        }
-      });*/
-      
-      const totalGames = games.length;
-      const winRatio = totalGames > 0 ? wins / totalGames : 0;
-      
-      return res.status(200).json({
-        success: true,
-        stats: {
-          totalGames,
-          wins,
-          winRatio: winRatio.toFixed(2)
-        }
-      });
+        return res.status(200).json({
+            success: true,
+            stats: {
+              totalGames,
+              wins,
+              winRatio,
+            },
+          });
     } catch (error) {
-      console.error(error);
-      return res.status(500).json({ success: false, message: "Server error" });
+        console.error("Error in getUserStats:", error);
+        return res
+            .status(500)
+            .json({ success: false, message: "Server error" });
     }
-  };
+};
 
 export const deleteUser = async (req, res) => {
     const { id } = req.params;
