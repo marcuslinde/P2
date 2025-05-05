@@ -37,6 +37,7 @@ export const register = async (req, res) => {
 
   if (!name || !email || !password) {
     return res.status(400).json({ success: false, message: "Provide all fields" });
+    return false
   }
 
   try {
@@ -49,9 +50,11 @@ export const register = async (req, res) => {
     // Remove sensitive fields before sending the response
     const { password: _, ...safeUser } = newUser.toObject();
     res.status(201).json({ success: true, newUser: safeUser });
+    return true;
   } catch (error) {
     console.error("Error in creating user:", error.message);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(500).json({ success: false, message: "Server error"});
+    return false;
   }
 };
 
