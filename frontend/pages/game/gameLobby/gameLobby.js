@@ -10,7 +10,7 @@ joinRoom(Game().gameCode)
 getElementById("gameCode").innerHTML = `GAME CODE: ${Game().gameCode}`
 getElementById("cancelButton").addEventListener("click", handleDeleteGame)
 
-socket.on("gameUpdate", (room)=>{
+socket.on("gameUpdate", ()=>{
     updateGame();
 })
 

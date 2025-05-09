@@ -4,7 +4,7 @@
  * @typedef {Ship} ship
  */
 import { getElementById, querySelectorAll } from '../../utility/helperFunctions.js';
-import { createShips, Ship } from '../game/gameHelpers/ships.js';
+import { createShips } from '../game/gameHelpers/ships.js';
 import { boardHeight, boardWidth } from '../game/gameHelpers/board.js';
 import { cannonSound, splashSound } from '../../utility/audioManager.js';
 
@@ -94,11 +94,9 @@ function gameLoop() {
     }
     if (turn === 0) {
         setTimeout(() => {botFireCannon();
-        }, 1000)}
-    else {
+        }, 1000)
     }
 }
-
 /** Tilføjer elementet occupiedField til de fields med skibe på */
 function assignOccupiedFields(coveredFields, side) {
     coveredFields.forEach(index => {

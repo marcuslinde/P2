@@ -18,7 +18,6 @@ registerForm?.addEventListener("submit", handleRegister)
  */
 
 function isValidPassword() {
-    const upperLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     const password = getInputElement("password").value;
     const repeatPassword = getInputElement("repeatPassword").value;
 

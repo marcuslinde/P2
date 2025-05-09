@@ -4,22 +4,16 @@ const apiBase = '/api/user'
    * @param {string} id 
 */
 export async function getUserById(id) {
+    // API CALL TO REGISTER USER
+    const response = await fetch(apiBase + '/' + id)
 
-    try {
-        // API CALL TO REGISTER USER
-        const response = await fetch(apiBase + '/'+id)
-
-        if (!response.ok) {
-            throw new Error("User does not exist");
-        }
-
-        const data = await response.json()
-
-        return data.user;
-    } catch(err) {
-        throw err
+    if (!response.ok) {
+        throw new Error("User does not exist");
     }
 
+    const data = await response.json()
+
+    return data.user;
 }
 
 /**
@@ -39,8 +33,7 @@ export async function deleteUser(id) {
         };
 
         const data = await response.json();
-
-        return true;
+        return data;
 
     } catch (error) {
         console.error("Error deleting user", error);

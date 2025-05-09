@@ -100,7 +100,7 @@ export async function deleteGame(gameId) {
 
         const data = await response.json();
 
-        return true;
+        return data;
 
     } catch (error) {
         console.error("Error checking game state:", error);
@@ -141,18 +141,16 @@ export async function submitShips(gameId, userId, ships) {
  * @returns {Promise<object>}  
  */
 export async function fireShot(gameId, userId, field) {
-    try {
-        const response = await fetch(apiBase + "/updateGame", {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ gameId, userId, field })
-        });
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        return await response.json();
-    } catch (error) {
-        throw error;
-    }
-  }
+
+    const response = await fetch(apiBase + "/updateGame", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ gameId, userId, field })
+    });
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    return await response.json();
+
+}
 
 /*
 // Checks for game status
@@ -199,8 +197,7 @@ async function checkCurrentTurn() {
 */
 
 
-export async function handleActiveGameRedirection() {
-    const user = User();
+export async function handleActiveGameRedirection(user) {
     if (!user || !user._id) return;
     try {
         const activeGames = await fetchActiveGames(user._id);
@@ -216,7 +213,7 @@ export async function handleActiveGameRedirection() {
 
 export async function fetchActiveGames(userId) {
     try {
-        const response = await fetch(apiBase+`/active?userId=${userId}`);
+        const response = await fetch(apiBase + `/active?userId=${userId}`);
         if (!response.ok) {
             // If no active game exists, our backend returns 404.
             if (response.status === 404) return [];

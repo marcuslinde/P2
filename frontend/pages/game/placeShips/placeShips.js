@@ -10,14 +10,14 @@ import { setLoading } from "../../../utility/ui.js";
 import { getElementById, querySelectorAll } from "../../../utility/helperFunctions.js";
 import { boardWidth, boardHeight } from "../gameHelpers/board.js";
 import { getGameByID, submitShips, deleteGame } from "../gameHelpers/gameFunctions.js"
-import { createShips, Ship } from "../gameHelpers/ships.js";
+import { createShips } from "../gameHelpers/ships.js";
 import { gameUpdate, joinRoom, socket } from "../../../utility/socketFunctions.js";
 
 
 initializeBoardFields();
 joinRoom(Game().gameCode)
 
-socket.on("gameUpdate", (room)=>{
+socket.on("gameUpdate", () => {
     checkIfReady();
 })
 // Event listeners for game control buttons
@@ -26,7 +26,6 @@ getElementById("resetButton").addEventListener("click", resetShipPlacement);
 getElementById("randomizeButton").addEventListener("click", randomizeShipPlacement);
 getElementById("readyButton").addEventListener("click", handleSubmitShips);
 
-const fetchIntervalMS = 500;
 
 /** @type {HTMLElement|null} */
 let currentSelectedShip = null;
@@ -96,11 +95,11 @@ export function initializeBoardFields() {
 function updateGhostShipDisplay(color) {
     // Added defensive check for currentHoveredField
     if (!currentHoveredField || !currentSelectedShip) return;
-    
+
     const fieldIndex = Number(currentHoveredField.dataset.index);
     const shipData = getShipByName(currentSelectedShip.id);
     if (!shipData) return;
-    
+
     const ghostFields = calculateCoveredFields(fieldIndex, shipData.length, shipData.rotation);
     if (ghostFields) {
         ghostFields.forEach(fieldId => {
@@ -155,7 +154,7 @@ function getShipByName(name) {
 function placeShip(e) {
     e.preventDefault();
     if (!currentSelectedShip) return;
-    
+
     try {
         const field = e.currentTarget;
         const shipData = getShipByName(currentSelectedShip.id);
@@ -164,15 +163,15 @@ function placeShip(e) {
             return;
 
         }
-        
+
         const dropField = parseInt(field.dataset.index, 10);
-        
+
         const coveredFields = calculateCoveredFields(dropField, shipData.length, shipData.rotation);
         if (!coveredFields) {
             // Invalid placement, don't deselect the ship to allow trying again
             return;
         }
-        
+
         shipData.setcoveredFields(coveredFields);
         currentSelectedShip.style.display = "none"; // Hide ship element after placement
         markFieldsOccupied(coveredFields);
@@ -292,13 +291,13 @@ function markFieldsOccupied(fields) {
  */
 function rotateShip() {
     if (!currentSelectedShip) return;
-    
+
     try {
         const shipData = getShipByName(currentSelectedShip.id);
         if (!shipData) return;
-        
+
         const newRotation = shipData.rotation === "horizontal" ? "vertical" : "horizontal";
-        
+
         // Check if rotation would be valid when hovering over a field
         if (currentHoveredField) {
             const fieldIndex = Number(currentHoveredField.dataset.index);
@@ -308,10 +307,10 @@ function rotateShip() {
                 return;
             }
         }
-        
+
         // Toggle ship rotation
         shipData.rotation = newRotation;
-        
+
         // Update visual rotation of the ship element
         const currentRotationDeg = parseInt(currentSelectedShip.getAttribute("data-rotation") || "0", 10);
         const newRotationDeg = (currentRotationDeg + 90) % 360;
@@ -342,25 +341,23 @@ document.addEventListener("keydown", (e) => {
  * Fixed race condition by moving the timeout inside the promise resolution.
  */
 async function checkIfReady() {
-    try {
-        const gameData = await getGameByID(Game()._id);
-        
-        if (!gameData) {
-            window.alert("Enemy left the game!")
-            setGame(null)
-            setTimeout(() => {
-                window.location.href = "/"
-            }, 1);
-        }  
 
-        if (gameData && gameData.players && 
-            gameData.players[1].ready && gameData.players[0].ready) {
-            setGame(gameData);
-            window.location.href = "/game";
-        } 
-    } catch (err) {
-        throw err;
+    const gameData = await getGameByID(Game()._id);
+
+    if (!gameData) {
+        window.alert("Enemy left the game!")
+        setGame(null)
+        setTimeout(() => {
+            window.location.href = "/"
+        }, 1);
     }
+
+    if (gameData && gameData.players &&
+        gameData.players[1].ready && gameData.players[0].ready) {
+        setGame(gameData);
+        window.location.href = "/game";
+    }
+
 
 }
 
@@ -378,7 +375,7 @@ shipElements.forEach(ship => {
             currentSelectedShip = ship;
         }
     });
-    
+
     // Right-click to deselect ship
     ship.addEventListener("contextmenu", (e) => {
         e.preventDefault();
@@ -396,7 +393,7 @@ export function randomizeShipPlacement() {
         let placed = false;
         let attempts = 0;
         const maxAttempts = 100; // Prevent infinite loops
-        
+
         while (!placed && attempts < maxAttempts) {
             attempts++;
             // Randomly set ship rotation
@@ -415,7 +412,7 @@ export function randomizeShipPlacement() {
 
             placed = true;
         }
-        
+
         if (!placed) {
             console.error(`Failed to place ${shipData.name} after ${maxAttempts} attempts`);
         }
@@ -441,13 +438,13 @@ export function resetShipPlacement() {
             ship.style.transform = "rotate(0deg)";
             ship.setAttribute("data-rotation", "0");
         });
-        
+
         // Reset the ships data structure
         ships.forEach(ship => {
             ship.setcoveredFields([]);
             ship.setRotation("vertical");
         });
-        
+
         // Reset current selections
         deselectCurrentShip();
     } catch (error) {

@@ -19,13 +19,13 @@ if (Game()) {
     await checkForGameInDB() 
 
     // redirect to right page
-    if (Game().status = "waiting") {
+    if (Game().status == "waiting") {
        window.location.href = "/gameLobby"
-    } else if (Game().status = "placingShips") {
+    } else if (Game().status == "placingShips") {
         window.location.href = "/placingShips"
-    } else if (Game().status = "active") {
+    } else if (Game().status == "active") {
         window.location.href = "/game"
-    } else if (Game().status = "finished") {
+    } else if (Game().status == "finished") {
         setGame(null)
     } else {
         throw new Error("error getting game state")
