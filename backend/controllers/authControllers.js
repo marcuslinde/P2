@@ -37,7 +37,7 @@ export const register = async (req, res) => {
 
   if (!name || !email || !password) {
     return res.status(400).json({ success: false, message: "Provide all fields" });
-    return false
+  
   }
 
   try {
