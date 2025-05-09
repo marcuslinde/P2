@@ -3,7 +3,7 @@ import { User, setGame, Game } from "../../../utility/state.js";
 import { getElementById, getInputElement } from "../../../utility/helperFunctions.js";
 import { setLoading } from "../../../utility/ui.js";
 import { joinGame } from "../gameHelpers/gameFunctions.js";
-import { gameUpdate, joinRoom, socket } from "../../../utility/socketFunctions.js";
+import { gameUpdate, joinRoom } from "../../../utility/socketFunctions.js";
 
 
 if (!User()) {
@@ -13,7 +13,6 @@ if (!User()) {
 getElementById("backButton")?.addEventListener("click", () => window.location.href = "/");
 
 const form = getElementById('joinGameForm');
-const joinGameButton = getElementById("joinGameButton");
 const gameCodeInput = getInputElement("gameCode");
 
 

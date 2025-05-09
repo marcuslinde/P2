@@ -7,7 +7,6 @@
 import { User, Game, setGame } from '../../../utility/state.js';
 import { getElementById } from '../../../utility/helperFunctions.js';
 import { boardHeight, boardWidth } from '../gameHelpers/board.js';
-import { Ship } from '../gameHelpers/ships.js';
 
 const playerIndex = User()._id == Game().players[0].userId ? 0 : 1;
 const enemyIndex = playerIndex == 0 ? 1 : 0;

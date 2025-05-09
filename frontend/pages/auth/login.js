@@ -1,6 +1,6 @@
 /** @module login */
 import { setLoading } from '../../utility/ui.js';
-import { setUser, User } from '../../utility/state.js';
+import { setUser } from '../../utility/state.js';
 import { getElementById, getInputElement, getCookie, setCookie } from '../../utility/helperFunctions.js';
 import { login } from './authFunctions.js';
 
