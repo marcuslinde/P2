@@ -6,7 +6,7 @@ import staticRoutes from './routes/staticRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import gameRoutes from './routes/gameRoutes.js';
-import setupWebhooks from './webhooks.js';
+import process from "process";
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import { initSocketHandlers } from "./config/sockets.io.js";

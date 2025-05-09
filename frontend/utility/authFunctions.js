@@ -5,7 +5,7 @@ const apiBase = '/api/auth'
    * @param {string} password 
 */
 export async function login(username, password) {
-    try {
+
         const response = await fetch(apiBase + '/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -20,11 +20,6 @@ export async function login(username, password) {
 
 
         return data.user;
-
-    }
-    catch (err) {
-        throw err
-    }
 }
 
 
@@ -34,7 +29,6 @@ export async function login(username, password) {
  * @returns {Promise<object>}  
  */
 export async function registerUser(user) {
-    try {
         // API CALL TO REGISTER USER
         const response = await fetch(apiBase + '/register', {
             method: 'POST',
@@ -51,9 +45,4 @@ export async function registerUser(user) {
 
         return data.newUser;
 
-    }
-
-    catch (err) {
-        throw err
-    }
 }
