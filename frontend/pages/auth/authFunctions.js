@@ -12,7 +12,6 @@ export async function login(username, password) {
     })
 
     if (!response.ok) {
-        window.alert(`${response.status}: Invalid username or password`);
         throw new Error("User not found");
     }
     const data = await response.json();
