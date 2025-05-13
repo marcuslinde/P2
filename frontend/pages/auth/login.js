@@ -1,6 +1,6 @@
 /** @module login */
 import { setLoading } from '../../utility/ui.js';
-import { setUser, User } from '../../utility/state.js';
+import { setUser } from '../../utility/state.js';
 import { getElementById, getInputElement, getCookie, setCookie } from '../../utility/helperFunctions.js';
 import { login } from './authFunctions.js';
 
@@ -46,7 +46,7 @@ loginForm.addEventListener("submit", handleLogin)
 async function handleLogin(e) {
     e.preventDefault()
     setLoading(true);
-
+    try {
     const username = getInputElement("username").value;
     const password = getInputElement("password").value;
 
@@ -58,7 +58,11 @@ async function handleLogin(e) {
         setUserCookies(username, password);
         window.location.href = "/"; // go to front page
     }
+    } catch(err) {
+        window.alert(`${err.status}: Invalid username or password`);
+    } finally {
     setLoading(false);
+    }
 
 }
 

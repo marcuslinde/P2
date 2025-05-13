@@ -33,6 +33,11 @@ jobs:
       run: |
         npm test
 
+
+    - name: can pass lint
+      run: |
+        npm run lint
+
     - name: Search for console.log statements in frontend
       run: |
         if grep -r "console\.log" ./frontend; then

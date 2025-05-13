@@ -130,7 +130,7 @@ export const deleteGame = async (req, res) => {
     await Game.findByIdAndDelete(id);
     res.status(200).json({ success: true, message: "Game deleted" });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Server Error" });
+    res.status(500).json({ success: false, message: `Server Error: ${error}` });
   }
 }
 

@@ -18,7 +18,6 @@ registerForm?.addEventListener("submit", handleRegister)
  */
 
 function isValidPassword() {
-    const upperLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     const password = getInputElement("password").value;
     const repeatPassword = getInputElement("repeatPassword").value;
 
@@ -57,23 +56,27 @@ async function handleRegister(e) {
 
     setLoading(true);
 
-    
+
     const userData = {
         name: getInputElement("username").value,
         email: getInputElement("email").value,
         password: getInputElement("password").value,
     }
+    try {
+        const user = await registerUser(userData);
 
-    const user = await registerUser(userData);
+        if (user) {
 
-    if (user) {
+            // Update frontend userState
+            setUser(user);
+            window.location.href = "/"; // go to front page
 
-        // Update frontend userState
-        setUser(user);
-        window.location.href = "/"; // go to front page
-
+        }
+    } catch (err) {
+        window.alert(`${err.status}: Couldn't register user. Username might be occupied.`);
+    } finally {
+        setLoading(false);
     }
-    setLoading(false);
 }
 
 

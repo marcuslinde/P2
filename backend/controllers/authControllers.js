@@ -37,7 +37,7 @@ export const register = async (req, res) => {
 
   if (!name || !email || !password) {
     return res.status(400).json({ success: false, message: "Provide all fields" });
-    return false
+  
   }
 
   try {
@@ -47,8 +47,8 @@ export const register = async (req, res) => {
     const newUser = new User({ name, email, password: hashedPassword }); 
     await newUser.save();
 
-    // Remove sensitive fields before sending the response
-    const { password: _, ...safeUser } = newUser.toObject();
+    // Remove sensitive fields before sending the responsz
+    const { password, ...safeUser } = newUser.toObject();
     res.status(201).json({ success: true, newUser: safeUser });
     return true;
   } catch (error) {

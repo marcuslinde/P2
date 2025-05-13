@@ -1,10 +1,9 @@
 /** @module loading */
 
-import { getElementById, getInputElement } from "./helperFunctions.js";
+import { getElementById } from "./helperFunctions.js";
 
-let isLoading = false;
 
-function displayLoader(e) {
+function displayLoader() {
     const loader = document.createElement("div")
     loader.id = "loader";
     document.body.appendChild(loader);
@@ -21,7 +20,6 @@ function removeLoader() {
 }
 
 export const setLoading = (bool) => {
-    isLoading = bool;
     if (bool) {
         displayLoader();
     } else {
