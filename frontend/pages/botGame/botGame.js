@@ -73,7 +73,7 @@ function getNextRandomTarget() {
 }
 
 /** Checks win condition for both player and bot */
-function checkWinCondition() {
+export function checkWinCondition() {
     if (game.enemyHits === 17) {
         return 1;
     }

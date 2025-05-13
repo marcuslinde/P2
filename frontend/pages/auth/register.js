@@ -79,6 +79,8 @@ async function handleRegister(e) {
     }
 }
 
+export { isValidPassword, handleRegister };
+
 
 
 
