@@ -48,39 +48,32 @@ function isValidPassword() {
  * handles the registration process by calling the "registerUser" function and updating the ui 
  */
 async function handleRegister(e) {
-    e.preventDefault()
-
+    e.preventDefault();
+  
     if (!isValidPassword()) {
-        return;
+      return;
     }
-
+  
     setLoading(true);
-
-
+  
     const userData = {
-        name: getInputElement("username").value,
-        email: getInputElement("email").value,
-        password: getInputElement("password").value,
-    }
+      name: getInputElement("username").value,
+      email: getInputElement("email").value,
+      password: getInputElement("password").value,
+    };
+  
     try {
-        const user = await registerUser(userData);
-
-        if (user) {
-
-            // Update frontend userState
-            setUser(user);
-            window.location.href = "/"; // go to front page
-
-        }
+      const user = await registerUser(userData);
+    // Update frontend userState
+      setUser(user);
+      window.location.href = "/";
     } catch (err) {
-        window.alert(`${err.status}: Couldn't register user. Username might be occupied.`);
+
+      window.alert(err.message);
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
-}
-
-export { isValidPassword, handleRegister };
-
-
-
+  }
+  
+  export { isValidPassword, handleRegister };
 
