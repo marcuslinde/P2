@@ -36,25 +36,30 @@ export const register = async (req, res) => {
   const { name, email, password } = req.body;
 
   if (!name || !email || !password) {
-    return res.status(400).json({ success: false, message: "Provide all fields" });
-  
+    return res
+      .status(400)
+      .json({ success: false, message: "Provide all fields" });
   }
 
   try {
-    // Hash password
     const hashedPassword = await hashPassword(password);
-    // Create a new user
-    const newUser = new User({ name, email, password: hashedPassword }); 
+    const newUser = new User({ name, email, password: hashedPassword });
     await newUser.save();
 
-    // Remove sensitive fields before sending the responsz
-    const { password, ...safeUser } = newUser.toObject();
+    // Remove sensitive fields without introducing an unused variable
+    const safeUser = newUser.toObject();
+    delete safeUser.password;
+
     res.status(201).json({ success: true, newUser: safeUser });
     return true;
   } catch (error) {
     console.error("Error in creating user:", error.message);
-    res.status(500).json({ success: false, message: "Server error"});
+    if (error.code === 11000) {
+      return res
+        .status(409)
+        .json({ success: false, message: "Username or email already in use" });
+    }
+    res.status(500).json({ success: false, message: "Server error" });
     return false;
   }
 };
-

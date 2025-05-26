@@ -29,20 +29,22 @@ export async function login(username, password) {
  * @returns {Promise<object>}  
  */
 export async function registerUser(user) {
-        // API CALL TO REGISTER USER
-        const response = await fetch(apiBase + '/register', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(user)
-        })
-
-        if (!response.ok) {
-            throw new Error("User could not be registered");
-        }
-
-        const data = await response.json()
-
-
-        return data.newUser;
-
-}
+    // API CALL TO REGISTER USER
+    const response = await fetch(apiBase + '/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(user)
+    });
+  
+    const data = await response.json();
+  
+    if (response.status === 409) {
+      // duplicate‐key: username/email in use
+      throw new Error(data.message);
+    } else if (!response.ok) {
+      // any other server failure
+      throw new Error(data.message || "User could not be registered");
+    }
+  
+    return data.newUser;
+  }
