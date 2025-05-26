@@ -42,32 +42,23 @@ export const register = async (req, res) => {
   }
 
   try {
-    // Hash the incoming password
     const hashedPassword = await hashPassword(password);
-
-    // Create & save the user with the hashed password
-    const newUser = new User({
-      name,
-      email,
-      password: hashedPassword
-    });
+    const newUser = new User({ name, email, password: hashedPassword });
     await newUser.save();
 
-    // Destructure out the hashed password under a throwaway name,
-    // so the rest of the fields become `safeUser`
-    const { password: throwawayPassword, ...safeUser } = newUser.toObject();
+    // Remove sensitive fields without introducing an unused variable
+    const safeUser = newUser.toObject();
+    delete safeUser.password;
 
-    // Send back the user WITHOUT the password
     res.status(201).json({ success: true, newUser: safeUser });
     return true;
   } catch (error) {
     console.error("Error in creating user:", error.message);
-    // Error handling for duplicate username and email
-     if (error.code === 11000) {
-       return res
-         .status(409)
-         .json({ success: false, message: "Username or email already in use" });
-     }
+    if (error.code === 11000) {
+      return res
+        .status(409)
+        .json({ success: false, message: "Username or email already in use" });
+    }
     res.status(500).json({ success: false, message: "Server error" });
     return false;
   }
