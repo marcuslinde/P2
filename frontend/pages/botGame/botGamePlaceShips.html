@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Battleships</title>
+    <base href="/pages/botGame/" target="_blank">
+    <link rel="stylesheet" href="../game/gameStyles.css">
+</head>
+
+<body>
+
+    <button id="backButton" type="button">
+        <img src="../../resources/images/backArrow.png" alt="Back to homepage">
+    </button>
+
+    <h2 id ="turn" class="center" > place your ships </h2>
+    <div id="gameBoardWrapper" class="flex">
+        <div class="gameBoard" id="gameBoard"></div>
+    </div>
+
+    <div class="shipSelectionWrapper center">
+        <div id="carrier" class="ship" draggable="true"></div>
+        <div id="battleship" class="ship" draggable="true"></div>
+        <div id="submarine" class="ship" draggable="true"></div>
+        <div id="cruiser" class="ship" draggable="true"></div>
+        <div id="destroyer" class="ship" draggable="true"></div>
+    </div>
+
+    <div class="functionWrapper">
+    
+        <div class="buttonWrapper">
+            <div id="gameButtonWrapper">
+                <input id="readyButton" type="button" value="Ready">
+            </div>
+            <div id="gameButtonWrapper">
+                <input id="randomizeButton" type="button" value="Randomize">
+            </div>
+            <div id="gameButtonWrapper">
+                <input id="resetButton" type="button" value="Reset">
+            </div>
+        </div>
+    </div>
+    <script type="module" src="botGamePlaceShips.js"></script>
+ 
+</div>
+
+</body>
+
+</html>

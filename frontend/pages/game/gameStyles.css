@@ -1,4 +1,5 @@
 @import url('/styles.css');
+
 :root {
     --carrier: #957b5f;
     --submarine: #fff4db;
@@ -13,7 +14,8 @@ html {
     transition: all 0.15s;
 }
 
-#yourName, #enemyName{
+#yourName,
+#enemyName {
     margin: 25px;
     width: min-content;
     padding: 10px;
@@ -35,35 +37,47 @@ html {
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 @keyframes fadeOut {
-    from { opacity: 1; }
-    to { opacity: 0; }
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
 }
 
 .gameBoard {
-    background-color:var(--boardColor);
+    background-color: var(--boardColor);
     display: grid;
     border-radius: 7px;
     margin: 25px;
     border: 3px solid black;
     backdrop-filter: blur(5px);
-    grid-template-columns: repeat(10,1fr); /* laver 10 grid coloumns*/
-    grid-template-rows: repeat(10,1fr);
+    grid-template-columns: repeat(10, 1fr);
+    /* laver 10 grid coloumns*/
+    grid-template-rows: repeat(10, 1fr);
     box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.44);
     width: 400px;
-    height: 400px; /*10x10 height*/
+    height: 400px;
+    /*10x10 height*/
 }
 
 .functionWrapper {
     display: flex;
-    flex-direction: column; 
-    justify-content: center; 
-    align-items: center; 
-    text-align: center; 
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
 }
 
 .infoBox {
@@ -76,15 +90,17 @@ html {
     margin: 10px;
 }
 
-#gameBoardWrapper{
+#gameBoardWrapper {
     width: 70%;
     margin: auto;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-around;
 }
+
 #gameBoardWrapper div {
-    max-width: 460px; /*40x10 + 2x25 margin + 5 border */
+    max-width: 460px;
+    /*40x10 + 2x25 margin + 5 border */
 }
 
 .field {
@@ -102,12 +118,15 @@ html {
 .gameBoard div:nth-child(n+1):nth-child(-n+10) {
     border-top: none;
 }
+
 .gameBoard div:nth-child(10n-9) {
     border-left: none;
 }
+
 .gameBoard div:nth-child(10n) {
     border-right: none;
 }
+
 .gameBoard div:nth-child(n+91):nth-child(n+10) {
     border-bottom: none;
 }
@@ -124,25 +143,55 @@ html {
 .field.right.occupiedField {
     background-color: initial !important;
 }
+
 /* Laver et rødt kryds på hitField ved at dele background-image op i 2 med hældningen 45% (den er transparent fra start til 50% - 1px og 50% + 1px til slut*/
-.hitField { 
-    background-image: 
-    linear-gradient(45deg, transparent calc(50% - 1px), red calc(50% - 1px), red calc(50% + 1px), transparent calc(50% + 1px)),
-    linear-gradient(-45deg, transparent calc(50% - 1px), red calc(50% - 1px), red calc(50% + 1px), transparent calc(50% + 1px));
+.hitField {
+    /* 2) Remove any default border/outline/box-shadow */
+    background-image:
+        linear-gradient(45deg, transparent calc(50% - 1px), red calc(50% - 1px), red calc(50% + 1px), transparent calc(50% + 1px)),
+        linear-gradient(-45deg, transparent calc(50% - 1px), red calc(50% - 1px), red calc(50% + 1px), transparent calc(50% + 1px));
     background-size: 100% 100%;
     background-repeat: no-repeat;
+    animation-name: scale;
+    animation-duration: 1s;
+    animation-timing-function: ease-out
 }
+
+
 
 .missedField {
     position: relative;
-  }
-  
+    animation-name: scale;
+    animation-duration: 0.8s;
+    animation-timing-function: ease-out;
+
+}
+
+@keyframes scale {
+    0% {
+        scale: 2;
+        border: none;
+    }
+    50% {
+        scale: 0.7;
+    }
+    75% {
+        border: none;
+        scale: 1;
+    }
+    100% {
+        background-size: 100% 100%;
+        border: 1px solid black;
+
+    }
+}
+
 .missedField::after {
     content: "";
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 20px; 
+    width: 20px;
     height: 20px;
     background-color: rgb(0, 0, 0);
     border-radius: 50%;
@@ -213,7 +262,7 @@ html {
 }
 
 .field.right.missedField:hover {
-    background-color: inherit; 
+    background-color: inherit;
 }
 
 #gameButtonWrapper {
@@ -221,7 +270,10 @@ html {
     padding: 3px;
 }
 
-#turn, #exitGameButton, #homeButton, #winnerDisplay  {
+#turn,
+#exitGameButton,
+#homeButton,
+#winnerDisplay {
     background-color: #141414;
     color: var(--text2);
     width: fit-content;
@@ -229,4 +281,3 @@ html {
     border: #000000;
     border-radius: 5px;
 }
-

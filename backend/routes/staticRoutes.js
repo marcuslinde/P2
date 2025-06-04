@@ -30,7 +30,7 @@ router.get('/createGame', (req, res) => {
 });
 
 router.get('/createBotGame', (req, res) => {
-    res.sendFile(join(__dirname, '..', '..', 'frontend', 'pages', 'botGame', 'botGame.html'));
+    res.sendFile(join(__dirname, '..', '..', 'frontend', 'pages', 'botGame', 'botGamePlaceShips.html'));
 });
 
 router.get('/profile', (req, res) => {
