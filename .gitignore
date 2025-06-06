@@ -9,3 +9,6 @@ package-lock.json
 /.idea
 
 /docs
+
+Dockerfile
+.dockerignore
