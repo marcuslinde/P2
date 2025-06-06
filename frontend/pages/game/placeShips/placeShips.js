@@ -2,7 +2,7 @@
 
 import { Game, setGame, User } from "../../../utility/state.js";
 import { setLoading } from "../../../utility/ui.js";
-import { getElementById, querySelectorAll } from "../../../utility/helperFunctions.js";
+import { getElementById } from "../../../utility/helperFunctions.js";
 import { initializeBoardFields, resetShipPlacement, randomizeShipPlacement, ships } from "./placeShipsFunctionality.js";
 import { getGameByID, submitShips, deleteGame } from "../gameHelpers/gameFunctions.js"
 import { gameUpdate, joinRoom, socket } from "../../../utility/socketFunctions.js";

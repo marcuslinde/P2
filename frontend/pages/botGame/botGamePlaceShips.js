@@ -10,25 +10,29 @@ import { ships as ownShips } from "../game/placeShips/placeShipsFunctionality.js
 
 
 getElementById("resetButton")?.addEventListener("click", resetShipPlacement);
-getElementById("randomizeButton")?.addEventListener("click", () => { randomizeShipPlacement(ownShips) });
 getElementById("readyButton").addEventListener("click", submitShips);
-getElementById("backButton")?.addEventListener("click", () => window.location.href = "/");
+getElementById("backButton")?.addEventListener("click", () => { window.location.href = "/"; setGame(null) });
+getElementById("randomizeButton")?.addEventListener("click", () => { randomizeShipPlacement(ownShips) });
 
 initializeBoardFields();
 
 let botShips = placeBotShips();
 
-
 /** checks if player is done the necessary steps to start the game  */
 function submitShips(e) {
     e.preventDefault();
-    const allShipsPlaced = ownShips.every(ship => ship.coveredFields.length > 0);
+    const allShipsPlaced = ownShips.every(ship => ship.coveredFields.length > 0); 
     if (!allShipsPlaced) {
         window.alert("Please place all ships before submitting");
         return;
     } else {
-        setGame({ type: "botGame", own: {occupiedFields: getOccupiedFields(ownShips), firedShots: []}, bot: {occupiedFields: getOccupiedFields(botShips), firedShots: []}, turn: "BOT" })
-        window.location.href = "botGame.html"
+        setGame({ 
+            type: "botGame", 
+            own: { occupiedFields: getOccupiedFields(ownShips), firedShots: [] }, 
+            bot: { occupiedFields: getOccupiedFields(botShips), firedShots: [] }, 
+            turn: "BOT"
+        })
+        window.location.href = "/botGame"
     }
 }
 
