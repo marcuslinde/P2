@@ -174,7 +174,7 @@ function getNewShips() {
         game.bot.missedFields.forEach((field) => freeFields.splice(freeFields.indexOf(field), 1))
         strategyShips.forEach((ship) => ship.setcoveredFields([]));
 
-        getNewPositions(0, freeFields);
+        getNewPositions(strategyShips.length - 1, freeFields);
     }
     occupiedFields = calculateOccupiedFields();
 }
@@ -189,11 +189,8 @@ function getNewShips() {
 function getNewPositions(shipIdx, freeFields) {
     const freeFieldsCopy = [...freeFields];
 
-    if (shipIdx === strategyShips.length) {
-
-        return checkIfValidFields(calculateOccupiedFields());
-    }
-
+    // termination
+    if (shipIdx === -1) return checkIfValidFields(calculateOccupiedFields());
 
     for (let i = 0; i < freeFieldsCopy.length; i++) {
         for (let j = 0; j < 2; j++) {
@@ -211,11 +208,9 @@ function getNewPositions(shipIdx, freeFields) {
             // if we are here, the ship placement fields are valid
             strategyShips[shipIdx].setcoveredFields(coveredFields);
 
-
-
             freeFields = freeFieldsCopy.filter(field => !coveredFields.includes(field));
 
-            if (getNewPositions(shipIdx + 1, freeFields)) {
+            if (getNewPositions(shipIdx - 1, freeFields)) {
                 return true;
             } else {
                 strategyShips[shipIdx].setcoveredFields([]);
