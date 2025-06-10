@@ -7,31 +7,38 @@ import { getElementById } from '../../utility/helperFunctions.js';
 import { cannonSound, splashSound } from '../../utility/audioManager.js';
 import { Game, setGame } from '../../utility/state.js';
 import { boardWidth, boardHeight } from '../game/gameHelpers/board.js';
+import { createShips } from '../game/gameHelpers/ships.js';
 
 let game = Game();
-// holds the probabillity of a ship being on each free field. Sum is always 1.
-let fieldDistribution = Array.from({ length: 100 }, ()=>0.01);
 
-
-getElementById("backButton").addEventListener("click", () =>{
-    setGame(null); 
+getElementById("backButton").addEventListener("click", () => {
+    setGame(null);
     window.location.href = "/";
 });
+
 initializeFields();
 
 gameLoop(); // starts the game with a bot shot
 
+let strategyShips = createShips();
+let occupiedFields = calculateOccupiedFields();
 
 /** Checks win condition for both player and bot */
 export function checkWinCondition() {
     if (game.own.occupiedFields.every((fieldId) => { return game.bot.firedShots.includes(fieldId) })) {
-        window.alert("BOT WON!")
-        window.location.href = "/";
-        setGame(null);
+        setTimeout(() => {
+            window.alert("BOT WON!")
+            window.location.href = "/";
+            setGame(null);
+        }, 500)
+
     } else if (game.bot.occupiedFields.every((fieldId) => { return game.own.firedShots.includes(fieldId) })) {
-        window.alert("YOU WON!")
-        window.location.href = "/";
-        setGame(null);
+        setTimeout(() => {
+
+            window.alert("YOU WON!")
+            window.location.href = "/";
+            setGame(null);
+        }, 500)
     }
 }
 
@@ -46,22 +53,18 @@ function gameLoop() {
             game.turn = "OWN";
             setGame(game);
             gameLoop();
-        }, Math.random()*1000)
+        }, Math.random() * 500 + 500)
     } else if (game.turn == "OWN") {
         getElementById("turn").innerHTML = "Your turn!"
         setGame(game);
-
     }
 }
-
-
-
 
 /** Opretter 2×100 felter */
 function initializeFields() {
     ["left", "right"].forEach(side => {
         const board = getElementById(side + "GameBoard");
-        for (let i = 0; i <= boardWidth * boardHeight - 1; i++) {
+        for (let i = 0; i < boardWidth * boardHeight; i++) {
             const field = document.createElement("div");
             field.classList.add("field", side);
             field.id = side + "field" + i;
@@ -126,65 +129,172 @@ function fireCannon(e) {
 
 
 /** handls the bot fire a shot */
-export function botFireCannon() {
-    const posWeight = 20;
-    const negWeight = 0.05;
+function botFireCannon() {
+    const randomnessFactor = 0.3;
+    let fieldId = -1;
 
-    const fieldId = getNextRandomTarget();
+    // choose random target
+    if (Math.random() < randomnessFactor || occupiedFields.length == 0 || game.bot.hitFields.length == 0) {
+        let freeFields = Array.from(Array(100).keys())
+        game.bot.missedFields.forEach((field) => freeFields.splice(freeFields.indexOf(field), 1))
+        let randomIdx = Math.floor(Math.random() * freeFields.length)
+        fieldId = freeFields[randomIdx];
+    }
+
+    // choose target according to strategy
+    while (fieldId == -1) {
+        let idx = Math.floor(Math.random() * occupiedFields.length);
+        if (!game.bot.firedShots.includes(occupiedFields[idx])) {
+            fieldId = occupiedFields[idx];
+        }
+    }
+
     const firedAtField = getElementById(`leftfield${fieldId}`);
     game.bot.firedShots.push(fieldId);
-    fieldDistribution[fieldId] = 0;
-
 
     if (game.own.occupiedFields.includes(fieldId)) {
         firedAtField.classList.remove("occupiedField");
         firedAtField.classList.add("hitField");
-
+        game.bot.hitFields.push(fieldId);
         cannonSound.play();
-
-        [10, -10, 1, -1].forEach((i) => {
-            if (checkIfValidField(fieldId + (i))) { fieldDistribution[fieldId + (i)] *= posWeight }
-        })
-
     } else {
-        [10 - 10, 1, -1].forEach((i) => {
-            if (checkIfValidField(fieldId + (i))) { fieldDistribution[fieldId + (i)] *= negWeight };
-        })
+        game.bot.missedFields.push(fieldId);
         firedAtField?.classList.add("missedField");
         splashSound.play();
     }
-    correctDistribution();
+
+    getNewShips();
     setGame(game);
 }
 
-function checkIfValidField(fieldId) {
-    return (fieldId < 100 && fieldId >= 0 && fieldDistribution[fieldId] !== 0) ? true : false;
+// calls the getNewPosition function
+function getNewShips() {
+    if (!checkIfValidFields(calculateOccupiedFields())) {
+        let freeFields = Array.from(Array(100).keys())
+        game.bot.missedFields.forEach((field) => freeFields.splice(freeFields.indexOf(field), 1))
+        strategyShips.forEach((ship) => ship.setcoveredFields([]));
+
+        getNewPositions(0, freeFields);
+    }
+    occupiedFields = calculateOccupiedFields();
 }
 
-/** Takes the fieldDistribution, and makes sure it sums up to one, by multiplying each field probabillity with the overflow */
-function correctDistribution() {
-    let probSum = fieldDistribution.reduce((p, i) => { return i += p })
+/**
+ * Recursive function which checks all possible ship placement and returns if a given ship place ment satisfies "checkIfValidFields" conditions.
+ * modifies the 'strategyShips'
+ * @param {Number} shipIdx 
+ * @param {Array<field>} freeFields 
+ * @returns {boolean}
+ */
+function getNewPositions(shipIdx, freeFields) {
+    const freeFieldsCopy = [...freeFields];
 
-    if (probSum !== 1) {
-        let overflow = 1 / probSum
-        for (let i = 0; i < 100; i++) {
-            fieldDistribution[i] *= overflow;
+    if (shipIdx === strategyShips.length) {
+
+        return checkIfValidFields(calculateOccupiedFields());
+    }
+
+
+    for (let i = 0; i < freeFieldsCopy.length; i++) {
+        for (let j = 0; j < 2; j++) {
+            // reset free fields
+            freeFields = freeFieldsCopy;
+
+            strategyShips[shipIdx].setRotation(j == 0 ? "vertical" : "horizontal");
+            let coveredFields = calculateCoveredFields(freeFieldsCopy[i], strategyShips[shipIdx].length, strategyShips[shipIdx].rotation);
+
+            // check if covered fields are valid:
+            if (!coveredFields) continue;
+            if (!coveredFields?.every((field) => freeFieldsCopy.includes(field))) continue;
+            if (coveredFields?.some((field) => game.bot.missedFields.includes(field))) continue;
+
+            // if we are here, the ship placement fields are valid
+            strategyShips[shipIdx].setcoveredFields(coveredFields);
+
+
+
+            freeFields = freeFieldsCopy.filter(field => !coveredFields.includes(field));
+
+            if (getNewPositions(shipIdx + 1, freeFields)) {
+                return true;
+            } else {
+                strategyShips[shipIdx].setcoveredFields([]);
+            }
         }
     }
-    probSum = fieldDistribution.reduce((p, i) => { return i += p })
+    return false;
 }
 
-/** Gets random target for the bot to shot at */
-function getNextRandomTarget() {
-    const randomProb = Math.random();
-    let randomIdx = -1;
-    let sum = 0;
-    for (let i = 0; i < 100; i++) {
-        sum += fieldDistribution[i];
-        if (sum > randomProb) {
-            randomIdx = i;
-            break;
+
+function calculateOccupiedFields() {
+    let arr = [];
+    strategyShips.forEach((ship) => {
+        ship.getOccupiedFields()?.forEach((field) => arr.push(field))
+    })
+    return arr;
+}
+
+
+
+function checkIfValidFields(arr) {
+    let set = new Set(arr);
+
+    if (set.size !== 17) {
+        return false;
+    }
+
+    if (arr.length !== 17) {
+        return false;
+    }
+
+    for (let i = 0; i < arr.length; i++) {
+        if (game.bot.missedFields.includes(arr[i])) {
+            return false;
         }
     }
-    return randomIdx;
+
+    for (let i = 0; i < game.bot.hitFields.length; i++) {
+        if (!arr.includes(game.bot.hitFields[i])) {
+            return false;
+        }
+    }
+    if (game.bot.missedFields.some((field) => arr.includes(field))) {
+        // return false;
+    }
+    if (!game.bot.hitFields.every((field) => arr.includes(field))) {
+        // return false;
+    }
+    return true;
+}
+
+/**
+ * Calculates the board fields a ship will cover given a starting field.
+ * Returns null if placement is invalid or overlaps.
+ */
+export function calculateCoveredFields(start, length, rotation) {
+    const startColumn = (start) % boardWidth;
+    const startRow = Math.floor((start) / boardWidth);
+
+    // check for out of bounds
+    if (rotation === "vertical" && startRow + length > boardHeight) {
+        return null;
+    } else if (rotation === "horizontal" && startColumn + length > boardWidth) {
+        return null;
+    }
+
+    const fields = [];
+    for (let i = 0; i < length; i++) {
+        if (rotation === "vertical") {
+            fields.push(start + boardWidth * i);
+        } else {
+            fields.push(start + i);
+        }
+    }
+
+    if (fields.some((field) => game.bot.missedFields.includes(field))) {
+        return null;
+    }
+
+
+    return fields;
 }

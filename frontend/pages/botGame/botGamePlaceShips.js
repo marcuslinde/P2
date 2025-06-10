@@ -29,8 +29,8 @@ function submitShips(e) {
         setGame({ 
             type: "botGame", 
             own: { occupiedFields: getOccupiedFields(ownShips), firedShots: [] }, 
-            bot: { occupiedFields: getOccupiedFields(botShips), firedShots: [] }, 
-            turn: "BOT"
+            bot: { occupiedFields: getOccupiedFields(botShips), firedShots: [], missedFields: [], hitFields: [] }, 
+            turn: "BOT",
         })
         window.location.href = "/botGame"
     }
@@ -40,7 +40,7 @@ function getOccupiedFields(ships) {
     let fields = []
 
     ships.forEach(ship =>
-        ship.coveredFields.forEach((f) => { fields.push(f); })
+        ship.coveredFields.forEach((f) => { fields.push(f-1); })
     );
     return fields;
 }
@@ -56,7 +56,7 @@ function placeBotShips() {
             attempts++;
             // Randomly set ship rotation
             Math.random() < 0.5 ? shipData.setRotation("vertical") : shipData.setRotation("horizontal");
-            const randomField = Math.floor(Math.random() * (boardWidth * boardHeight)) + 1;
+            const randomField = Math.floor(Math.random() * (boardWidth * boardHeight));
             const coveredFields = calculateCoveredFields(randomField, shipData.length, shipData.rotation);
             if (!coveredFields) continue;
 
