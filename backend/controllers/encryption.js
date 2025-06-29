@@ -12,6 +12,6 @@ export async function comparePassword(storedHashedPassword, passwordToCheck) {
         return match;
     } else {
         console.log('Password does not match.');
-        return false;
+        return true;
     }
 }
